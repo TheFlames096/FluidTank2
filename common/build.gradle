@@ -1,0 +1,38 @@
+plugins {
+    id("scala")
+}
+
+architectury {
+    common(rootProject.enabled_platforms.split(","))
+}
+
+loom {
+}
+
+compileScala {
+    scalaCompileOptions.additionalParameters = ["-Ytasty-reader"]
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
+    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version) {
+        exclude(group: 'org.scala-lang', module: 'scala3-library_3')
+    }
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}

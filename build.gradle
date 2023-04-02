@@ -1,0 +1,78 @@
+plugins {
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.1-SNAPSHOT" apply false
+}
+
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    repositories {
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings loom.layered {
+            it.officialMojangMappings()
+            String[] parchmentVersion = String.valueOf(project.parchment_mapping).split("-")
+            String parchmentMC = parchmentVersion[0]
+            String parchmentDate = parchmentVersion[1]
+            it.parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
+        }
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = project.archives_base_name
+    version = project.mod_version
+    group = project.maven_group
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = "Azure-SLP"
+            url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+            content {
+                it.includeVersion("org.typelevel", "cats-core_2.13", project.cats_version)
+                it.includeVersion("org.typelevel", "cats-kernel_2.13", project.cats_version)
+            }
+        }
+    }
+
+    dependencies {
+        testImplementation(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
+        testImplementation('org.junit.jupiter:junit-jupiter')
+        // implementation(group: "org.scala-lang", name: "scala3-library_3", version: project.scala3_version)
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+    }
+
+    java {
+        withSourcesJar()
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+    }
+}
