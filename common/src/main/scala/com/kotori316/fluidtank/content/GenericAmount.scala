@@ -1,5 +1,7 @@
 package com.kotori316.fluidtank.content
 
+import java.util.Objects
+
 import cats.Hash
 import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, catsSyntaxSemigroup}
 import com.kotori316.fluidtank.content.Implicits._
@@ -33,4 +35,18 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
 
   final def contentEqual(that: GenericAmount[ContentType]): Boolean =
     this.content === that.content && this.nbt === that.nbt
+
+  override final def equals(obj: Any): Boolean = obj match {
+    case that: GenericAmount[_] =>
+      val c = this.access.classTag
+      that.content match {
+        case c(content) => this.content === content && this.nbt === that.nbt && this.amount.value === that.amount.value
+        case _ => false
+      }
+    case _ => false
+  }
+
+  override def hashCode(): Int = Objects.hash(this.content, this.amount.value, this.nbt)
+
+  override def toString: String = s"GenericAmount{content=$content, amount=${amount.value}, nbt=$nbt}"
 }

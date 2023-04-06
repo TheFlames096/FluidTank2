@@ -30,9 +30,5 @@ object FluidTransferLog {
     override def logString: String = s"DrainFailed{ToDrain=$fluid, Tank={${tank.content}}}"
   }
 
-  case class Empty[A](fluid: GenericAmount[A], tank: Tank[A]) extends FluidTransferLog {
-    override def logString: String = s"Empty{s=$fluid, Tank={${tank.content}}}"
-  }
-
   implicit val showFluidTransferLog: Show[FluidTransferLog] = _.logString
 }

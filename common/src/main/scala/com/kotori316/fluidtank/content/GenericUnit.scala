@@ -20,6 +20,7 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
       inForge.intValue
     }
   }
+
 }
 
 object GenericUnit {
@@ -35,7 +36,7 @@ object GenericUnit {
   def fromForge(value: Long): GenericUnit = new GenericUnit(BigInt(value * 81))
 
   implicit final val groupGenericUnit: CommutativeGroup[GenericUnit] = new GroupGenericUnit
-  implicit final val orderingGenericUnit: Ordering[GenericUnit] = new OrderingGenericUnit
+  implicit final val orderingGenericUnit: Ordering[GenericUnit] = Ordering.by(_.value)
 
   private class GroupGenericUnit extends CommutativeGroup[GenericUnit] {
     override def inverse(a: GenericUnit): GenericUnit = new GenericUnit(-a.value)
@@ -47,10 +48,6 @@ object GenericUnit {
     override def remove(x: GenericUnit, y: GenericUnit): GenericUnit = new GenericUnit(x.value - y.value)
 
     override def combineN(a: GenericUnit, n: Int): GenericUnit = new GenericUnit(a.value * n)
-  }
-
-  private class OrderingGenericUnit extends Ordering[GenericUnit] {
-    override def compare(x: GenericUnit, y: GenericUnit): Int = x.value.compare(y.value)
   }
 
   @VisibleForTesting
