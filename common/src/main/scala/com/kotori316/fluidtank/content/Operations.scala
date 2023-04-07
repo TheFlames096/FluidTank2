@@ -1,8 +1,8 @@
 package com.kotori316.fluidtank.content
 
-import cats.Id
 import cats.data.{Chain, ReaderWriterStateT}
-import cats.implicits.catsSyntaxGroup
+import cats.implicits.{catsSyntaxGroup, toSemigroupKOps}
+import cats.{Applicative, Foldable, Id, MonoidK}
 
 import scala.math.Ordering.Implicits.infixOrderingOps
 
@@ -42,5 +42,18 @@ object Operations {
       (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
     }
   }
+
+  private def opList[F[+_], A](opList: F[TankOperation[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] = {
+    val initialState: ListTankOperation[F, A] = ReaderWriterStateT.applyS(f => Id((Chain.empty, f, monoidK.empty)))
+    F.foldLeft(opList, initialState) { (s, op) =>
+      s.flatMap(filledTankList => op.map(t => filledTankList <+> applicative.pure(t)))
+    }
+  }
+
+  def fillList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
+    opList(applicative.map(tanks)(fillOp))
+
+  def drainList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
+    opList(applicative.map(tanks)(drainOp))
 }
 

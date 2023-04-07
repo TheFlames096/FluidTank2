@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.content
 
-import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull, assertTrue}
+import net.minecraft.nbt.CompoundTag
+import org.junit.jupiter.api.Assertions.{assertEquals, assertNotEquals, assertNotNull, assertTrue}
 import org.junit.jupiter.api.{Nested, Test}
 
 import scala.language.implicitConversions
@@ -43,6 +44,38 @@ class GenericAmountTest {
       val subtract = a - a
       assertTrue(subtract.isEmpty)
       assertEquals("a", subtract.content)
+    }
+
+    @Test
+    def notEqual1(): Unit = {
+      val a = GenericAmount("a", 1, None)
+      val b = GenericAmount("b", 1, None)
+      assertNotEquals(a, b)
+      assertNotEquals(a.##, b.##)
+    }
+
+    @Test
+    def notEqual2(): Unit = {
+      val a = GenericAmount("a", 1, None)
+      val b = GenericAmount("a", 2, None)
+      assertNotEquals(a, b)
+      assertNotEquals(a.##, b.##)
+    }
+
+    @Test
+    def notEqual3(): Unit = {
+      val a = GenericAmount("a", 1, None)
+      val b = GenericAmount("a", 1, Option(new CompoundTag()))
+      assertNotEquals(a, b)
+      assertNotEquals(a.##, b.##)
+    }
+
+    @Test
+    def equal(): Unit = {
+      val a1 = GenericAmount("a", 1, None)
+      val a2 = GenericAmount("a", 1, None)
+      assertEquals(a1.##, a2.##)
+      assertEquals(a1, a2)
     }
   }
 

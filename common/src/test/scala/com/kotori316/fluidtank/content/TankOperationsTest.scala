@@ -85,6 +85,24 @@ class TankOperationsTest {
       assertEquals(createTank("a", 200, 1000), result)
       assertEquals(GenericUnit(500), rest.amount)
     }
+
+    @Test
+    def fillToEmpty2(): Unit = {
+      val tank = createTank("", 200, 1000)
+      val op = Operations.fillOp(tank)
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(createTank("a", 700, 1000), result)
+      assertTrue(rest.isEmpty)
+    }
+
+    @Test
+    def fillToEmpty3(): Unit = {
+      val tank = createTank("b", 0, 1000)
+      val op = Operations.fillOp(tank)
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(createTank("a", 500, 1000), result)
+      assertTrue(rest.isEmpty)
+    }
   }
 
   @Nested
@@ -138,6 +156,15 @@ class TankOperationsTest {
         })
       }
       CollectionConverters.asJava(tests)
+    }
+
+    @Test
+    def drainFromEmptyTank3(): Unit = {
+      val tank = createTank("", 500, 1000)
+      val op = Operations.drainOp(tank)
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("content", GenericUnit(200), None))
+      assertEquals(GenericAmount("content", GenericUnit(200), None), rest)
+      assertEquals(tank, result)
     }
 
     @Test
