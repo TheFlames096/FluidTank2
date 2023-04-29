@@ -51,9 +51,9 @@ object Operations {
   }
 
   def fillList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
-    opList(applicative.map(tanks)(fillOp))
+    opList(applicative.map(tanks)(_.fillOp))
 
   def drainList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
-    opList(applicative.map(tanks)(drainOp))
+    opList(applicative.map(tanks)(_.drainOp))
 }
 

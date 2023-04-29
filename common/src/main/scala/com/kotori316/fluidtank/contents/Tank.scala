@@ -2,18 +2,35 @@ package com.kotori316.fluidtank.contents
 
 import java.util.Objects
 
-case class Tank[A](content: GenericAmount[A], capacity: GenericUnit) {
-  def amount: GenericUnit = content.amount
+class Tank[A](val content: GenericAmount[A], val capacity: GenericUnit) {
+  final def amount: GenericUnit = content.amount
 
-  def isEmpty: Boolean = content.isEmpty
+  final def isEmpty: Boolean = content.isEmpty
 
-  override def hashCode(): Int = Objects.hash(content, capacity.value)
+  override final def hashCode(): Int = Objects.hash(content, capacity.value)
 
-  override def equals(obj: Any): Boolean = obj match {
+  override final def equals(obj: Any): Boolean = obj match {
     case t: Tank[_] => this.content == t.content && this.capacity.value == t.capacity.value
     case _ => false
   }
 
-  override def toString: String = s"Tank{content=$content, capacity=${capacity.value}}"
+  override final def toString: String = s"Tank{content=$content, capacity=${capacity.value}}"
+
+  def copy(content: GenericAmount[A] = this.content, capacity: GenericUnit = this.capacity): Tank[A] = {
+    if (this.getClass == classOf[Tank[A]]) {
+      new Tank(content, capacity)
+    } else {
+      throw new NotImplementedError("Child classes of Tank must override copy method")
+    }
+  }
+
+  // overridable!
+  def fillOp: Operations.TankOperation[A] = Operations.fillOp(this)
+
+  // overridable!
+  def drainOp: Operations.TankOperation[A] = Operations.drainOp(this)
 }
- 
+
+object Tank {
+  def apply[A](content: GenericAmount[A], capacity: GenericUnit): Tank[A] = new Tank(content, capacity)
+}
