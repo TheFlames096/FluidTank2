@@ -36,6 +36,10 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
   final def contentEqual(that: GenericAmount[ContentType]): Boolean =
     this.content === that.content && this.nbt === that.nbt
 
+  final def createEmpty: GenericAmount[ContentType] = GenericAmount(access.empty, GenericUnit.ZERO, Option.empty)
+
+  final def isGaseous: Boolean = access.isGaseous(this.content)
+
   override final def equals(obj: Any): Boolean = obj match {
     case that: GenericAmount[_] =>
       val c = this.access.classTag
