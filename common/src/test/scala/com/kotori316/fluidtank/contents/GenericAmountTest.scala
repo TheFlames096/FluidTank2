@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import net.minecraft.nbt.CompoundTag
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotEquals, assertNotNull, assertTrue}

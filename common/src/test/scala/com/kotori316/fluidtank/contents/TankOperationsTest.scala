@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}

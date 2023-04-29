@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation
 
 import scala.reflect.ClassTag
 
-package object content {
+package object contents {
   implicit final val gaString: GenericAccess[String] = new GenericAccess[String] {
     def isEmpty(a: String): Boolean = a.isEmpty
 

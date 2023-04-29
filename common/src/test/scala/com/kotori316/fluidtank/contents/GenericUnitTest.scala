@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import cats.implicits.{catsSyntaxGroup, catsSyntaxSemigroup}
 import org.junit.jupiter.api.{Assertions, Nested, Test}

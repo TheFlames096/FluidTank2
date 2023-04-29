@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import cats.data.{Chain, ReaderWriterStateT}
 import cats.implicits.{catsSyntaxGroup, toSemigroupKOps}

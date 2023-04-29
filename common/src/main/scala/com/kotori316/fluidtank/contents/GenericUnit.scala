@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import cats.kernel.CommutativeGroup
 import org.jetbrains.annotations.VisibleForTesting
@@ -51,5 +51,5 @@ object GenericUnit {
   }
 
   @VisibleForTesting
-  private[content] def apply(value: BigInt): GenericUnit = new GenericUnit(value)
+  private[contents] def apply(value: BigInt): GenericUnit = new GenericUnit(value)
 }

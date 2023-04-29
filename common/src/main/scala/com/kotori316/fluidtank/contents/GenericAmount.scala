@@ -1,10 +1,10 @@
-package com.kotori316.fluidtank.content
+package com.kotori316.fluidtank.contents
 
 import java.util.Objects
 
 import cats.Hash
 import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, catsSyntaxSemigroup}
-import com.kotori316.fluidtank.content.Implicits._
+import com.kotori316.fluidtank.contents.Implicits._
 import net.minecraft.nbt.CompoundTag
 
 case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit, nbt: Option[CompoundTag])
