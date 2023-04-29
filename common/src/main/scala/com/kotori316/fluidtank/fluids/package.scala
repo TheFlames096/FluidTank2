@@ -34,18 +34,18 @@ package object fluids {
 
       tag.putString(KEY_FLUID, getKey(amount.content).toString)
       tag.putByteArray(KEY_AMOUNT_GENERIC, amount.amount.asByteArray)
-      tag.putInt(KEY_FORGE_AMOUNT, amount.amount.asForge)
-      tag.putLong(KEY_FABRIC_AMOUNT, amount.amount.asFabric)
-      amount.nbt.map(t => tag.put(KEY_TAG, t))
+      amount.nbt.foreach(t => tag.put(KEY_TAG, t))
 
       tag
     }
 
     override def read(tag: CompoundTag): GenericAmount[Fluid] = {
       val key: Fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString(KEY_FLUID)))
-      val amount: GenericUnit = if (tag.contains(KEY_AMOUNT_GENERIC, NbtTag.TAG_BYTE_ARRAY)) GenericUnit.fromByteArray(tag.getByteArray(KEY_AMOUNT_GENERIC))
-      else if (tag.contains(KEY_FABRIC_AMOUNT)) GenericUnit.fromFabric(tag.getLong(KEY_FABRIC_AMOUNT))
-      else GenericUnit.fromForge(tag.getInt(KEY_FORGE_AMOUNT))
+      val amount: GenericUnit = {
+        if (tag.contains(KEY_AMOUNT_GENERIC, NbtTag.TAG_BYTE_ARRAY)) GenericUnit.fromByteArray(tag.getByteArray(KEY_AMOUNT_GENERIC))
+        else if (tag.contains(KEY_FABRIC_AMOUNT)) GenericUnit.fromFabric(tag.getLong(KEY_FABRIC_AMOUNT))
+        else GenericUnit.fromForge(tag.getInt(KEY_FORGE_AMOUNT))
+      }
       val fluidTag: Option[CompoundTag] = Option.when(tag.contains(KEY_TAG))(tag.getCompound(KEY_TAG))
 
       new GenericAmount[Fluid](key, amount, fluidTag)

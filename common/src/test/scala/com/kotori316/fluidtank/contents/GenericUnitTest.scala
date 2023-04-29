@@ -2,6 +2,8 @@ package com.kotori316.fluidtank.contents
 
 import cats.implicits.{catsSyntaxGroup, catsSyntaxSemigroup}
 import org.junit.jupiter.api.{Assertions, Nested, Test}
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class GenericUnitTest {
   @Nested
@@ -65,6 +67,31 @@ class GenericUnitTest {
     def maxMinus1(): Unit = {
       val underMax = GenericUnit.fromFabric(-1L + Long.MaxValue)
       Assertions.assertEquals(Long.MaxValue - 1, underMax.asFabric)
+    }
+  }
+
+  @Nested
+  class RotationTest {
+    @ParameterizedTest
+    @ValueSource(longs = Array(
+      0L, 81000L, 81000L * 5, 81000L * 10
+    ))
+    def rotation(amount: Long): Unit = {
+      val genericUnit = GenericUnit(BigInt(amount))
+      Assertions.assertAll(
+        () => Assertions.assertEquals(genericUnit, GenericUnit.fromForge(genericUnit.asForge)),
+        () => Assertions.assertEquals(genericUnit, GenericUnit.fromFabric(genericUnit.asFabric)),
+        () => Assertions.assertEquals(genericUnit, GenericUnit.fromByteArray(genericUnit.asByteArray)),
+      )
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = Array(
+      0L, 1L, 2L, 10L, 100L, 1000L, Int.MaxValue, Long.MaxValue
+    ))
+    def rotationByte(amount: Long): Unit = {
+      val genericUnit = GenericUnit(BigInt(amount))
+      Assertions.assertEquals(genericUnit, GenericUnit.fromByteArray(genericUnit.asByteArray))
     }
   }
 

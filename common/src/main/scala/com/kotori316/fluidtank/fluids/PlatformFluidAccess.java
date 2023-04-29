@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import scala.Option;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
 
 public interface PlatformFluidAccess {
     @NotNull
@@ -26,11 +28,15 @@ public interface PlatformFluidAccess {
     Fluid getBucketContent(BucketItem bucketItem);
 
     @NotNull
-    default Option<Fluid> getFluidContained(ItemStack stack) {
+    default GenericAmount<Fluid> getFluidContained(ItemStack stack) {
         if (stack.getItem() instanceof BucketItem bucketItem) {
-            return Option.apply(getBucketContent(bucketItem));
+            var fluid = getBucketContent(bucketItem);
+            if (Fluids.EMPTY.equals(fluid)) {
+                return FluidAmountUtil.EMPTY();
+            }
+            return FluidAmountUtil.from(fluid, GenericUnit.ONE_BUCKET(), Option.empty());
         }
-        return Option.empty();
+        return FluidAmountUtil.EMPTY();
     }
 
     @ApiStatus.Internal

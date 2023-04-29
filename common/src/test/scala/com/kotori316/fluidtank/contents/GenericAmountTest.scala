@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.contents
 
 import net.minecraft.nbt.CompoundTag
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotEquals, assertNotNull, assertTrue}
-import org.junit.jupiter.api.{Nested, Test}
+import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
 
 import scala.language.implicitConversions
 
@@ -76,6 +76,26 @@ class GenericAmountTest {
       val a2 = GenericAmount("a", 1, None)
       assertEquals(a1.##, a2.##)
       assertEquals(a1, a2)
+    }
+  }
+
+  @Nested
+  class CycleTest {
+    @TestFactory
+    def cycleTest(): Array[DynamicNode] = {
+      val amounts = Seq(
+        GenericAmount("", 0, None),
+        GenericAmount("a", 1, None),
+        GenericAmount("a", 3, None),
+        GenericAmount("b", 1, None),
+        GenericAmount("b", 1, Option(new CompoundTag())),
+      )
+
+      amounts.map(f => DynamicTest.dynamicTest(s"cycle $f", () => {
+        val tag = f.getTag
+        val reconstructed = implicitly[GenericAccess[String]].read(tag)
+        assertEquals(f, reconstructed)
+      })).toArray
     }
   }
 

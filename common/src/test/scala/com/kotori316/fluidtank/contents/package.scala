@@ -21,13 +21,15 @@ package object contents {
       val tag = new CompoundTag()
       tag.putString("content", amount.content)
       tag.putString("amount", amount.amount.value.toString())
+      amount.nbt.foreach(t => tag.put("tag", t))
       tag
     }
 
     override def read(tag: CompoundTag): GenericAmount[String] = {
       val content = tag.getString("content")
       val amount = GenericUnit(BigInt(tag.getString("amount")))
-      GenericAmount(content, amount, Option.empty)
+      val nbt = Option.when(tag.contains("tag"))(tag.getCompound("tag"))
+      GenericAmount(content, amount, nbt)
     }
 
     def classTag: ClassTag[String] = implicitly[ClassTag[String]]
