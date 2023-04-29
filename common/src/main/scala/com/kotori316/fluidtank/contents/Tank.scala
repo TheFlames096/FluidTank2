@@ -7,6 +7,8 @@ class Tank[A](val content: GenericAmount[A], val capacity: GenericUnit) {
 
   final def isEmpty: Boolean = content.isEmpty
 
+  final def hasContent: Boolean = !isEmpty
+
   override final def hashCode(): Int = Objects.hash(content, capacity.value)
 
   override final def equals(obj: Any): Boolean = obj match {

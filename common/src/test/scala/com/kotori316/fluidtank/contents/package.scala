@@ -1,5 +1,7 @@
 package com.kotori316.fluidtank
 
+import cats.data.Chain
+import cats.{Monad, MonoidK}
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 
@@ -7,6 +9,13 @@ import scala.reflect.ClassTag
 
 package object contents {
   implicit final val gaString: GenericAccess[String] = new StringGenericAccess
+
+  def createTanks(settings: (String, Long, Long)*): Chain[Tank[String]] = {
+    val monoidK = implicitly[MonoidK[Chain]]
+    val monad = implicitly[Monad[Chain]]
+    monoidK.combineAllK(settings.map { case (value, l, l1) => Tank(GenericAmount(value, GenericUnit(l), None), GenericUnit(l1)) }
+      .map(t => monad.pure(t)))
+  }
 
   private final class StringGenericAccess extends GenericAccess[String] {
     def isEmpty(a: String): Boolean = a.isEmpty

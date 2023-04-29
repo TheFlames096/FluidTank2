@@ -1,19 +1,11 @@
 package com.kotori316.fluidtank.contents
 
-import cats.data.Chain
-import cats.{Monad, MonoidK}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
 
 import scala.jdk.javaapi.CollectionConverters
 
 class ListTankOperationsTest {
-  type L[A] = Chain[A]
-
-  def createTanks(settings: (String, Long, Long)*)(implicit monoidK: MonoidK[L], monad: Monad[L]): L[Tank[String]] = {
-    monoidK.combineAllK(settings.map { case (value, l, l1) => Tank(GenericAmount(value, GenericUnit(l), None), GenericUnit(l1)) }
-      .map(t => monad.pure(t)))
-  }
 
   @Nested
   class FillTest {
