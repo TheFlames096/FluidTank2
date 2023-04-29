@@ -172,5 +172,41 @@ class TanksHandlerTest {
       assertEquals(GenericAmount("b", GenericUnit(100), None), filled)
       assertEquals(createTanks(("b", 100, 1000), ("", 0, 1000)), tanks.getTank)
     }
+
+    @Test
+    def withVoid1(): Unit = {
+      val tanks = new ImplLimit
+      val initial = createTanks(("a", 100, 1000)) :+ VoidTank[String]
+      tanks.updateTanks(initial)
+
+      val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = true)
+      assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+      assertEquals(createTanks(("a", 200, 1000)) :+ VoidTank[String], tanks.getTank)
+    }
+
+    @Test
+    def withVoid2(): Unit = {
+      val tanks = new ImplLimit
+      val initial = createTanks(("a", 100, 1000)) :+ VoidTank[String]
+      tanks.updateTanks(initial)
+
+      val filled = tanks.fill(GenericAmount("a", GenericUnit(10000), None), execute = true)
+      assertEquals(GenericAmount("a", GenericUnit(10000), None), filled)
+      assertEquals(createTanks(("a", 1000, 1000)) :+ VoidTank[String], tanks.getTank)
+    }
+
+    @Test
+    def withVoid3(): Unit = {
+      val tanks = new ImplLimit
+      val initial = (createTanks(("a", 100, 1000)) :+ VoidTank[String]) ++ createTanks(("a", 100, 1000))
+      tanks.updateTanks(initial)
+
+      val filled = tanks.fill(GenericAmount("a", GenericUnit(10000), None), execute = true)
+      assertEquals(GenericAmount("a", GenericUnit(10000), None), filled)
+      assertEquals(
+        (createTanks(("a", 1000, 1000)) :+ VoidTank[String]) ++ createTanks(("a", 100, 1000)),
+        tanks.getTank
+      )
+    }
   }
 }

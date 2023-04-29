@@ -103,6 +103,16 @@ class TankOperationsTest {
       assertEquals(createTank("a", 500, 1000), result)
       assertTrue(rest.isEmpty)
     }
+
+    @Test
+    def fillVoid(): Unit = {
+      val tank = createTank("a", 200, 1000)
+      val op = Operations.fillVoidOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertTrue(rest.isEmpty)
+      assertEquals(tank, result)
+    }
   }
 
   @Nested

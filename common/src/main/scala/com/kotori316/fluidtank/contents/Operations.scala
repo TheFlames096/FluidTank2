@@ -27,6 +27,11 @@ object Operations {
     }
   }
 
+  def fillVoidOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+    // Tank doesn't change
+    Id((Chain(FluidTransferLog.FillFluid(s, s, tank, tank)), s.createEmpty, Id(tank)))
+  }
+
   def drainOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
     if (s.isEmpty || tank.isEmpty) {
       // Nothing to drain.
