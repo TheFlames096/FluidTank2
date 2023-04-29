@@ -110,5 +110,25 @@ class GenericUnitTest {
       val b = GenericUnit(BigInt(30))
       Assertions.assertEquals(GenericUnit(BigInt(170)), a |-| b)
     }
+
+    @Test
+    def inverse1(): Unit = {
+      val a = GenericUnit(BigInt(200))
+      Assertions.assertEquals(GenericUnit(BigInt(-200)), a.inverse())
+    }
+
+    @Test
+    def inverse2(): Unit = {
+      val a = GenericUnit(BigInt(0))
+      Assertions.assertEquals(a, a.inverse())
+    }
+
+    @Test
+    def multiply(): Unit = {
+      val a = GenericUnit(BigInt(200))
+      Assertions.assertEquals(GenericUnit(BigInt(200)), a.combineN(1))
+      Assertions.assertEquals(GenericUnit(BigInt(400)), a.combineN(2))
+      Assertions.assertEquals(GenericUnit(BigInt(600)), a.combineN(3))
+    }
   }
 }

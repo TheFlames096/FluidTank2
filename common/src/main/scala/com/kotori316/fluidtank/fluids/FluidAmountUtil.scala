@@ -7,9 +7,9 @@ import net.minecraft.world.level.material.{Fluid, Fluids}
 
 object FluidAmountUtil {
 
-  final val EMPTY: FluidAmount = from(Fluids.EMPTY, GenericUnit.ZERO, Option.empty)
-  final val BUCKET_WATER: FluidAmount = from(Fluids.WATER, GenericUnit.ONE_BUCKET, Option.empty)
-  final val BUCKET_LAVA: FluidAmount = from(Fluids.LAVA, GenericUnit.ONE_BUCKET, Option.empty)
+  final val EMPTY: FluidAmount = from(Fluids.EMPTY, GenericUnit.ZERO)
+  final val BUCKET_WATER: FluidAmount = from(Fluids.WATER, GenericUnit.ONE_BUCKET)
+  final val BUCKET_LAVA: FluidAmount = from(Fluids.LAVA, GenericUnit.ONE_BUCKET)
 
   def from(fluid: Fluid, genericUnit: GenericUnit, nbt: Option[CompoundTag]): FluidAmount = {
     GenericAmount(fluid, genericUnit, nbt)
@@ -21,7 +21,6 @@ object FluidAmountUtil {
     stack.getItem match {
       case Items.WATER_BUCKET => BUCKET_WATER
       case Items.LAVA_BUCKET => BUCKET_LAVA
-      case Items.BUCKET => EMPTY
       case _ => PlatformFluidAccess.getInstance().getFluidContained(stack)
     }
   }

@@ -31,6 +31,12 @@ class TanksHandlerTest {
     }.toArray
   }
 
+  def testBothAndExecution(executable: (ImplForTest, Boolean) => Unit): Array[DynamicNode] = {
+    testBothMany(Seq(true, false).map(execution =>
+      (s"Execution=$execution", t => executable(t, execution))
+    ))
+  }
+
   @TestFactory
   def emptyCapacity(): Array[DynamicNode] = {
     testBoth(t => assertEquals(GenericUnit.ZERO, t.getSumOfCapacity))
@@ -38,64 +44,62 @@ class TanksHandlerTest {
 
   @TestFactory
   def fillToNoTank(): Array[DynamicNode] = {
-    testBothMany(Seq(true, false).map(e =>
-      s"execute = $e" -> (t => {
-        val filled = t.fill(GenericAmount("a", GenericUnit(100), None), execute = e)
-        assertTrue(filled.isEmpty)
-      })))
+    testBothAndExecution { case (t, e) =>
+      val filled = t.fill(GenericAmount("a", GenericUnit(100), None), execute = e)
+      assertTrue(filled.isEmpty)
+    }
   }
 
   @TestFactory
   def drainFromNoTank(): Array[DynamicNode] = {
-    testBothMany(Seq(true, false).map(e =>
-      s"execute = $e" -> (t => {
-        val drained = t.drain(GenericAmount("a", GenericUnit(100), None), execute = e)
-        assertTrue(drained.isEmpty)
-      })))
+    testBothAndExecution { case (t, e) =>
+      val drained = t.drain(GenericAmount("a", GenericUnit(100), None), execute = e)
+      assertTrue(drained.isEmpty)
+    }
   }
 
   @TestFactory
   def fillToEmpty1Simulate(): Array[DynamicNode] = {
-    testBoth(tanks => {
+    testBoth { tanks =>
       tanks.updateTanks(createTanks(("", 0, 1000)))
 
       val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = false)
       assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
       assertEquals(createTanks(("", 0, 1000)), tanks.getTank)
-    })
+    }
   }
 
   @TestFactory
   def fillToEmpty1Execute(): Array[DynamicNode] = {
-    testBoth(tanks => {
+    testBoth { tanks =>
       tanks.updateTanks(createTanks(("", 0, 1000)))
 
       val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = true)
       assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
       assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
-    })
+    }
   }
 
   @TestFactory
   def fillToEmpty2Simulate(): Array[DynamicNode] = {
-    testBoth(tanks => {
+    testBoth { tanks =>
       tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
 
       val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = false)
       assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
       assertEquals(createTanks(("", 0, 1000), ("", 0, 1000)), tanks.getTank)
-    })
+    }
   }
 
   @TestFactory
   def fillToEmpty2Execute(): Array[DynamicNode] = {
-    testBoth(tanks => {
+    testBoth { tanks =>
       tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
 
       val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = true)
       assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
       assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
-    })
+    }
   }
 
   @TestFactory

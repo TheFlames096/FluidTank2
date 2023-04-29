@@ -1,11 +1,10 @@
 package com.kotori316.fluidtank.fluids
 
 import com.kotori316.fluidtank.BeforeMC
-import com.kotori316.fluidtank.contents.GenericUnit
+import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit}
 import net.minecraft.world.item.{ItemStack, Items}
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
-
 
 class FluidAmountUtilTest extends BeforeMC {
 
@@ -14,6 +13,27 @@ class FluidAmountUtilTest extends BeforeMC {
     val water = FluidAmountUtil.BUCKET_WATER
     assertEquals(GenericUnit.ONE_BUCKET, water.amount)
     assertFalse(water.isEmpty)
+  }
+
+  @TestFactory
+  def notEqual(): Array[DynamicNode] = {
+    val fluids = Seq(
+      FluidAmountUtil.EMPTY,
+      FluidAmountUtil.BUCKET_WATER,
+      FluidAmountUtil.BUCKET_LAVA,
+    )
+    fluids.combinations(2).map(s =>
+      DynamicTest.dynamicTest(s"$s", () =>
+        assertNotEquals(s.head, s(1))
+      )).toArray
+  }
+
+  //noinspection AssertBetweenInconvertibleTypes
+  @Test
+  def notEqual2(): Unit = {
+    val a = GenericAmount("a", GenericUnit.fromFabric(1), None)
+    assertNotEquals(a, "a")
+    assertNotEquals(a, FluidAmountUtil.BUCKET_WATER)
   }
 
   @TestFactory
