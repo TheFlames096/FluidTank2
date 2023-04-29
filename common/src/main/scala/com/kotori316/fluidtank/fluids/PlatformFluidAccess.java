@@ -6,7 +6,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import scala.Option;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericAmount;
@@ -34,7 +33,7 @@ public interface PlatformFluidAccess {
             if (Fluids.EMPTY.equals(fluid)) {
                 return FluidAmountUtil.EMPTY();
             }
-            return FluidAmountUtil.from(fluid, GenericUnit.ONE_BUCKET(), Option.empty());
+            return FluidAmountUtil.from(fluid, GenericUnit.ONE_BUCKET());
         }
         return FluidAmountUtil.EMPTY();
     }

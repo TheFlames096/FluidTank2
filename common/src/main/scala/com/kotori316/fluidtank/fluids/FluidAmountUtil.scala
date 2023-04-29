@@ -15,6 +15,8 @@ object FluidAmountUtil {
     GenericAmount(fluid, genericUnit, nbt)
   }
 
+  def from(fluid: Fluid, genericUnit: GenericUnit): FluidAmount = from(fluid, genericUnit, Option.empty)
+
   def fromItem(stack: ItemStack): FluidAmount = {
     stack.getItem match {
       case Items.WATER_BUCKET => BUCKET_WATER
