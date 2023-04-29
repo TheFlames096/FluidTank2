@@ -6,7 +6,9 @@ import net.minecraft.resources.ResourceLocation
 import scala.reflect.ClassTag
 
 package object contents {
-  implicit final val gaString: GenericAccess[String] = new GenericAccess[String] {
+  implicit final val gaString: GenericAccess[String] = new StringGenericAccess
+
+  private final class StringGenericAccess extends GenericAccess[String] {
     def isEmpty(a: String): Boolean = a.isEmpty
 
     def isGaseous(a: String): Boolean = a.contains("gas")
@@ -15,10 +17,17 @@ package object contents {
 
     def empty: String = ""
 
-    def write(amount: GenericAmount[String], tag: CompoundTag): CompoundTag = {
+    def write(amount: GenericAmount[String]): CompoundTag = {
+      val tag = new CompoundTag()
       tag.putString("content", amount.content)
       tag.putString("amount", amount.amount.value.toString())
       tag
+    }
+
+    override def read(tag: CompoundTag): GenericAmount[String] = {
+      val content = tag.getString("content")
+      val amount = GenericUnit(BigInt(tag.getString("amount")))
+      GenericAmount(content, amount, Option.empty)
     }
 
     def classTag: ClassTag[String] = implicitly[ClassTag[String]]

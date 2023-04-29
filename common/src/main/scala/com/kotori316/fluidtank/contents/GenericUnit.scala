@@ -21,6 +21,7 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
     }
   }
 
+  def asByteArray: Array[Byte] = this.value.toByteArray
 }
 
 object GenericUnit {
@@ -28,12 +29,15 @@ object GenericUnit {
   private final val FORGE_ONE_BUCKET = 1000
   private final val LONG_MAX = BigInt(Long.MaxValue)
   private final val INT_MAX = BigInt(Int.MaxValue)
+  final val ZERO: GenericUnit = new GenericUnit(BigInt(0))
   final val ONE_BUCKET: GenericUnit = new GenericUnit(BigInt(FABRIC_ONE_BUCKET))
   final val MAX: GenericUnit = new GenericUnit(GenericUnit.LONG_MAX * BigInt(FABRIC_ONE_BUCKET))
 
   def fromFabric(value: Long): GenericUnit = new GenericUnit(BigInt(value))
 
   def fromForge(value: Long): GenericUnit = new GenericUnit(BigInt(value * 81))
+
+  def fromByteArray(value: Array[Byte]): GenericUnit = new GenericUnit(BigInt(value))
 
   implicit final val groupGenericUnit: CommutativeGroup[GenericUnit] = new GroupGenericUnit
   implicit final val orderingGenericUnit: Ordering[GenericUnit] = Ordering.by(_.value)

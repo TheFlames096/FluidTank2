@@ -14,7 +14,9 @@ trait GenericAccess[A] {
 
   def empty: A
 
-  def write(amount: GenericAmount[A], tag: CompoundTag): CompoundTag
+  def write(amount: GenericAmount[A]): CompoundTag
+
+  def read(tag: CompoundTag): GenericAmount[A]
 
   def classTag: ClassTag[A]
 }

@@ -15,7 +15,7 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
 
   final def nonEmpty: Boolean = !isEmpty
 
-  final def write(tag: CompoundTag): CompoundTag = access.write(this, tag)
+  final def getTag: CompoundTag = access.write(this)
 
   final def +(that: GenericAmount[ContentType]): GenericAmount[ContentType] = this add that
 
