@@ -85,6 +85,7 @@ class GenericAmountTest {
     def cycleTest(): Array[DynamicNode] = {
       val amounts = Seq(
         GenericAmount("", 0, None),
+        GenericAmount("", 100, None),
         GenericAmount("a", 1, None),
         GenericAmount("a", 3, None),
         GenericAmount("b", 1, None),

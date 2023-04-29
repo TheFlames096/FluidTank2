@@ -18,29 +18,19 @@ package object contents {
   }
 
   private final class StringGenericAccess extends GenericAccess[String] {
-    def isEmpty(a: String): Boolean = a.isEmpty
+    override def isEmpty(a: String): Boolean = a.isEmpty
 
-    def isGaseous(a: String): Boolean = a.contains("gas")
+    override def isGaseous(a: String): Boolean = a.contains("gas")
 
-    def getKey(a: String): ResourceLocation = new ResourceLocation(a)
+    override def getKey(a: String): ResourceLocation = new ResourceLocation(FluidTankCommon.modId, a)
 
-    def empty: String = ""
+    override def fromKey(key: ResourceLocation): String = key.getPath
 
-    def write(amount: GenericAmount[String]): CompoundTag = {
-      val tag = new CompoundTag()
-      tag.putString("content", amount.content)
-      tag.putString("amount", amount.amount.value.toString())
-      amount.nbt.foreach(t => tag.put("tag", t))
-      tag
-    }
+    override def empty: String = ""
 
-    override def read(tag: CompoundTag): GenericAmount[String] = {
-      val content = tag.getString("content")
-      val amount = GenericUnit(BigInt(tag.getString("amount")))
-      val nbt = Option.when(tag.contains("tag"))(tag.getCompound("tag"))
+    override def classTag: ClassTag[String] = implicitly[ClassTag[String]]
+
+    override def newInstance(content: String, amount: GenericUnit, nbt: Option[CompoundTag]): GenericAmount[String] =
       GenericAmount(content, amount, nbt)
-    }
-
-    def classTag: ClassTag[String] = implicitly[ClassTag[String]]
   }
 }
