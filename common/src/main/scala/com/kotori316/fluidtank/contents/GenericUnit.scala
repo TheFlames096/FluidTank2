@@ -22,6 +22,10 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
   }
 
   def asByteArray: Array[Byte] = this.value.toByteArray
+
+  def asForgeDouble: Double = {
+    this.value.doubleValue / 81d
+  }
 }
 
 object GenericUnit {

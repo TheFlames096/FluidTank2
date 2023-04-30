@@ -5,15 +5,8 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
 
 class TanksHandlerTest {
-  class ImplForTest(limit: Boolean) extends TanksHandler[String, Chain](limit) {
-    override def updateTanks(newTanks: Chain[Tank[String]]): Unit = this.tanks = newTanks
 
-    def getTank: Chain[Tank[String]] = this.tanks
-  }
-
-  class ImplNoLimit extends ImplForTest(false)
-
-  class ImplLimit extends ImplForTest(true)
+  import TanksHandlerTest._
 
   def testBothMany(executables: Seq[(String, ImplForTest => Unit)]): Array[DynamicNode] = {
     val emptyTanks = Seq(("No Limit", new ImplNoLimit), ("With Limit", new ImplLimit))
@@ -353,4 +346,17 @@ class TanksHandlerTest {
       )
     }
   }
+}
+
+object TanksHandlerTest {
+  class ImplForTest(limit: Boolean) extends ChainTanksHandler[String](limit) {
+    override def updateTanks(newTanks: Chain[Tank[String]]): Unit = super.updateTanks(newTanks)
+
+    def getTank: Chain[Tank[String]] = this.tanks
+  }
+
+  class ImplNoLimit extends ImplForTest(false)
+
+  class ImplLimit extends ImplForTest(true)
+
 }
