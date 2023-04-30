@@ -1,0 +1,75 @@
+package com.kotori316.fluidtank.tank;
+
+import java.math.BigInteger;
+import java.util.EnumMap;
+import java.util.Map;
+
+import com.google.common.base.CaseFormat;
+
+import com.kotori316.fluidtank.contents.GenericUnit;
+
+public enum Tier {
+    INVALID(0),
+    WOOD(1),
+    STONE(2),
+    IRON(3),
+    GOLD(4),
+    DIAMOND(5),
+    EMERALD(6),
+    STAR(7),
+    CREATIVE(10),
+    VOID(0),
+    COPPER(2),
+    TIN(2),
+    BRONZE(3),
+    LEAD(3),
+    SILVER(3),
+    ;
+
+    private static EnumMap<Tier, BigInteger> capacityMap;
+    private final int rank;
+    private final String name;
+
+    Tier(int rank) {
+        this.rank = rank;
+        this.name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
+    }
+
+    BigInteger getCapacity() {
+        if (!capacityMap.containsKey(this)) {
+            throw new IllegalStateException("No capacity for %s".formatted(this));
+        }
+        return capacityMap.get(this);
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+    static BigInteger fromForge(long forgeAmount) {
+        var unit = GenericUnit.fromForge(forgeAmount);
+        return unit.bigInteger();
+    }
+
+    static {
+        // Default
+        capacityMap = new EnumMap<>(Map.ofEntries(
+            Map.entry(INVALID, fromForge(0)),
+            Map.entry(WOOD, fromForge(4_000)),
+            Map.entry(STONE, fromForge(16_000)),
+            Map.entry(IRON, fromForge(256_000)),
+            Map.entry(GOLD, fromForge(4_096_000)),
+            Map.entry(DIAMOND, fromForge(16_384_000)),
+            Map.entry(EMERALD, fromForge(65_536_000)),
+            Map.entry(STAR, fromForge(1_048_576_000)),
+            Map.entry(CREATIVE, fromForge(Long.MAX_VALUE)),
+            Map.entry(VOID, fromForge(0)),
+            Map.entry(COPPER, fromForge(40_000)),
+            Map.entry(TIN, fromForge(48_000)),
+            Map.entry(BRONZE, fromForge(256_000)),
+            Map.entry(LEAD, fromForge(192_000)),
+            Map.entry(SILVER, fromForge(1_024_000))
+        ));
+    }
+}

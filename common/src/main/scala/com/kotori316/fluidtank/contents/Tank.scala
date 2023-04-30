@@ -16,7 +16,10 @@ class Tank[A](val content: GenericAmount[A], val capacity: GenericUnit) {
     case _ => false
   }
 
-  override final def toString: String = s"Tank{content=$content, capacity=${capacity.value}}"
+  override final def toString: String = {
+    val className = getClass.getSimpleName
+    s"$className{content=$content, capacity=${capacity.value}}"
+  }
 
   def copy(content: GenericAmount[A] = this.content, capacity: GenericUnit = this.capacity): Tank[A] = {
     if (this.getClass == classOf[Tank[A]]) {

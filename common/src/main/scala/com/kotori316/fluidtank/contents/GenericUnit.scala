@@ -44,6 +44,8 @@ object GenericUnit {
 
   def fromByteArray(value: Array[Byte]): GenericUnit = new GenericUnit(BigInt(value))
 
+  def fromBigInteger(value: java.math.BigInteger): GenericUnit = new GenericUnit(BigInt(value))
+
   implicit final val groupGenericUnit: CommutativeGroup[GenericUnit] = new GroupGenericUnit
   implicit final val orderingGenericUnit: Ordering[GenericUnit] = Ordering.by(_.value)
   implicit final val hashGenericUnit: Hash[GenericUnit] = Hash.by(_.value)
