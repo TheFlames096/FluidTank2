@@ -46,7 +46,7 @@ trait GenericAccess[A] {
     val amount: GenericUnit = {
       if (tag.contains(KEY_AMOUNT_GENERIC, NbtTag.TAG_BYTE_ARRAY)) GenericUnit.fromByteArray(tag.getByteArray(KEY_AMOUNT_GENERIC))
       else if (tag.contains(KEY_FABRIC_AMOUNT)) GenericUnit.fromFabric(tag.getLong(KEY_FABRIC_AMOUNT))
-      else GenericUnit.fromForge(tag.getInt(KEY_FORGE_AMOUNT))
+      else GenericUnit.fromForge(tag.getLong(KEY_FORGE_AMOUNT))
     }
     val contentTag: Option[CompoundTag] = Option.when(tag.contains(KEY_TAG))(tag.getCompound(KEY_TAG))
     newInstance(content, amount, contentTag)
