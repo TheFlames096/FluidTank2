@@ -42,83 +42,227 @@ class TanksHandlerTest {
     testBoth(t => assertEquals(GenericUnit.ZERO, t.getSumOfCapacity))
   }
 
-  @TestFactory
-  def fillToNoTank(): Array[DynamicNode] = {
-    testBothAndExecution { case (t, e) =>
-      val filled = t.fill(GenericAmount("a", GenericUnit(100), None), execute = e)
-      assertTrue(filled.isEmpty)
+  @Nested
+  class FillTest {
+    @TestFactory
+    def fillToNoTank(): Array[DynamicNode] = {
+      testBothAndExecution { case (t, e) =>
+        val filled = t.fill(GenericAmount("a", GenericUnit(100), None), execute = e)
+        assertTrue(filled.isEmpty)
+      }
+    }
+
+    @TestFactory
+    def fillToEmpty1Simulate(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("", 0, 1000)))
+
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = false)
+        assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+        assertEquals(createTanks(("", 0, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillToEmpty1Execute(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("", 0, 1000)))
+
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = true)
+        assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+        assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillToEmpty2Simulate(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = false)
+        assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
+        assertEquals(createTanks(("", 0, 1000), ("", 0, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillToEmpty2Execute(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = true)
+        assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
+        assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillToFilled1Simulate(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("a", 500, 1000), ("", 0, 1000)))
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(1000), None), execute = false)
+        assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
+        assertEquals(createTanks(("a", 500, 1000), ("", 0, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillToFilled1Execute(): Array[DynamicNode] = {
+      testBoth { tanks =>
+        tanks.updateTanks(createTanks(("a", 500, 1000), ("", 0, 1000)))
+        val filled = tanks.fill(GenericAmount("a", GenericUnit(1000), None), execute = true)
+        assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
+        assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
+      }
+    }
+
+    @TestFactory
+    def fillGasSimulate(): Array[DynamicNode] = {
+      testBothMany(Seq(
+        ("fill100", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+          val before = tanks.getTank
+          val filled = tanks.fill(GenericAmount("gas", GenericUnit(100), None), execute = false)
+          assertEquals(GenericAmount("gas", GenericUnit(100), None), filled)
+          assertEquals(before, tanks.getTank)
+        }),
+        ("fill1100", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+          val before = tanks.getTank
+          val filled = tanks.fill(GenericAmount("gas", GenericUnit(1100), None), execute = false)
+          assertEquals(GenericAmount("gas", GenericUnit(1100), None), filled)
+          assertEquals(before, tanks.getTank)
+        }),
+      ))
+    }
+
+    @TestFactory
+    def fillGasExecute(): Array[DynamicNode] = {
+      testBothMany(Seq(
+        ("fill100", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+          val filled = tanks.fill(GenericAmount("gas", GenericUnit(100), None), execute = true)
+          assertEquals(GenericAmount("gas", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("", 0, 1000), ("gas", 100, 1000)), tanks.getTank)
+        }),
+        ("fill1100", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+          val filled = tanks.fill(GenericAmount("gas", GenericUnit(1100), None), execute = true)
+          assertEquals(GenericAmount("gas", GenericUnit(1100), None), filled)
+          assertEquals(createTanks(("gas", 100, 1000), ("gas", 1000, 1000)), tanks.getTank)
+        }),
+      ))
     }
   }
 
-  @TestFactory
-  def drainFromNoTank(): Array[DynamicNode] = {
-    testBothAndExecution { case (t, e) =>
-      val drained = t.drain(GenericAmount("a", GenericUnit(100), None), execute = e)
-      assertTrue(drained.isEmpty)
+  @Nested
+  class DrainTest {
+    @TestFactory
+    def drainFromNoTank(): Array[DynamicNode] = {
+      testBothAndExecution { case (t, e) =>
+        val drained = t.drain(GenericAmount("a", GenericUnit(100), None), execute = e)
+        assertTrue(drained.isEmpty)
+      }
     }
-  }
 
-  @TestFactory
-  def fillToEmpty1Simulate(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("", 0, 1000)))
-
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = false)
-      assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
-      assertEquals(createTanks(("", 0, 1000)), tanks.getTank)
+    @TestFactory
+    def drainSimulate1(): Array[DynamicNode] = {
+      val initial = createTanks(("a", 500, 1000), ("", 0, 1000))
+      val execution = false
+      testBothMany(Seq(
+        ("drain100", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(100), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(100), None), drained)
+          assertEquals(initial, tanks.getTank)
+        }),
+        ("drain500", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(500), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(500), None), drained)
+          assertEquals(initial, tanks.getTank)
+        }),
+        ("drain1000", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(1000), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(500), None), drained)
+          assertEquals(initial, tanks.getTank)
+        }),
+        ("drain1100", tanks => {
+          tanks.updateTanks(createTanks(("a", 1000, 1000), ("a", 500, 1000)))
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(1100), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(1100), None), drained)
+          assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
+        }),
+        ("drainGas100", tanks => {
+          tanks.updateTanks(createTanks(("gas", 500, 1000), ("gas", 1000, 1000)))
+          val drained = tanks.drain(GenericAmount("gas", GenericUnit(1100), None), execute = execution)
+          assertEquals(GenericAmount("gas", GenericUnit(1100), None), drained)
+          assertEquals(createTanks(("gas", 500, 1000), ("gas", 1000, 1000)), tanks.getTank)
+        }),
+      ))
     }
-  }
 
-  @TestFactory
-  def fillToEmpty1Execute(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("", 0, 1000)))
-
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(100), None), execute = true)
-      assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
-      assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+    @TestFactory
+    def drainExecute1(): Array[DynamicNode] = {
+      val initial = createTanks(("a", 500, 1000), ("", 0, 1000))
+      val execution = true
+      testBothMany(Seq(
+        ("drain100", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(100), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(100), None), drained)
+          assertEquals(createTanks(("a", 400, 1000), ("", 0, 1000)), tanks.getTank)
+        }),
+        ("drain500", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(500), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(500), None), drained)
+          assertEquals(createTanks(("a", 0, 1000), ("", 0, 1000)), tanks.getTank)
+        }),
+        ("drain1000", tanks => {
+          tanks.updateTanks(initial)
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(1000), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(500), None), drained)
+          assertEquals(createTanks(("a", 0, 1000), ("", 0, 1000)), tanks.getTank)
+        }),
+        ("drain1100", tanks => {
+          tanks.updateTanks(createTanks(("a", 1000, 1000), ("a", 500, 1000)))
+          val drained = tanks.drain(GenericAmount("a", GenericUnit(1100), None), execute = execution)
+          assertEquals(GenericAmount("a", GenericUnit(1100), None), drained)
+          assertEquals(createTanks(("a", 400, 1000), ("a", 0, 1000)), tanks.getTank)
+        }),
+        ("drainGas100", tanks => {
+          tanks.updateTanks(createTanks(("gas", 500, 1000), ("gas", 1000, 1000)))
+          val drained = tanks.drain(GenericAmount("gas", GenericUnit(1100), None), execute = execution)
+          assertEquals(GenericAmount("gas", GenericUnit(1100), None), drained)
+          assertEquals(createTanks(("gas", 0, 1000), ("gas", 400, 1000)), tanks.getTank)
+        }),
+      ))
     }
-  }
 
-  @TestFactory
-  def fillToEmpty2Simulate(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
-
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = false)
-      assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
-      assertEquals(createTanks(("", 0, 1000), ("", 0, 1000)), tanks.getTank)
-    }
-  }
-
-  @TestFactory
-  def fillToEmpty2Execute(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
-
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(1500), None), execute = true)
-      assertEquals(GenericAmount("a", GenericUnit(1500), None), filled)
-      assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
-    }
-  }
-
-  @TestFactory
-  def fillToFilled1Simulate(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("a", 500, 1000), ("", 0, 1000)))
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(1000), None), execute = false)
-      assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
-      assertEquals(createTanks(("a", 500, 1000), ("", 0, 1000)), tanks.getTank)
-    }
-  }
-
-  @TestFactory
-  def fillToFilled1Execute(): Array[DynamicNode] = {
-    testBoth { tanks =>
-      tanks.updateTanks(createTanks(("a", 500, 1000), ("", 0, 1000)))
-      val filled = tanks.fill(GenericAmount("a", GenericUnit(1000), None), execute = true)
-      assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
-      assertEquals(createTanks(("a", 1000, 1000), ("a", 500, 1000)), tanks.getTank)
+    @TestFactory
+    def drainFail(): Array[DynamicNode] = {
+      val toDrain = Seq(
+        GenericAmount("", GenericUnit(0), None),
+        GenericAmount("", GenericUnit(500), None),
+        GenericAmount("a", GenericUnit(0), None),
+        GenericAmount("b", GenericUnit(500), None),
+      )
+      testBothMany(
+        for {
+          execution <- Seq(true, false)
+          f <- toDrain
+        } yield {
+          (s"$f execute=$execution", (tanks: ImplForTest) => {
+            val initial = createTanks(("a", 500, 1000), ("", 0, 1000))
+            tanks.updateTanks(initial)
+            val drained = tanks.drain(f, execution)
+            assertTrue(drained.isEmpty)
+            assertEquals(initial, tanks.getTank)
+          })
+        }
+      )
     }
   }
 
