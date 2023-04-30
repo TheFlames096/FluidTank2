@@ -212,4 +212,65 @@ class ConnectionTest {
         .toArray
     }
   }
+
+  @Nested
+  class InitializationTest {
+    @Test
+    def two1(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("b", 200, 700))
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+
+      val c1 = tanks.head.connection
+      val c2 = tanks.tail.head.connection
+      assertNotEquals(c1, c2)
+      assertNotEquals(c1.get.getContent, c2.get.getContent)
+      assertEquals(1, c1.get.sortedTanks.size)
+      assertEquals(1, c2.get.sortedTanks.size)
+    }
+
+    @Test
+    def two2(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("a", 100, 1000), ("b", 200, 700))
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+
+      val c1 = tanks.head.connection
+      val c2 = tanks.tail.tail.head.connection
+      assertNotEquals(c1, c2)
+      assertEquals(2, c1.get.sortedTanks.size)
+      assertNotEquals(c1.get.getContent, c2.get.getContent)
+      assertEquals(1, c2.get.sortedTanks.size)
+    }
+
+    @Test
+    def two3(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("", 0, 1000), ("b", 200, 700))
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+
+      val c1 = tanks.head.connection.get
+      val c2 = tanks.tail.tail.head.connection.get
+      assertNotEquals(c1, c2)
+      assertEquals(2, c1.sortedTanks.size)
+      assertNotEquals(c1.getContent, c2.getContent)
+      assertEquals(1, c2.sortedTanks.size)
+    }
+
+    @Test
+    def removeMiddle(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("", 0, 1000), ("", 0, 700))
+      val tanks@List(a, b, c) = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+
+      val c1 = a.connection.get
+      assertEquals(3, c1.sortedTanks.size)
+      c1.remove(b)
+      val c21 = a.connection.get
+      val c22 = c.connection.get
+      assertNotEquals(c21, c22)
+      assertEquals(1, c21.sortedTanks.size)
+      assertEquals(1, c22.sortedTanks.size)
+    }
+  }
 }
