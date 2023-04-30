@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.contents
 
+import cats.Hash
 import cats.kernel.CommutativeGroup
 import org.jetbrains.annotations.VisibleForTesting
 
@@ -45,6 +46,7 @@ object GenericUnit {
 
   implicit final val groupGenericUnit: CommutativeGroup[GenericUnit] = new GroupGenericUnit
   implicit final val orderingGenericUnit: Ordering[GenericUnit] = Ordering.by(_.value)
+  implicit final val hashGenericUnit: Hash[GenericUnit] = Hash.by(_.value)
 
   private class GroupGenericUnit extends CommutativeGroup[GenericUnit] {
     override def inverse(a: GenericUnit): GenericUnit = new GenericUnit(-a.value)

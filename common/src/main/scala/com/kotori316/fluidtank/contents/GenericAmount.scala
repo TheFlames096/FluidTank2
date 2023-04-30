@@ -11,7 +11,9 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
                                      (implicit access: GenericAccess[ContentType], contentHash: Hash[ContentType]) {
   final def setAmount(newAmount: GenericUnit): GenericAmount[ContentType] = new GenericAmount[ContentType](this.content, newAmount, this.nbt)
 
-  final def isEmpty: Boolean = access.isEmpty(this.content) || this.amount.value <= 0
+  final def isContentEmpty: Boolean = access.isEmpty(this.content)
+
+  final def isEmpty: Boolean = isContentEmpty || this.amount.value <= 0
 
   final def nonEmpty: Boolean = !isEmpty
 

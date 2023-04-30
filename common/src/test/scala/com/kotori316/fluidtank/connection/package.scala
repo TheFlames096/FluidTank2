@@ -26,7 +26,7 @@ package object connection {
     def getTank: Chain[Tank[String]] = this.tanks
   }
 
-  implicit val stringConnectionHelper: ConnectionHelper.Aux[StringTile, String, StringTanksHandler] = new StringConnectionHelper
+  implicit final val stringConnectionHelper: ConnectionHelper.Aux[StringTile, String, StringTanksHandler] = new StringConnectionHelper
 
   private final class StringConnectionHelper extends ConnectionHelper[StringTile] {
     override type Content = String

@@ -233,7 +233,7 @@ class TankOperationsTest {
       val op = Operations.fillCreativeOp(tank)
 
       val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
-      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertTrue(rest.isEmpty)
       assertEquals(createTank("a", 1000, 1000), result)
     }
 
@@ -243,7 +243,7 @@ class TankOperationsTest {
       val op = Operations.fillCreativeOp(tank)
 
       val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
-      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertTrue(rest.isEmpty)
       assertEquals(createTank("a", 1000, 1000), result)
     }
 

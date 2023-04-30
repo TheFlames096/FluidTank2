@@ -346,6 +346,125 @@ class TanksHandlerTest {
       )
     }
   }
+
+  @Nested
+  class CreativeTest {
+    @Test
+    def fill1(): Unit = {
+      val tanks = createTanks(("", 0, 1000)) :+ new CreativeTank(GenericAmount("", GenericUnit.ZERO, None), GenericUnit(1000))
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toFill = GenericAmount("a", GenericUnit(10), None)
+      val filled1 = handler.fill(toFill, execute = false)
+      assertEquals(toFill, filled1)
+
+      val filled2 = handler.fill(toFill, execute = true)
+      assertEquals(toFill, filled2)
+      assertEquals(createTanks(("a", 1000, 1000)) :+ new CreativeTank(GenericAmount("a", GenericUnit(1000), None), GenericUnit(1000)), handler.getTank)
+    }
+
+    @Test
+    def fill2(): Unit = {
+      val tanks = createTanks(("a", 10, 1000)) :+ new CreativeTank(GenericAmount("", GenericUnit.ZERO, None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toFill = GenericAmount("a", GenericUnit(10), None)
+      val filled1 = handler.fill(toFill, execute = false)
+      assertEquals(toFill, filled1)
+
+      val filled2 = handler.fill(toFill, execute = true)
+      assertEquals(toFill, filled2)
+      assertEquals(createTanks(("a", 1000, 1000)) :+ new CreativeTank(GenericAmount("a", GenericUnit(1000), None), GenericUnit(1000)), handler.getTank)
+    }
+
+    @Test
+    def fill3(): Unit = {
+      val tanks = createTanks(("b", 10, 1000)) :+ new CreativeTank(GenericAmount("b", GenericUnit.ZERO, None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toFill = GenericAmount("a", GenericUnit(10), None)
+      val filled1 = handler.fill(toFill, execute = false)
+      assertTrue(filled1.isEmpty)
+
+      val filled2 = handler.fill(toFill, execute = true)
+      assertTrue(filled2.isEmpty)
+      assertEquals(tanks, handler.getTank)
+    }
+
+    @Test
+    def drain1(): Unit = {
+      val tanks = createTanks(("a", 10, 1000)) :+ new CreativeTank(GenericAmount("", GenericUnit.ZERO, None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toDrain = GenericAmount("a", GenericUnit(1000), None)
+      val drained1 = handler.drain(toDrain, execute = false)
+      assertEquals(toDrain, drained1)
+      assertEquals(tanks, handler.getTank)
+
+      val drained2 = handler.drain(toDrain, execute = true)
+      assertEquals(toDrain, drained2)
+      assertEquals(tanks, handler.getTank)
+    }
+
+    @Test
+    def drain2(): Unit = {
+      val tanks = createTanks(("a", 10, 1000)) :+ new CreativeTank(GenericAmount("", GenericUnit.ZERO, None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toDrain = GenericAmount("b", GenericUnit(1000), None)
+      val drained1 = handler.drain(toDrain, execute = false)
+      assertTrue(drained1.isEmpty)
+      assertEquals(tanks, handler.getTank)
+
+      val drained2 = handler.drain(toDrain, execute = true)
+      assertTrue(drained2.isEmpty)
+      assertEquals(tanks, handler.getTank)
+    }
+
+    @Test
+    def drain3(): Unit = {
+      val tanks = createTanks(("", 0, 1000)) :+ new CreativeTank(GenericAmount("", GenericUnit.ZERO, None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toDrain = GenericAmount("a", GenericUnit(1000), None)
+      val drained1 = handler.drain(toDrain, execute = false)
+      assertTrue(drained1.isEmpty)
+      assertEquals(tanks, handler.getTank)
+
+      val drained2 = handler.drain(toDrain, execute = true)
+      assertTrue(drained2.isEmpty)
+      assertEquals(tanks, handler.getTank)
+    }
+
+    @Test
+    def drain4(): Unit = {
+      val tanks = createTanks(("", 0, 1000)) :+ new CreativeTank(GenericAmount("a", GenericUnit(10), None), GenericUnit(1000))
+
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toDrain = GenericAmount("a", GenericUnit(1000), None)
+      val drained1 = handler.drain(toDrain, execute = false)
+      assertEquals(toDrain, drained1)
+      assertEquals(tanks, handler.getTank)
+
+      val drained2 = handler.drain(toDrain, execute = true)
+      assertEquals(toDrain, drained2)
+      assertEquals(tanks, handler.getTank)
+    }
+
+  }
 }
 
 object TanksHandlerTest {

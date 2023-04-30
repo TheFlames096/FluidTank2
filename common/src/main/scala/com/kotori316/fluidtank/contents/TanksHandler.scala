@@ -42,7 +42,9 @@ abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit mo
       }
     }
 
-    val op: ListTankOperation[ListType, T] = if (resource.isGaseous) {
+    val op: ListTankOperation[ListType, T] = if (hasCreative) {
+      Operations.opList(this.tanks, Operations.fillCreativeOp)
+    } else if (resource.isGaseous) {
       // Fill from last
       Operations.fillList[ListType, T](reversible.reverse(this.tanks)).map(reversible.reverse)
     } else {
@@ -59,7 +61,9 @@ abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit mo
    * @return drained amount
    */
   def drain(resource: GenericAmount[T], execute: Boolean): GenericAmount[T] = {
-    val op: ListTankOperation[ListType, T] = if (resource.isGaseous) {
+    val op: ListTankOperation[ListType, T] = if (hasCreative) {
+      Operations.opList(this.tanks, Operations.drainCreativeOp)
+    } else if (resource.isGaseous) {
       // Drain from head
       Operations.drainList[ListType, T](this.tanks)
     } else {

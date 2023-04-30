@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.contents
 
 import cats.data.{Chain, ReaderWriterStateT}
-import cats.implicits.{catsSyntaxGroup, toSemigroupKOps}
+import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, toSemigroupKOps}
 import cats.{Applicative, Foldable, Id, MonoidK}
 
 import scala.math.Ordering.Implicits.infixOrderingOps
@@ -33,12 +33,14 @@ object Operations {
   }
 
   def fillCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
-    if (s.isEmpty) {
+    // Not `isEmpty` because 0 amount stack should be considered.
+    if (s.isContentEmpty) {
       // Nothing to fill
       (Chain(FluidTransferLog.FillFailed(s, tank)), s, Id(tank))
     } else if (tank.content.isEmpty || tank.content.contentEqual(s)) {
       val newTank = tank.copy(s.setAmount(tank.capacity))
-      (Chain(FluidTransferLog.FillFluid(s, s, tank, newTank)), s, Id(newTank))
+      val rest = if (tank.amount === tank.capacity) s else s.setAmount(GenericUnit.ZERO)
+      (Chain(FluidTransferLog.FillFluid(s, s, tank, newTank)), rest, Id(newTank))
     } else {
       // The content didn't match
       (Chain(FluidTransferLog.FillFailed(s, tank)), s, Id(tank))
@@ -81,10 +83,12 @@ object Operations {
     }
   }
 
+  def opList[F[+_], A](tanks: F[Tank[A]], opGetter: Tank[A] => TankOperation[A])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
+    opList(applicative.map(tanks)(opGetter))
+
   def fillList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
-    opList(applicative.map(tanks)(_.fillOp))
+    opList(tanks, _.fillOp)
 
   def drainList[F[+_], A](tanks: F[Tank[A]])(implicit applicative: Applicative[F], F: Foldable[F], monoidK: MonoidK[F]): ListTankOperation[F, A] =
-    opList(applicative.map(tanks)(_.drainOp))
+    opList(tanks, _.drainOp)
 }
-
