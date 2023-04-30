@@ -8,6 +8,8 @@ import com.kotori316.fluidtank.contents.Operations.ListTankOperation
 abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit monoidK: MonoidK[ListType], monad: Monad[ListType], f: Foldable[ListType], reversible: Reversible[ListType]) {
   protected var tanks: ListType[Tank[T]] = monoidK.empty
 
+  protected def hasCreative: Boolean = tanks.exists(_.isInstanceOf[CreativeTank[_]])
+
   /**
    * @return moved amount, meaning resource - left(not filled/drained)
    */

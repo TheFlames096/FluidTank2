@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.contents
 
 import com.kotori316.fluidtank.contents.Operations.TankOperation
 
-class VoidTank[A](e: GenericAmount[A], c: GenericUnit) extends Tank(e.createEmpty, c) {
+final class VoidTank[A](e: GenericAmount[A], c: GenericUnit) extends Tank(e.createEmpty, c) {
   /**
    * Changing the content is not allowed
    *

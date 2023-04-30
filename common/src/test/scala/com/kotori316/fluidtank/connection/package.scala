@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank
 
 import cats.data.Chain
-import com.kotori316.fluidtank.contents.{ChainTanksHandler, GenericAmount, GenericUnit, Tank, VoidTank}
+import com.kotori316.fluidtank.contents.{ChainTanksHandler, CreativeTank, GenericAmount, GenericUnit, Tank, VoidTank}
 import net.minecraft.core.BlockPos
 
 package object connection {
@@ -35,7 +35,7 @@ package object connection {
 
     override def getPos(t: StringTile): BlockPos = t.pos
 
-    override def isCreative(t: StringTile): Boolean = false
+    override def isCreative(t: StringTile): Boolean = t.tank.isInstanceOf[CreativeTank[_]]
 
     override def isVoid(t: StringTile): Boolean = t.tank.isInstanceOf[VoidTank[_]]
 

@@ -225,4 +225,65 @@ class TankOperationsTest {
     }
   }
 
+  @Nested
+  class CreativeTest {
+    @Test
+    def fillToEmpty(): Unit = {
+      val tank = createTank("", 0, 1000)
+      val op = Operations.fillCreativeOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertEquals(createTank("a", 1000, 1000), result)
+    }
+
+    @Test
+    def fillToSameContent(): Unit = {
+      val tank = createTank("a", 1, 1000)
+      val op = Operations.fillCreativeOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertEquals(createTank("a", 1000, 1000), result)
+    }
+
+    @Test
+    def fillToDifferentContent(): Unit = {
+      val tank = createTank("b", 1, 1000)
+      val op = Operations.fillCreativeOp(tank)
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertEquals(tank, result)
+    }
+
+    @Test
+    def drainFromEmpty(): Unit = {
+      val tank = createTank("", 0, 1000)
+      val op = Operations.drainCreativeOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertEquals(tank, result)
+    }
+
+    @Test
+    def drainFromSameContent(): Unit = {
+      val tank = createTank("a", 1, 1000)
+      val op = Operations.drainCreativeOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertTrue(rest.isEmpty)
+      assertEquals(tank, result)
+    }
+
+    @Test
+    def drainFromDifferentContent(): Unit = {
+      val tank = createTank("b", 1, 1000)
+      val op = Operations.drainCreativeOp(tank)
+
+      val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+      assertEquals(GenericAmount("a", GenericUnit(500), None), rest)
+      assertEquals(tank, result)
+    }
+  }
 }

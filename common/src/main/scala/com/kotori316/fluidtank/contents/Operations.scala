@@ -32,6 +32,19 @@ object Operations {
     Id((Chain(FluidTransferLog.FillFluid(s, s, tank, tank)), s.createEmpty, Id(tank)))
   }
 
+  def fillCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+    if (s.isEmpty) {
+      // Nothing to fill
+      (Chain(FluidTransferLog.FillFailed(s, tank)), s, Id(tank))
+    } else if (tank.content.isEmpty || tank.content.contentEqual(s)) {
+      val newTank = tank.copy(s.setAmount(tank.capacity))
+      (Chain(FluidTransferLog.FillFluid(s, s, tank, newTank)), s, Id(newTank))
+    } else {
+      // The content didn't match
+      (Chain(FluidTransferLog.FillFailed(s, tank)), s, Id(tank))
+    }
+  }
+
   def drainOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
     if (s.isEmpty || tank.isEmpty) {
       // Nothing to drain.
@@ -42,6 +55,19 @@ object Operations {
       val newTank = tank.copy(tank.content - drainedStack)
       val rest = s - drainedStack
       (Chain(FluidTransferLog.DrainFluid(s, drainedStack, tank, newTank)), rest, newTank)
+    } else {
+      // Failed to drain
+      (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
+    }
+  }
+
+  def drainCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+    if (s.isEmpty || tank.isEmpty) {
+      // Nothing to drain.
+      (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
+    } else if (s.contentEqual(tank.content)) {
+      // Drain requested amount, and nothing changed.
+      (Chain(FluidTransferLog.DrainFluid(s, s, tank, tank)), s.createEmpty, tank)
     } else {
       // Failed to drain
       (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
