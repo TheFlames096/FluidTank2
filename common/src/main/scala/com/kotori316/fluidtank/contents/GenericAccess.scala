@@ -21,6 +21,8 @@ trait GenericAccess[A] {
 
   def fromKey(key: ResourceLocation): A
 
+  def asString(a: A): String = getKey(a).toString
+
   def empty: A
 
   def newInstance(content: A, amount: GenericUnit, nbt: Option[CompoundTag]): GenericAmount[A]

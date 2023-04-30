@@ -26,6 +26,8 @@ package object contents {
 
     override def fromKey(key: ResourceLocation): String = key.getPath
 
+    override def asString(a: String) = a
+
     override def empty: String = ""
 
     override def classTag: ClassTag[String] = implicitly[ClassTag[String]]
