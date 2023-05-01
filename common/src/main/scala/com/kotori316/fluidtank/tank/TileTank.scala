@@ -22,7 +22,7 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
   }
 
   private var connection: FluidConnection = new FluidConnection(Nil)
-  private var tank: Tank[Fluid] = Tank(FluidAmountUtil.EMPTY, GenericUnit.fromBigInteger(tier.getCapacity))
+  private var tank: Tank[Fluid] = Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
 
   def setConnection(c: FluidConnection): Unit = {
     this.connection = c

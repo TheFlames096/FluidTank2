@@ -2,7 +2,6 @@ package com.kotori316.fluidtank.contents
 
 import cats.Hash
 import cats.kernel.CommutativeGroup
-import org.jetbrains.annotations.VisibleForTesting
 
 class GenericUnit private(val value: BigInt) extends AnyVal {
   def asFabric: Long = {
@@ -40,11 +39,18 @@ object GenericUnit {
 
   def fromFabric(value: Long): GenericUnit = new GenericUnit(BigInt(value))
 
-  def fromForge(value: Long): GenericUnit = new GenericUnit(BigInt(value * 81))
+  def fromForge(value: Long): GenericUnit = new GenericUnit(asBigIntFromForge(value))
+
+  def asBigIntFromForge(value: Long): BigInt = BigInt(value * 81)
 
   def fromByteArray(value: Array[Byte]): GenericUnit = new GenericUnit(BigInt(value))
 
-  def fromBigInteger(value: java.math.BigInteger): GenericUnit = new GenericUnit(BigInt(value))
+  /**
+   * Get [[GenericUnit]] from [[BigInt]]
+   *
+   * @param value formatted for fabric unit. From forge, use [[asBigIntFromForge()]] to convert.
+   */
+  def apply(value: BigInt): GenericUnit = new GenericUnit(value)
 
   implicit final val groupGenericUnit: CommutativeGroup[GenericUnit] = new GroupGenericUnit
   implicit final val orderingGenericUnit: Ordering[GenericUnit] = Ordering.by(_.value)
@@ -62,6 +68,4 @@ object GenericUnit {
     override def combineN(a: GenericUnit, n: Int): GenericUnit = new GenericUnit(a.value * n)
   }
 
-  @VisibleForTesting
-  private[contents] def apply(value: BigInt): GenericUnit = new GenericUnit(value)
 }

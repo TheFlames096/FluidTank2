@@ -1,10 +1,10 @@
 package com.kotori316.fluidtank.tank;
 
-import java.math.BigInteger;
 import java.util.EnumMap;
 import java.util.Map;
 
 import com.google.common.base.CaseFormat;
+import scala.math.BigInt;
 
 import com.kotori316.fluidtank.contents.GenericUnit;
 
@@ -26,7 +26,7 @@ public enum Tier {
     SILVER(3),
     ;
 
-    private static EnumMap<Tier, BigInteger> capacityMap;
+    private static EnumMap<Tier, BigInt> capacityMap;
     private final int rank;
     private final String name;
 
@@ -35,7 +35,7 @@ public enum Tier {
         this.name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
     }
 
-    BigInteger getCapacity() {
+    BigInt getCapacity() {
         if (!capacityMap.containsKey(this)) {
             throw new IllegalStateException("No capacity for %s".formatted(this));
         }
@@ -47,9 +47,8 @@ public enum Tier {
         return this.name;
     }
 
-    static BigInteger fromForge(long forgeAmount) {
-        var unit = GenericUnit.fromForge(forgeAmount);
-        return unit.bigInteger();
+    static BigInt fromForge(long forgeAmount) {
+        return GenericUnit.asBigIntFromForge(forgeAmount);
     }
 
     static {
