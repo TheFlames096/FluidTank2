@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.material.Fluid
 
 class FluidConnection(s: Seq[TileTank])(override implicit val helper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler]) extends Connection[TileTank](s) {
-  override val isDummy: Boolean = s.isEmpty
-
   def getHandler: FluidTanksHandler = this.handler
 }
 

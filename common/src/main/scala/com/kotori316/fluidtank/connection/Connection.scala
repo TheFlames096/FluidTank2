@@ -16,10 +16,10 @@ abstract class Connection[TileType] protected(val sortedTanks: Seq[TileType]) {
   val updateActions: ArrayBuffer[() => Unit] = ArrayBuffer(
     () => this.sortedTanks.foreach(_.setChanged())
   )
-  val isDummy: Boolean = false
+  final val isDummy: Boolean = sortedTanks.isEmpty
   protected var isValid: Boolean = true
 
-  protected val handler: helper.Handler = helper.createHandler(this.sortedTanks)
+  protected final val handler: helper.Handler = helper.createHandler(this.sortedTanks)
 
   // Assuming head or last tank contains the content.
   protected def contentType: GenericAmount[helper.Content] =

@@ -216,6 +216,13 @@ class ConnectionTest {
   @Nested
   class InitializationTest {
     @Test
+    def dummy(): Unit = {
+      val c = new StringConnection(Nil)
+      assertTrue(c.isDummy)
+      assertEquals(GenericUnit.ZERO, c.getHandler.getSumOfCapacity)
+    }
+
+    @Test
     def two1(): Unit = {
       val initialTank = contents.createTanks(("a", 100, 1000), ("b", 200, 700))
       val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
