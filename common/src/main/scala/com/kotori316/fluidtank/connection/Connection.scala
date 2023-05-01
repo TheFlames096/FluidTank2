@@ -57,6 +57,10 @@ abstract class Connection[TileType] protected(val sortedTanks: Seq[TileType]) {
   def updateNeighbors(): Unit = {
     updateActions.foreach(_.apply())
   }
+
+  override def toString: String = {
+    s"${getClass.getSimpleName}{tanks=${sortedTanks.size},content=$contentType}"
+  }
 }
 
 object Connection {

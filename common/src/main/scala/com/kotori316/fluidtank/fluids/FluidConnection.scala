@@ -10,10 +10,6 @@ class FluidConnection(s: Seq[TileTank])(override implicit val helper: Connection
   override val isDummy: Boolean = s.isEmpty
 
   def getHandler: FluidTanksHandler = this.handler
-
-  override def toString: String = {
-    s"FluidConnection{tanks=${s.size},content=$contentType"
-  }
 }
 
 object FluidConnection {
