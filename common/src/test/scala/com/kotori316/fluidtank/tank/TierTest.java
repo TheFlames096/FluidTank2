@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.tank;
 
+import java.util.EnumMap;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DynamicTest;
@@ -9,6 +10,7 @@ import scala.math.BigInt;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TierTest {
     @TestFactory
@@ -24,5 +26,10 @@ class TierTest {
     @Test
     void checkStoneCapacity() {
         assertEquals(BigInt.apply(81000 * 16), Tier.STONE.getCapacity());
+    }
+
+    @Test
+    void setBadMap() {
+        assertThrows(IllegalArgumentException.class, () -> Tier.setCapacityMap(new EnumMap<>(Tier.class)));
     }
 }

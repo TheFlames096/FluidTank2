@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.tank;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.google.common.base.CaseFormat;
 import scala.math.BigInt;
@@ -35,16 +36,27 @@ public enum Tier {
         this.name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
     }
 
-    BigInt getCapacity() {
+    public BigInt getCapacity() {
         if (!capacityMap.containsKey(this)) {
             throw new IllegalStateException("No capacity for %s".formatted(this));
         }
         return capacityMap.get(this);
     }
 
+    public int getRank() {
+        return rank;
+    }
+
     @Override
     public String toString() {
         return this.name;
+    }
+
+    public static void setCapacityMap(EnumMap<Tier, BigInt> capacityMap) {
+        if (!Stream.of(values()).allMatch(capacityMap::containsKey)) {
+            throw new IllegalArgumentException("Not all key is defined in capacity map. " + capacityMap);
+        }
+        Tier.capacityMap = capacityMap;
     }
 
     static BigInt fromForge(long forgeAmount) {

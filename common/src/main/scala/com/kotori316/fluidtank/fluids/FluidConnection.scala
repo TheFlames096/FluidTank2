@@ -11,7 +11,7 @@ class FluidConnection(s: Seq[TileTank])(override implicit val helper: Connection
 }
 
 object FluidConnection {
-  implicit final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler] = new FluidConnectionHelper
+  final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler] = new FluidConnectionHelper
 
   private final class FluidConnectionHelper extends ConnectionHelper[TileTank] {
     override type Content = Fluid
@@ -32,7 +32,10 @@ object FluidConnection {
 
     override def createHandler(s: Seq[TileTank]): FluidTanksHandler = new FluidTanksHandler(s)
 
-    override def createConnection(s: Seq[TileTank]): FluidConnection = new FluidConnection(s)
+    override def createConnection(s: Seq[TileTank]): FluidConnection = {
+      new FluidConnection(s)(fluidConnectionHelper)
+      // Connection.updatePosPropertyAndCreateConnection[TileTank, FluidConnection](s, s => new FluidConnection(s)(fluidConnectionHelper))
+    }
 
     override def connectionSetter(connection: FluidConnection): TileTank => Unit = t => t.setConnection(connection)
   }

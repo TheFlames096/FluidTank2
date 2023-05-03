@@ -1,7 +1,9 @@
 package com.kotori316.fluidtank
 
 import cats.Hash
+import com.kotori316.fluidtank.connection.ConnectionHelper
 import com.kotori316.fluidtank.contents.{GenericAccess, GenericAmount, GenericUnit}
+import com.kotori316.fluidtank.tank.TileTank
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
@@ -14,6 +16,7 @@ package object fluids {
   type FluidAmount = GenericAmount[Fluid]
   implicit final val fluidHash: Hash[Fluid] = Hash.fromUniversalHashCode
   implicit final val fluidAccess: GenericAccess[Fluid] = new FluidAccess
+  implicit final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler] = FluidConnection.fluidConnectionHelper
 
   private class FluidAccess extends GenericAccess[Fluid] {
     override def isEmpty(a: Fluid): Boolean = a == empty

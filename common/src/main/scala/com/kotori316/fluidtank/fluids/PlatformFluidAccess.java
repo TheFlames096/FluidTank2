@@ -38,8 +38,14 @@ public interface PlatformFluidAccess {
         return FluidAmountUtil.EMPTY();
     }
 
+}
+
+class PlatformFluidAccessHolder {
+    @NotNull
+    static PlatformFluidAccess platformFluidAccess = new Default();
+
     @ApiStatus.Internal
-    final class Default implements PlatformFluidAccess {
+    private static final class Default implements PlatformFluidAccess {
         @Override
         public boolean isGaseous(Fluid fluid) {
             return false;
@@ -57,9 +63,4 @@ public interface PlatformFluidAccess {
             }
         }
     }
-}
-
-class PlatformFluidAccessHolder {
-    @NotNull
-    static PlatformFluidAccess platformFluidAccess = new PlatformFluidAccess.Default();
 }

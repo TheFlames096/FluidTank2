@@ -1,14 +1,20 @@
 package com.kotori316.fluidtank.connection
 
-import cats.implicits.toFoldableOps
+import cats.implicits.{toFoldableOps, toShow}
+import com.kotori316.fluidtank.FluidTankCommon
+import com.kotori316.fluidtank.MCImplicits._
 import com.kotori316.fluidtank.connection.ConnectionHelper.ConnectionHelperMethods
 import com.kotori316.fluidtank.contents.{ChainTanksHandler, GenericAmount, GenericUnit}
+import com.kotori316.fluidtank.tank.TankPos
+import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
+import net.minecraft.world.level.BlockGetter
+import net.minecraft.world.level.block.entity.BlockEntity
 
 import scala.collection.mutable.ArrayBuffer
 import scala.math.Ordering.Implicits.infixOrderingOps
 
-abstract class Connection[TileType] protected(val sortedTanks: Seq[TileType]) {
+abstract class Connection[TileType] protected(private[connection] val sortedTanks: Seq[TileType]) {
   implicit val helper: ConnectionHelper[TileType]
 
   val hasCreative: Boolean = sortedTanks.exists(_.isCreative)
@@ -85,6 +91,49 @@ object Connection {
       s1 foreach helper.connectionSetter(connection)
 
       if (s2.nonEmpty) createAndInit(s2)
+    }
+  }
+
+  def load[TankType <: BlockEntity, ContentType, HandlerType <: ChainTanksHandler[ContentType]]
+  (level: BlockGetter, pos: BlockPos, tankClass: Class[TankType])(implicit helper: ConnectionHelper.Aux[TankType, ContentType, HandlerType]): Unit = {
+    val lowest = Iterator.iterate(pos)(_.below())
+      .takeWhile(p => tankClass.isInstance(level.getBlockEntity(p)))
+      .toList.lastOption.getOrElse {
+      FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_CONNECTION, f"No lowest tank at ${pos.show}, ${level.getBlockState(pos)}", new IllegalStateException("No lowest tank"))
+      pos
+    }
+    val tanks = Iterator.iterate(lowest)(_.above())
+      .map(level.getBlockEntity)
+      .takeWhile(tankClass.isInstance)
+      .map(tankClass.cast)
+      .toList
+    createAndInit(tanks)
+  }
+
+  /**
+   * Constructor wrapper to modify block state of tanks.
+   */
+  def updatePosPropertyAndCreateConnection[TileType <: BlockEntity, ConnectionType <: Connection[TileType]]
+  (s: Seq[TileType], constructor: Seq[TileType] => ConnectionType): ConnectionType = {
+    if (s.isEmpty) {
+      constructor(Nil)
+    } else {
+      val seq = s.sortBy(_.getBlockPos.getY)
+      // Property update
+      if (seq.lengthIs > 1) {
+        // HEAD
+        val head = seq.head
+        head.getLevel.setBlockAndUpdate(head.getBlockPos, head.getBlockState.setValue(TankPos.TANK_POS_PROPERTY, TankPos.BOTTOM))
+        // LAST
+        val last = seq.last
+        last.getLevel.setBlockAndUpdate(last.getBlockPos, last.getBlockState.setValue(TankPos.TANK_POS_PROPERTY, TankPos.TOP))
+        // MIDDLE
+        seq.tail.init.foreach(t => t.getLevel.setBlockAndUpdate(t.getBlockPos, t.getBlockState.setValue(TankPos.TANK_POS_PROPERTY, TankPos.MIDDLE)))
+      } else {
+        // SINGLE
+        seq.foreach(t => t.getLevel.setBlockAndUpdate(t.getBlockPos, t.getBlockState.setValue(TankPos.TANK_POS_PROPERTY, TankPos.SINGLE)))
+      }
+      constructor(seq)
     }
   }
 }
