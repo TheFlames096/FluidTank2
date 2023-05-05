@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import scala.collection.mutable.ArrayBuffer
 import scala.math.Ordering.Implicits.infixOrderingOps
 
-abstract class Connection[TileType] protected(private[connection] val sortedTanks: Seq[TileType]) {
+abstract class Connection[TileType] protected(protected val sortedTanks: Seq[TileType]) {
   implicit val helper: ConnectionHelper[TileType]
 
   val hasCreative: Boolean = sortedTanks.exists(_.isCreative)
@@ -26,6 +26,8 @@ abstract class Connection[TileType] protected(private[connection] val sortedTank
   protected var isValid: Boolean = true
 
   protected final val handler: helper.Handler = helper.createHandler(this.sortedTanks)
+
+  def getTiles: Seq[TileType] = this.sortedTanks
 
   // Assuming head or last tank contains the content.
   protected def contentType: GenericAmount[helper.Content] =

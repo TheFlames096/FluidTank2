@@ -61,7 +61,7 @@ class ConnectionTest {
     val initialTank = contents.createTanks(("", 0, 1000), ("", 0, 700), ("", 0, 600))
     val c = getConnection(initialTank)
 
-    assertTrue(c.sortedTanks.forall(tile => tile.connection == Option(c)))
+    assertTrue(c.getTiles.forall(tile => tile.connection == Option(c)))
   }
 
   @Nested
@@ -232,8 +232,8 @@ class ConnectionTest {
       val c2 = tanks.tail.head.connection
       assertNotEquals(c1, c2)
       assertNotEquals(c1.get.getContent, c2.get.getContent)
-      assertEquals(1, c1.get.sortedTanks.size)
-      assertEquals(1, c2.get.sortedTanks.size)
+      assertEquals(1, c1.get.getTiles.size)
+      assertEquals(1, c2.get.getTiles.size)
     }
 
     @Test
@@ -245,9 +245,9 @@ class ConnectionTest {
       val c1 = tanks.head.connection
       val c2 = tanks.tail.tail.head.connection
       assertNotEquals(c1, c2)
-      assertEquals(2, c1.get.sortedTanks.size)
+      assertEquals(2, c1.get.getTiles.size)
       assertNotEquals(c1.get.getContent, c2.get.getContent)
-      assertEquals(1, c2.get.sortedTanks.size)
+      assertEquals(1, c2.get.getTiles.size)
     }
 
     @Test
@@ -259,9 +259,9 @@ class ConnectionTest {
       val c1 = tanks.head.connection.get
       val c2 = tanks.tail.tail.head.connection.get
       assertNotEquals(c1, c2)
-      assertEquals(2, c1.sortedTanks.size)
+      assertEquals(2, c1.getTiles.size)
       assertNotEquals(c1.getContent, c2.getContent)
-      assertEquals(1, c2.sortedTanks.size)
+      assertEquals(1, c2.getTiles.size)
     }
 
     @Test
@@ -271,13 +271,13 @@ class ConnectionTest {
       Connection.createAndInit(tanks)
 
       val c1 = a.connection.get
-      assertEquals(3, c1.sortedTanks.size)
+      assertEquals(3, c1.getTiles.size)
       c1.remove(b)
       val c21 = a.connection.get
       val c22 = c.connection.get
       assertNotEquals(c21, c22)
-      assertEquals(1, c21.sortedTanks.size)
-      assertEquals(1, c22.sortedTanks.size)
+      assertEquals(1, c21.getTiles.size)
+      assertEquals(1, c22.getTiles.size)
     }
   }
 }
