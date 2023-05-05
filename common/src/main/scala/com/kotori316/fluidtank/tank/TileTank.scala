@@ -1,5 +1,9 @@
 package com.kotori316.fluidtank.tank
 
+import cats.implicits.toShow
+import com.kotori316.fluidtank.FluidTankCommon
+import com.kotori316.fluidtank.MCImplicits._
+import com.kotori316.fluidtank.connection.Connection
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank, TankUtil}
 import com.kotori316.fluidtank.fluids._
 import com.kotori316.fluidtank.tank.TileTank.{KEY_STACK_NAME, KEY_TANK, KEY_TIER}
@@ -69,12 +73,43 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
   def setCustomName(@Nullable customName: Component): Unit = {
     this.customName = Option(customName)
   }
+
+  // Methods called from block
+
+  def getComparatorLevel: Int = this.connection.getComparatorLevel
+
+  def onDestroy(): Unit = {
+    this.connection.remove(this)
+  }
+
+  def onBlockPlacedBy(): Unit = {
+    {
+      FluidTankCommon.LOGGER.debug(FluidTankCommon.MARKER_TANK,
+        "Connection {} loaded in onBlockPlacedBy. At={}, connection={}",
+        if (this.connection.isDummy) "will be" else "won't",
+        this.getBlockPos.show, this.connection)
+    }
+    // Do nothing if the connection is already created.
+    if (!this.connection.isDummy) return
+    val downTank = Option(getLevel.getBlockEntity(getBlockPos.below())).collect { case t: TileTank => t }
+    val upTank = Option(getLevel.getBlockEntity(getBlockPos.above())).collect { case t: TileTank => t }
+    val newSeq = (downTank, upTank) match {
+      case (Some(dT), Some(uT)) => dT.connection.getTiles :+ this :++ uT.connection.getTiles
+      case (None, Some(uT)) => this +: uT.connection.getTiles
+      case (Some(dT), None) => dT.connection.getTiles :+ this
+      case (None, None) => Seq(this)
+    }
+    if (downTank.exists(_.connection.isDummy) || upTank.exists(_.connection.isDummy)) {
+      Connection.load(getLevel, getBlockPos, classOf[TileTank])
+    } else {
+      Connection.createAndInit(newSeq)
+    }
+  }
 }
 
 object TileTank {
   final val KEY_TANK = "tank" // Tag map
   final val KEY_TIER = "tier" // Tag map provided in Tier class (Actually, String)
-  final val KEY_CAPACITY = "capacity" // Long
   final val KEY_STACK_NAME = "stackName" // String parsed in Text
 
 }
