@@ -11,7 +11,7 @@ object Operations {
   type ListTankOperation[L[_], A] = ReaderWriterStateT[Id, TransferEnv, Chain[FluidTransferLog], GenericAmount[A], L[Tank[A]]]
   type TankOperation[A] = ListTankOperation[Id, A]
 
-  def fillOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+  def fillOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT.applyS { s =>
     if (s.isEmpty) {
       // Nothing to fill
       (Chain(FluidTransferLog.FillFailed(s, tank)), s, Id(tank))
@@ -27,12 +27,12 @@ object Operations {
     }
   }
 
-  def fillVoidOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+  def fillVoidOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT.applyS { s =>
     // Tank doesn't change
     Id((Chain(FluidTransferLog.FillFluid(s, s, tank, tank)), s.createEmpty, Id(tank)))
   }
 
-  def fillCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+  def fillCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT.applyS { s =>
     // Not `isEmpty` because 0 amount stack should be considered.
     if (s.isContentEmpty) {
       // Nothing to fill
@@ -47,7 +47,7 @@ object Operations {
     }
   }
 
-  def drainOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+  def drainOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT.applyS { s =>
     if (s.isEmpty || tank.isEmpty) {
       // Nothing to drain.
       (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
@@ -63,7 +63,7 @@ object Operations {
     }
   }
 
-  def drainCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT { (_, s) =>
+  def drainCreativeOp[A](tank: Tank[A]): TankOperation[A] = ReaderWriterStateT.applyS { s =>
     if (s.isEmpty || tank.isEmpty) {
       // Nothing to drain.
       (Chain(FluidTransferLog.DrainFailed(s, tank)), s, tank)
