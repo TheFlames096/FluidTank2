@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.tank;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -10,7 +11,7 @@ import scala.math.BigInt;
 import com.kotori316.fluidtank.contents.GenericUnit;
 
 public enum Tier {
-    INVALID(0),
+    INVALID(0, ""),
     WOOD(1),
     STONE(2),
     IRON(3),
@@ -18,7 +19,7 @@ public enum Tier {
     DIAMOND(5),
     EMERALD(6),
     STAR(7),
-    CREATIVE(10),
+    CREATIVE(10, "creative"),
     VOID(0),
     COPPER(2),
     TIN(2),
@@ -29,10 +30,18 @@ public enum Tier {
 
     private static EnumMap<Tier, BigInt> capacityMap;
     private final int rank;
+    private final String blockName;
     private final String name;
+
+    Tier(int rank, String blockName) {
+        this.rank = rank;
+        this.blockName = blockName;
+        this.name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
+    }
 
     Tier(int rank) {
         this.rank = rank;
+        this.blockName = "tank_" + name().toLowerCase(Locale.ROOT);
         this.name = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name());
     }
 
@@ -45,6 +54,14 @@ public enum Tier {
 
     public int getRank() {
         return rank;
+    }
+
+    public String getBlockName() {
+        return blockName;
+    }
+
+    public boolean isNormalTankTier() {
+        return getRank() != 0 && getRank() != 10;
     }
 
     @Override

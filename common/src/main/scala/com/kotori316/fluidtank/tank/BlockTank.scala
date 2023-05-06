@@ -1,12 +1,9 @@
 package com.kotori316.fluidtank.tank
 
-import java.util.Locale
-
 import cats.implicits.toShow
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.MCImplicits.showPos
 import net.minecraft.core.{BlockPos, Direction}
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.{BlockItem, Item, ItemStack}
@@ -21,9 +18,6 @@ import org.jetbrains.annotations.Nullable
 
 class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(FluidTankCommon.TANK_MATERIAL).strength(1f).dynamicShape()) with EntityBlock {
 
-  protected def createInternalName: String = "tank_" + tier.toString.toLowerCase(Locale.ROOT)
-
-  final val registryName = new ResourceLocation(FluidTankCommon.modId, createInternalName)
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
   final val itemBlock: ItemBlockTank = createTankItem()
 
@@ -31,7 +25,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
 
   override final def asItem(): Item = itemBlock
 
-  override def toString: String = s"Block{$registryName}"
+  override def toString: String = s"Block{${tier.getBlockName}"
 
   override def newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity = {
     new TileTank(tier, pos, state)
