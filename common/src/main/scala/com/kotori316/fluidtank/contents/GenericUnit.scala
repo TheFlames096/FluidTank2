@@ -48,7 +48,7 @@ object GenericUnit {
   /**
    * Get [[GenericUnit]] from [[BigInt]]
    *
-   * @param value formatted for fabric unit. From forge, use [[asBigIntFromForge()]] to convert.
+   * @param value formatted for fabric unit. From forge, use [[asBigIntFromForge]] to convert.
    */
   def apply(value: BigInt): GenericUnit = new GenericUnit(value)
 

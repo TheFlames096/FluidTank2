@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.contents
 
 import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.function.Executable
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
 
 import scala.jdk.javaapi.CollectionConverters
@@ -89,20 +90,24 @@ class ListTankOperationsTest {
 
   @Nested
   class DrainTest {
-    @Test
-    def drain1(): Unit = {
+    @TestFactory
+    def drain1(): Array[DynamicNode] = {
       val tanks = createTanks(("a", 200, 1000), ("a", 1000, 1000))
       val op = Operations.drainList(tanks)
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(100), None))
-        assertTrue(rest.isEmpty)
-        assertEquals(createTanks(("a", 100, 1000), ("a", 1000, 1000)), result)
-      }
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
-        assertTrue(rest.isEmpty)
-        assertEquals(createTanks(("a", 0, 1000), ("a", 700, 1000)), result)
-      }
+      Seq[Executable](
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(100), None))
+          assertTrue(rest.isEmpty)
+          assertEquals(createTanks(("a", 100, 1000), ("a", 1000, 1000)), result)
+        },
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(500), None))
+          assertTrue(rest.isEmpty)
+          assertEquals(createTanks(("a", 0, 1000), ("a", 700, 1000)), result)
+        },
+      ).zipWithIndex
+        .map { case (executable, i) => DynamicTest.dynamicTest(s"Case ${i + 1}", executable) }
+        .toArray
     }
 
     @Test
@@ -114,30 +119,35 @@ class ListTankOperationsTest {
       assertEquals(createTanks(("a", 0, 1000), ("a", 0, 1000)), result)
     }
 
-    @Test
-    def drain3(): Unit = {
+    @TestFactory
+    def drain3(): Array[DynamicNode] = {
       val tanks = createTanks(("a", 500, 1000), ("b", 1000, 1000))
       val op = Operations.drainList(tanks)
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(100), None))
-        assertTrue(rest.isEmpty)
-        assertEquals(createTanks(("a", 400, 1000), ("b", 1000, 1000)), result)
-      }
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("b", GenericUnit(100), None))
-        assertTrue(rest.isEmpty)
-        assertEquals(createTanks(("a", 500, 1000), ("b", 900, 1000)), result)
-      }
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(1500), None))
-        assertEquals(GenericAmount("a", GenericUnit(1000), None), rest)
-        assertEquals(createTanks(("a", 0, 1000), ("b", 1000, 1000)), result)
-      }
-      locally {
-        val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("b", GenericUnit(1500), None))
-        assertEquals(GenericAmount("b", GenericUnit(500), None), rest)
-        assertEquals(createTanks(("a", 500, 1000), ("b", 0, 1000)), result)
-      }
+      val tests: Seq[Executable] = Seq(
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(100), None))
+          assertTrue(rest.isEmpty)
+          assertEquals(createTanks(("a", 400, 1000), ("b", 1000, 1000)), result)
+        },
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("b", GenericUnit(100), None))
+          assertTrue(rest.isEmpty)
+          assertEquals(createTanks(("a", 500, 1000), ("b", 900, 1000)), result)
+        },
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("a", GenericUnit(1500), None))
+          assertEquals(GenericAmount("a", GenericUnit(1000), None), rest)
+          assertEquals(createTanks(("a", 0, 1000), ("b", 1000, 1000)), result)
+        },
+        () => {
+          val (_, rest, result) = op.run(DefaultTransferEnv, GenericAmount("b", GenericUnit(1500), None))
+          assertEquals(GenericAmount("b", GenericUnit(500), None), rest)
+          assertEquals(createTanks(("a", 500, 1000), ("b", 0, 1000)), result)
+        },
+      )
+      tests.zipWithIndex
+        .map { case (executable, i) => DynamicTest.dynamicTest(s"Case ${i + 1}", executable) }
+        .toArray
     }
 
     @TestFactory

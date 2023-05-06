@@ -348,6 +348,78 @@ class TanksHandlerTest {
   }
 
   @Nested
+  class VoidTest {
+    @TestFactory
+    def fillVoid(): Array[DynamicNode] = {
+      val tanks = Chain(VoidTank[String])
+      val toFill = GenericAmount("a", GenericUnit(10), None)
+      testBothAndExecution { (handler, e) =>
+        handler.updateTanks(tanks)
+        val filled1 = handler.fill(toFill, execute = e)
+        assertEquals(toFill, filled1)
+      }
+    }
+
+    @TestFactory
+    def drainVoid(): Array[DynamicNode] = {
+      val tanks = Chain(VoidTank[String])
+      val toDrain = GenericAmount("a", GenericUnit(10), None)
+      testBothAndExecution { (handler, e) =>
+        handler.updateTanks(tanks)
+        val drained = handler.drain(toDrain, execute = e)
+        assertTrue(drained.isEmpty)
+      }
+    }
+
+    @Test
+    def fill1(): Unit = {
+      val tanks = createTanks(("", 0, 1000)) :+ VoidTank[String]
+      val handler = new ImplLimit
+      handler.updateTanks(tanks)
+
+      val toFill = GenericAmount("a", GenericUnit(10), None)
+      val filled1 = handler.fill(toFill, execute = false)
+      assertEquals(toFill, filled1)
+
+      val filled2 = handler.fill(toFill, execute = true)
+      assertEquals(toFill, filled2)
+      assertEquals(createTanks(("a", 10, 1000)) :+ VoidTank[String], handler.getTank)
+    }
+
+    @TestFactory
+    def fill2(): Array[DynamicNode] = {
+      val tanks = createTanks(("", 0, 1000)) :+ VoidTank[String]
+      val toFillList = Seq(1000, 1001, 10000, Int.MaxValue)
+        .map(i => GenericAmount("a", GenericUnit(i), None))
+
+      toFillList.map(toFill => DynamicTest.dynamicTest(s"$toFill", () => {
+        val handler = new ImplLimit
+        handler.updateTanks(tanks)
+
+        val filled2 = handler.fill(toFill, execute = true)
+        assertEquals(toFill, filled2)
+        assertEquals(createTanks(("a", 1000, 1000)) :+ VoidTank[String], handler.getTank)
+      })).toArray
+    }
+
+    @TestFactory
+    def fill3(): Array[DynamicNode] = {
+      val tanks = (createTanks(("", 0, 1000)) :+ VoidTank[String]) ++ createTanks(("", 0, 1000))
+      val toFillList = Seq(1000, 1001, 10000, Int.MaxValue)
+        .map(i => GenericAmount("a", GenericUnit(i), None))
+
+      toFillList.map(toFill => DynamicTest.dynamicTest(s"$toFill", () => {
+        val handler = new ImplLimit
+        handler.updateTanks(tanks)
+
+        val filled2 = handler.fill(toFill, execute = true)
+        assertEquals(toFill, filled2)
+        assertEquals((createTanks(("a", 1000, 1000)) :+ VoidTank[String]) ++ createTanks(("", 0, 1000)), handler.getTank)
+      })).toArray
+    }
+  }
+
+  @Nested
   class CreativeTest {
     @Test
     def fill1(): Unit = {
