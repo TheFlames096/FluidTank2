@@ -28,15 +28,17 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: :fabric:remapJar :forge:remapJar
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: FluidTank2-${{ github.run_number }}
-          path: "*/build/*libs/*.jar"
+          path: |
+            "fabric/build/libs/*.jar"
+            "forge/build/libs/*.jar"
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
 
   forge-game-test:
     runs-on: ubuntu-latest
