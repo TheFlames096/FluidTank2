@@ -32,9 +32,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: FluidTank2-${{ github.run_number }}
-          path: |
-            "fabric/build/libs/*.jar"
-            "forge/build/libs/*.jar"
+          path: "*/build/libs/*.jar"
+          if-no-files-found: error
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
