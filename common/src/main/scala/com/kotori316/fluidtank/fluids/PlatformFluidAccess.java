@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.fluids;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -38,6 +39,7 @@ public interface PlatformFluidAccess {
         return FluidAmountUtil.EMPTY();
     }
 
+    Component getDisplayName(GenericAmount<Fluid> amount);
 }
 
 class PlatformFluidAccessHolder {
@@ -61,6 +63,11 @@ class PlatformFluidAccessHolder {
                 FluidTankCommon.LOGGER.error("Got error in getting fluid content of %s. Are you in production?".formatted(bucketItem), e);
                 return Fluids.EMPTY;
             }
+        }
+
+        @Override
+        public Component getDisplayName(GenericAmount<Fluid> amount) {
+            return Component.literal(com.kotori316.fluidtank.fluids.package$.MODULE$.fluidAccess().asString(amount.content()));
         }
     }
 }

@@ -25,7 +25,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
 
   override final def asItem(): Item = itemBlock
 
-  override def toString: String = s"Block{${tier.getBlockName}"
+  override def toString: String = s"Block{${tier.getBlockName}}"
 
   override def newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity = {
     new TileTank(tier, pos, state)
@@ -36,7 +36,24 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
 
   //noinspection ScalaDeprecation,deprecation
   override def use(state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hit: BlockHitResult): InteractionResult = {
-    InteractionResult.PASS
+    level.getBlockEntity(pos) match {
+      case tank: TileTank =>
+        val stack = player.getItemInHand(hand)
+        if (player.getMainHandItem.isEmpty) {
+          if (!level.isClientSide) {
+            player.displayClientMessage(tank.getConnection.getTextComponent, true)
+          }
+          InteractionResult.SUCCESS
+        } else if (!stack.getItem.isInstanceOf[ItemBlockTank]) {
+          // Move tank content
+          InteractionResult.PASS
+        } else {
+          InteractionResult.PASS
+        }
+      case tile =>
+        FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_TANK, "There is not TileTank at {}, but {}", pos.show, tile)
+        InteractionResult.PASS
+    }
   }
 
   override def setPlacedBy(level: Level, pos: BlockPos, state: BlockState, @Nullable entity: LivingEntity, stack: ItemStack): Unit = {

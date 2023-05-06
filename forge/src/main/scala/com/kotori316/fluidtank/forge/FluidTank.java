@@ -29,6 +29,8 @@ import org.jetbrains.annotations.NotNull;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockVoidTankForge;
@@ -90,6 +92,11 @@ public final class FluidTank {
         @NotNull
         public Fluid getBucketContent(BucketItem bucketItem) {
             return bucketItem.getFluid();
+        }
+
+        @Override
+        public Component getDisplayName(GenericAmount<Fluid> amount) {
+            return ForgeConverter.toStack(amount).getDisplayName();
         }
 
         @Override

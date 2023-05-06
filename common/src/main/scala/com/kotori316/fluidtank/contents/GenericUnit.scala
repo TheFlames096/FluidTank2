@@ -21,6 +21,15 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
     }
   }
 
+  def asDisplay: Long = {
+    val inForge = this.value / 81
+    if (inForge > GenericUnit.LONG_MAX) {
+      Long.MaxValue
+    } else {
+      inForge.longValue
+    }
+  }
+
   def asByteArray: Array[Byte] = this.value.toByteArray
 
   def asForgeDouble: Double = {
