@@ -11,8 +11,11 @@ import org.junit.jupiter.api.{Nested, Test}
 
 class TileTankTest extends BeforeMC {
   private val tankBlock = new BlockTank(Tier.WOOD)
+  private val creativeTankBlock = new BlockCreativeTank
 
   def createTile(tier: Tier, pos: BlockPos): TileTank = new TileTank(tier, null, pos, tankBlock.defaultBlockState())
+
+  def createCreativeTile(pos: BlockPos): TileCreativeTank = new TileCreativeTank(pos, creativeTankBlock.defaultBlockState())
 
   @Test
   def create(): Unit = {
@@ -56,6 +59,20 @@ class TileTankTest extends BeforeMC {
       assertSame(tile1.getConnection, tile2.getConnection)
       val c = tile1.getConnection
       assertEquals(2, c.getHandler.getTank.size)
+    }
+
+    @Test
+    def createConnectionWithCreative(): Unit = {
+      val tile1 = createTile(Tier.WOOD, BlockPos.ZERO)
+      val tile2 = createTile(Tier.STONE, BlockPos.ZERO.above())
+      val tile3 = createCreativeTile(BlockPos.ZERO.above(2))
+      Connection.createAndInit(Seq(tile1, tile2, tile3))
+
+      assertSame(tile1.getConnection, tile2.getConnection)
+      assertSame(tile3.getConnection, tile2.getConnection)
+      val c = tile1.getConnection
+      assertEquals(3, c.getHandler.getTank.size)
+      assertEquals(3, c.getTiles.size)
     }
 
     @Test
@@ -103,6 +120,24 @@ class TileTankTest extends BeforeMC {
       assertEquals(filled2, filled)
       assertEquals(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(4000)), GenericUnit.fromForge(4000)), tile1.getTank)
       assertEquals(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(2000)), GenericUnit.fromForge(16000)), tile2.getTank)
+    }
+
+    @Test
+    def fillWithCreative(): Unit = {
+      val tile1 = createTile(Tier.WOOD, BlockPos.ZERO)
+      val tile2 = createTile(Tier.STONE, BlockPos.ZERO.above())
+      val tile3 = createCreativeTile(BlockPos.ZERO.above(2))
+      Connection.createAndInit(Seq(tile1, tile2, tile3))
+      val c = tile1.getConnection
+
+      val filled1 = c.getHandler.fill(FluidAmountUtil.BUCKET_WATER, execute = false)
+      assertEquals(FluidAmountUtil.BUCKET_WATER, filled1)
+      assertTrue(c.getHandler.getTank.forall(_.isEmpty), s"Simulate, ${c.getHandler.getTank}")
+
+      val filled2 = c.getHandler.fill(filled1, execute = true)
+      assertEquals(filled2, filled1)
+      assertEquals(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit(Tier.WOOD.getCapacity)), GenericUnit(Tier.WOOD.getCapacity)), tile1.getTank)
+      assertEquals(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit(Tier.STONE.getCapacity)), GenericUnit(Tier.STONE.getCapacity)), tile2.getTank)
     }
 
     @Test
