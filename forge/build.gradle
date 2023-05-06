@@ -22,11 +22,28 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven {
+        name = "Azure-SLP"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        content {
+            it.includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
+            // Required these libraries to execute the tests.
+            it.includeModule("com.kotori316", "test_utility")
+            it.includeVersion("com.kotori316", "test_utility_dependency", "1.0-SNAPSHOT")
+        }
+    }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    
+
     implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
     implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version)
+
+    runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'with-library') {
+        transitive(false)
+    }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
