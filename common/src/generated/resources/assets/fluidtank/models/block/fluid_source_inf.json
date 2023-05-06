@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "fluidtank:block/pink",
+    "side": "fluidtank:block/fluid_source_inf"
+  }
+}
