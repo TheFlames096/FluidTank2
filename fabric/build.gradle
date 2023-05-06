@@ -3,6 +3,8 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
+archivesBaseName = "${project.archives_base_name}-fabric"
+
 architectury {
     platformSetupLoomIde()
     fabric()
