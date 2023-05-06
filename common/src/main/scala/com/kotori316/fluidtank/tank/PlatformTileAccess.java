@@ -19,6 +19,11 @@ public interface PlatformTileAccess {
     BlockEntityType<? extends TileTank> getCreativeType();
 
     BlockEntityType<? extends TileTank> getVoidType();
+
+    static boolean isTankType(BlockEntityType<?> entityType) {
+        var i = getInstance();
+        return entityType == i.getNormalType() || entityType == i.getCreativeType() || entityType == i.getVoidType();
+    }
 }
 
 class PlatformTileAccessHolder {

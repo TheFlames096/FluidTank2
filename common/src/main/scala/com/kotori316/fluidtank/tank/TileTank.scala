@@ -105,6 +105,18 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
       Connection.createAndInit(newSeq)
     }
   }
+
+  def onTickLoading(): Unit = {
+    // Do nothing if the connection is already created.
+    if (!this.connection.isDummy) return
+    {
+      FluidTankCommon.LOGGER.debug(FluidTankCommon.MARKER_TANK,
+        "Connection {} loaded in onLoading. At={}, connection={}",
+        "will be",
+        this.getBlockPos.show, this.connection)
+    }
+    Connection.load(getLevel, getBlockPos, classOf[TileTank])
+  }
 }
 
 object TileTank {

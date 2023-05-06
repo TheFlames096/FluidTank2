@@ -15,7 +15,7 @@ public final class FluidTankCommon {
     public static final String modId = "fluidtank";
     public static final Logger LOGGER = LoggerFactory.getLogger(FluidTankCommon.class);
     public static final Marker MARKER_CONNECTION = MarkerFactory.getMarker("Connection");
-    public static final Marker MARKER_TANK = MarkerFactory.getMarker("Connection");
+    public static final Marker MARKER_TANK = MarkerFactory.getMarker("Tank");
 
     public static final Material TANK_MATERIAL = new Material(MaterialColor.NONE, false, true, true, false,
         false, false, PushReaction.BLOCK);

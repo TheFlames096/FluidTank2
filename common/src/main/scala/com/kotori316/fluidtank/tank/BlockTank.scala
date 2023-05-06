@@ -7,7 +7,7 @@ import net.minecraft.core.{BlockPos, Direction}
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.{BlockItem, Item, ItemStack}
-import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityTicker, BlockEntityType}
 import net.minecraft.world.level.block.state.{BlockBehaviour, BlockState, StateDefinition}
 import net.minecraft.world.level.block.{Block, EntityBlock}
 import net.minecraft.world.level.{BlockGetter, Level}
@@ -107,5 +107,17 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
   override def createBlockStateDefinition(builder: StateDefinition.Builder[Block, BlockState]): Unit = {
     super.createBlockStateDefinition(builder)
     builder.add(TankPos.TANK_POS_PROPERTY)
+  }
+
+  override def getTicker[T <: BlockEntity](level: Level, state: BlockState, blockEntityType: BlockEntityType[T]): BlockEntityTicker[T] = {
+    if (level.isClientSide) {
+      super.getTicker(level, state, blockEntityType)
+    } else {
+      if (PlatformTileAccess.isTankType(blockEntityType)) {
+        (_, _, _, tile) => tile.asInstanceOf[TileTank].onTickLoading()
+      } else {
+        null
+      }
+    }
   }
 }
