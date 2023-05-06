@@ -22,7 +22,7 @@ sourceSets {
     }
 }
 
-processResources {
+sourcesJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 

@@ -12,6 +12,27 @@ loom {
     forge {
 
     }
+
+    runs {
+        client {
+            configName = "Client"
+            runDir = "run"
+        }
+        server {
+            configName = "Server"
+            runDir = "run-server"
+        }
+        gameTest {
+            configName = "GameTest"
+            environment("gameTestServer")
+            forgeTemplate("gameTestServer")
+            vmArg("-ea")
+            property("fabric.dli.env", "gameTestServer")
+            property("forge.enabledGameTestNamespaces", "fluidtank")
+            runDir = "game-test"
+            source("test")
+        }
+    }
 }
 
 configurations {
@@ -20,6 +41,18 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
+
+    testCompileClasspath.extendsFrom(compileClasspath)
+    testRuntimeClasspath.extendsFrom(runtimeClasspath)
+}
+
+sourceSets {
+    test {
+        // TODO better solution
+        output.resourcesDir = sourceSets.main.output.resourcesDir
+        // Compiled Java classes should use this directory
+        scala.destinationDirectory.set(sourceSets.main.scala.destinationDirectory)
+    }
 }
 
 repositories {
@@ -29,7 +62,7 @@ repositories {
         content {
             it.includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
             // Required these libraries to execute the tests.
-            it.includeModule("com.kotori316", "test_utility")
+            it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion)
             it.includeVersion("com.kotori316", "test_utility_dependency", "1.0-SNAPSHOT")
         }
     }
@@ -47,6 +80,14 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    // Test Dependencies.
+    // Required these libraries to execute the tests.
+    // The library will avoid errors of ForgeRegistry and Capability.
+    modImplementation(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion)
+    implementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
+    forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
+    forgeRuntimeLibrary('org.junit.jupiter:junit-jupiter')
 }
 
 processResources {
@@ -66,7 +107,7 @@ shadowJar {
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
+    inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
     classifier null
 }
