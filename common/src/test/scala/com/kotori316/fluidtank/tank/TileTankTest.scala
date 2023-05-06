@@ -6,13 +6,13 @@ import com.kotori316.fluidtank.contents.{GenericUnit, Tank}
 import com.kotori316.fluidtank.fluids._
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
-import net.minecraft.world.level.block.Blocks
 import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.{Nested, Test}
 
 class TileTankTest extends BeforeMC {
+  private val tankBlock = new BlockTank(Tier.WOOD)
 
-  def createTile(tier: Tier, pos: BlockPos): TileTank = new TileTank(tier, null, pos, Blocks.AIR.defaultBlockState())
+  def createTile(tier: Tier, pos: BlockPos): TileTank = new TileTank(tier, null, pos, tankBlock.defaultBlockState())
 
   @Test
   def create(): Unit = {

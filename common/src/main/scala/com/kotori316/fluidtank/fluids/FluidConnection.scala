@@ -33,8 +33,12 @@ object FluidConnection {
     override def createHandler(s: Seq[TileTank]): FluidTanksHandler = new FluidTanksHandler(s)
 
     override def createConnection(s: Seq[TileTank]): FluidConnection = {
-      new FluidConnection(s)(fluidConnectionHelper)
-      // Connection.updatePosPropertyAndCreateConnection[TileTank, FluidConnection](s, s => new FluidConnection(s)(fluidConnectionHelper))
+      if (s.forall(_.hasLevel)) {
+        Connection.updatePosPropertyAndCreateConnection[TileTank, FluidConnection](s, s => new FluidConnection(s)(fluidConnectionHelper))
+      } else {
+        // Maybe in test
+        new FluidConnection(s)(fluidConnectionHelper)
+      }
     }
 
     override def connectionSetter(connection: FluidConnection): TileTank => Unit = t => t.setConnection(connection)
