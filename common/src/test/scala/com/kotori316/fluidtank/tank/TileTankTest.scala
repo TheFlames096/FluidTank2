@@ -12,10 +12,13 @@ import org.junit.jupiter.api.{Nested, Test}
 class TileTankTest extends BeforeMC {
   private val tankBlock = new BlockTank(Tier.WOOD)
   private val creativeTankBlock = new BlockCreativeTank
+  private val voidTankBlock = new BlockVoidTank
 
   def createTile(tier: Tier, pos: BlockPos): TileTank = new TileTank(tier, null, pos, tankBlock.defaultBlockState())
 
   def createCreativeTile(pos: BlockPos): TileCreativeTank = new TileCreativeTank(pos, creativeTankBlock.defaultBlockState())
+
+  def createVoidTile(pos: BlockPos): TileVoidTank = new TileVoidTank(pos, voidTankBlock.defaultBlockState())
 
   @Test
   def create(): Unit = {
@@ -66,6 +69,20 @@ class TileTankTest extends BeforeMC {
       val tile1 = createTile(Tier.WOOD, BlockPos.ZERO)
       val tile2 = createTile(Tier.STONE, BlockPos.ZERO.above())
       val tile3 = createCreativeTile(BlockPos.ZERO.above(2))
+      Connection.createAndInit(Seq(tile1, tile2, tile3))
+
+      assertSame(tile1.getConnection, tile2.getConnection)
+      assertSame(tile3.getConnection, tile2.getConnection)
+      val c = tile1.getConnection
+      assertEquals(3, c.getHandler.getTank.size)
+      assertEquals(3, c.getTiles.size)
+    }
+
+    @Test
+    def createConnectionWithVoid(): Unit = {
+      val tile1 = createTile(Tier.WOOD, BlockPos.ZERO)
+      val tile2 = createTile(Tier.STONE, BlockPos.ZERO.above())
+      val tile3 = createVoidTile(BlockPos.ZERO.above(2))
       Connection.createAndInit(Seq(tile1, tile2, tile3))
 
       assertSame(tile1.getConnection, tile2.getConnection)
