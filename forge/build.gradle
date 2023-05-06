@@ -18,6 +18,7 @@ loom {
     runs {
         client {
             configName = "Client"
+            property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
         }
         server {
@@ -50,10 +51,12 @@ configurations {
 
 sourceSets {
     test {
-        // TODO better solution
-        output.resourcesDir = sourceSets.main.output.resourcesDir
-        // Compiled Java classes should use this directory
-        scala.destinationDirectory.set(sourceSets.main.scala.destinationDirectory)
+        if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
+            // TODO better solution
+            output.resourcesDir = sourceSets.main.output.resourcesDir
+            // Compiled Java classes should use this directory
+            scala.destinationDirectory.set(sourceSets.main.scala.destinationDirectory)
+        }
     }
 }
 
