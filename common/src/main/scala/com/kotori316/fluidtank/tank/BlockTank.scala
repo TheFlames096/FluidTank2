@@ -1,5 +1,7 @@
 package com.kotori316.fluidtank.tank
 
+import java.util.Locale
+
 import cats.implicits.toShow
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.MCImplicits.showPos
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.Nullable
 
 class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(FluidTankCommon.TANK_MATERIAL).strength(1f).dynamicShape()) with EntityBlock {
 
-  protected def createInternalName: String = "tank_" + tier.toString.toLowerCase
+  protected def createInternalName: String = "tank_" + tier.toString.toLowerCase(Locale.ROOT)
 
   final val registryName = new ResourceLocation(FluidTankCommon.modId, createInternalName)
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
