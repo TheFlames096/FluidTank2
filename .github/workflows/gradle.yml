@@ -34,6 +34,7 @@ jobs:
           name: FluidTank2-${{ github.run_number }}
           path: "*/build/libs/*.jar"
           if-no-files-found: error
+          retention-days: 7
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
@@ -56,3 +57,4 @@ jobs:
           RUN_GAME_TEST: true
         with:
           arguments: :forge:runGameTest
+          cache-read-only: true
