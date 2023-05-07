@@ -44,7 +44,9 @@ import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockVoidTankForge;
+import com.kotori316.fluidtank.forge.tank.TileCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.TileTankForge;
+import com.kotori316.fluidtank.forge.tank.TileVoidTankForge;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
 import com.kotori316.fluidtank.tank.Tier;
@@ -86,12 +88,12 @@ public final class FluidTank {
         BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
             BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
                 .build(DSL.emptyPartType()));
-    public static final RegistryObject<BlockEntityType<TileCreativeTank>> TILE_CREATIVE_TANK_TYPE =
+    public static final RegistryObject<BlockEntityType<TileCreativeTankForge>> TILE_CREATIVE_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileCreativeTank::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
-    public static final RegistryObject<BlockEntityType<TileVoidTank>> TILE_VOID_TANK_TYPE =
+            BlockEntityType.Builder.of(TileCreativeTankForge::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
+    public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileVoidTank::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
+            BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
 
     private static final class ForgePlatformAccess implements PlatformAccess {
 

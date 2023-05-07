@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.forge.render
 
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
 import com.kotori316.fluidtank.forge.render.RenderTank.getVisualTank
-import com.kotori316.fluidtank.forge.tank.{TileTankForge, VisualTank}
+import com.kotori316.fluidtank.forge.tank.{TileCreativeTankForge, TileTankForge, VisualTank}
 import com.kotori316.fluidtank.tank.TileTank
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
@@ -78,6 +78,8 @@ object RenderTank {
   private final def getVisualTank(tileTank: TileTank): VisualTank = {
     tileTank match {
       case forge: TileTankForge => forge.visualTank
+      case creativeForge: TileCreativeTankForge => creativeForge.visualTank
+      // No need to set renderer for void tank because it never has content.
       case _ => throw new NotImplementedError(s"Unavailable for ${tileTank.getClass}")
     }
   }
