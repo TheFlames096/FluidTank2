@@ -40,6 +40,7 @@ import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
+import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockVoidTankForge;
@@ -64,6 +65,7 @@ public final class FluidTank {
         PlatformAccess.setInstance(new ForgePlatformAccess());
         modBus.register(this);
         modBus.register(proxy);
+        PacketHandler.init();
     }
 
     private static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, FluidTankCommon.modId);
