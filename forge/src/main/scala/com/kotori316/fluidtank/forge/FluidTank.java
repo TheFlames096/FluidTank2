@@ -43,6 +43,7 @@ import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockVoidTankForge;
+import com.kotori316.fluidtank.forge.tank.TileTankForge;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
 import com.kotori316.fluidtank.tank.Tier;
@@ -79,9 +80,9 @@ public final class FluidTank {
     public static final Map<Tier, RegistryObject<ItemBlockTank>> TANK_ITEM_MAP =
         Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
             .collect(Collectors.toMap(Map.Entry::getKey, e -> ITEM_REGISTER.register(e.getKey().getBlockName(), () -> e.getValue().get().itemBlock())));
-    public static final RegistryObject<BlockEntityType<TileTank>> TILE_TANK_TYPE =
+    public static final RegistryObject<BlockEntityType<TileTankForge>> TILE_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileTank::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
+            BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
                 .build(DSL.emptyPartType()));
     public static final RegistryObject<BlockEntityType<TileCreativeTank>> TILE_CREATIVE_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
