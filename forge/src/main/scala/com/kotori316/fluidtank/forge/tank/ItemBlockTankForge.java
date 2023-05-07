@@ -3,7 +3,11 @@ package com.kotori316.fluidtank.forge.tank;
 import java.util.function.Consumer;
 
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import org.jetbrains.annotations.Nullable;
 
 import com.kotori316.fluidtank.forge.render.RenderItemTank;
 import com.kotori316.fluidtank.tank.BlockTank;
@@ -23,5 +27,10 @@ public final class ItemBlockTankForge extends ItemBlockTank {
                 return RenderItemTank.INSTANCE();
             }
         });
+    }
+
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+        return new TankFluidItemHandler(blockTank().tier(), stack);
     }
 }
