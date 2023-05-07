@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import com.mojang.datafixers.DSL;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -18,18 +19,26 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
 import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
@@ -95,8 +104,51 @@ public final class FluidTank {
         }
 
         @Override
+        @NotNull
+        public GenericAmount<Fluid> getFluidContained(ItemStack stack) {
+            return FluidUtil.getFluidContained(stack)
+                .map(ForgeConverter::toAmount)
+                .orElse(FluidAmountUtil.EMPTY());
+        }
+
+        @Override
+        public boolean isFluidContainer(ItemStack stack) {
+            return FluidUtil.getFluidHandler(stack).isPresent();
+        }
+
+        @Override
         public Component getDisplayName(GenericAmount<Fluid> amount) {
             return ForgeConverter.toStack(amount).getDisplayName();
+        }
+
+        @Override
+        public @NotNull Pair<GenericAmount<Fluid>, ItemStack> fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer) {
+            return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
+                .map(h -> {
+                    int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
+                    return Pair.of(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
+                })
+                .orElse(Pair.of(FluidAmountUtil.EMPTY(), fluidContainer));
+        }
+
+        @Override
+        public @NotNull Pair<GenericAmount<Fluid>, ItemStack> drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer) {
+            return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
+                .map(h -> {
+                    var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
+                    return Pair.of(ForgeConverter.toAmount(drained), h.getContainer());
+                })
+                .orElse(Pair.of(FluidAmountUtil.EMPTY(), fluidContainer));
+        }
+
+        @Override
+        public @Nullable SoundEvent getEmptySound(GenericAmount<Fluid> fluid) {
+            return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_EMPTY);
+        }
+
+        @Override
+        public @Nullable SoundEvent getFillSound(GenericAmount<Fluid> fluid) {
+            return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_FILL);
         }
 
         @Override

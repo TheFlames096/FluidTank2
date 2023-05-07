@@ -7,6 +7,8 @@ import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, catsSyntaxSemigroup}
 import com.kotori316.fluidtank.MCImplicits._
 import net.minecraft.nbt.CompoundTag
 
+import scala.math.Ordering.Implicits.infixOrderingOps
+
 case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit, nbt: Option[CompoundTag])
                                      (implicit access: GenericAccess[ContentType], contentHash: Hash[ContentType]) {
   final def setAmount(newAmount: GenericUnit): GenericAmount[ContentType] = new GenericAmount[ContentType](this.content, newAmount, this.nbt)
@@ -41,6 +43,8 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
   final def createEmpty: GenericAmount[ContentType] = GenericAmount(access.empty, GenericUnit.ZERO, Option.empty)
 
   final def isGaseous: Boolean = access.isGaseous(this.content)
+
+  final def hasOneBucket: Boolean = this.amount >= GenericUnit.ONE_BUCKET
 
   override final def equals(obj: Any): Boolean = obj match {
     case that: GenericAmount[_] =>

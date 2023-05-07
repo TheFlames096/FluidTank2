@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.tank
 import cats.implicits.toShow
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.MCImplicits.showPos
+import com.kotori316.fluidtank.fluids.{PlatformFluidAccess, TransferFluid}
 import net.minecraft.core.{BlockPos, Direction}
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -46,7 +47,19 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
           InteractionResult.SUCCESS
         } else if (!stack.getItem.isInstanceOf[ItemBlockTank]) {
           // Move tank content
-          InteractionResult.PASS
+          if (PlatformFluidAccess.getInstance().isFluidContainer(stack)) {
+            if (!level.isClientSide) {
+              /*return*/
+              TransferFluid.transferFluid(tank.getConnection, stack)
+                .map { r => TransferFluid.setItem(player, hand, r, pos); InteractionResult.CONSUME }
+                .getOrElse(InteractionResult.PASS)
+            } else {
+              /*return*/
+              InteractionResult.sidedSuccess(level.isClientSide)
+            }
+          } else {
+            InteractionResult.PASS
+          }
         } else {
           InteractionResult.PASS
         }
