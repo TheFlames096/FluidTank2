@@ -19,6 +19,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Cache gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            .gradle
+            */.gradle
+          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
+          restore-keys: Gradle-Dot-${{ runner.os }}-
       - run: chmod +x ./gradlew
       - name: Tool chain check
         uses: gradle/gradle-build-action@v2
@@ -50,6 +58,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Cache gradle
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            .gradle
+            */.gradle
+          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
+          fail-on-cache-miss: true
       - run: chmod +x ./gradlew
       - name: GameTest
         uses: gradle/gradle-build-action@v2
@@ -57,4 +73,3 @@ jobs:
           RUN_GAME_TEST: true
         with:
           arguments: :forge:runGameTest
-          cache-read-only: true
