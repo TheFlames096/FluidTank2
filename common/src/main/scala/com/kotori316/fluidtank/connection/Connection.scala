@@ -43,6 +43,9 @@ abstract class Connection[TileType] protected(protected val sortedTanks: Seq[Til
     Option(contentType).filter(_.nonEmpty).map(_.setAmount(this.amount))
 
   def remove(tank: TileType): Unit = {
+    // Do nothing for dummy connection
+    if (this.isDummy) return
+
     val (s1, s2) = this.sortedTanks.span(_ != tank)
     val s1Connection = this.helper.createConnection(s1)
     val s2Connection = this.helper.createConnection(s2.tail)
