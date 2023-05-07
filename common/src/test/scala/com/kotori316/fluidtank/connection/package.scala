@@ -39,8 +39,6 @@ package object connection {
 
     override def isVoid(t: StringTile): Boolean = t.tank.isInstanceOf[VoidTank[_]]
 
-    override def setChanged(t: StringTile): Unit = ()
-
     override def getContentRaw(t: StringTile): GenericAmount[String] = t.tank.content
 
     override def defaultAmount: GenericAmount[String] = GenericAmount("", GenericUnit.ZERO, None)

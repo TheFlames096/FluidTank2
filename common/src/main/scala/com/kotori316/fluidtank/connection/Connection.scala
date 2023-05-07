@@ -11,7 +11,6 @@ import net.minecraft.util.Mth
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.entity.BlockEntity
 
-import scala.collection.mutable.ArrayBuffer
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 abstract class Connection[TileType] protected(protected val sortedTanks: Seq[TileType]) {
@@ -19,11 +18,7 @@ abstract class Connection[TileType] protected(protected val sortedTanks: Seq[Til
 
   val hasCreative: Boolean = sortedTanks.exists(_.isCreative)
   val hasVoid: Boolean = sortedTanks.exists(_.isVoid)
-  val updateActions: ArrayBuffer[() => Unit] = ArrayBuffer(
-    () => this.sortedTanks.foreach(_.setChanged())
-  )
   final val isDummy: Boolean = sortedTanks.isEmpty
-  protected var isValid: Boolean = true
 
   protected final val handler: helper.Handler = helper.createHandler(this.sortedTanks)
 
@@ -49,24 +44,16 @@ abstract class Connection[TileType] protected(protected val sortedTanks: Seq[Til
     val (s1, s2) = this.sortedTanks.span(_ != tank)
     val s1Connection = this.helper.createConnection(s1)
     val s2Connection = this.helper.createConnection(s2.tail)
-    this.invalidate()
+    // tank itself should mark handlers invalid.
 
     s1.foreach(this.helper.connectionSetter(s1Connection))
     s2.tail.foreach(this.helper.connectionSetter(s2Connection))
-  }
-
-  protected def invalidate(): Unit = {
-    this.isValid = false
   }
 
   def getComparatorLevel: Int = {
     if (amount > GenericUnit.ZERO)
       Mth.floor(amount.asForgeDouble / capacity.asForgeDouble * 14) + 1
     else 0
-  }
-
-  def updateNeighbors(): Unit = {
-    updateActions.foreach(_.apply())
   }
 
   override def toString: String = {

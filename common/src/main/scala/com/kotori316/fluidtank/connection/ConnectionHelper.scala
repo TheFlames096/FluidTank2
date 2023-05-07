@@ -15,8 +15,6 @@ trait ConnectionHelper[TileType] {
 
   def isVoid(t: TileType): Boolean
 
-  def setChanged(t: TileType): Unit
-
   /**
    * @param t the tile
    * @return the amount in the tank. None if it contains empty amount.
@@ -57,8 +55,6 @@ object ConnectionHelper {
     def isCreative: Boolean = helper.isCreative(t)
 
     def isVoid: Boolean = helper.isVoid(t)
-
-    def setChanged(): Unit = helper.setChanged(t)
 
     /**
      * @param h implicit parameter of the connection helper, required to get the type of content type.

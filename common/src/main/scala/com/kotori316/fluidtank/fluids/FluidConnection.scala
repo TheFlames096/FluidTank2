@@ -38,8 +38,6 @@ object FluidConnection {
 
     override def isVoid(t: TileTank): Boolean = t.getTank.isInstanceOf[VoidTank[_]]
 
-    override def setChanged(t: TileTank): Unit = t.setChanged()
-
     override def getContentRaw(t: TileTank): GenericAmount[Fluid] = t.getTank.content
 
     override def defaultAmount: GenericAmount[Fluid] = FluidAmountUtil.EMPTY
