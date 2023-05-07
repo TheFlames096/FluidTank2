@@ -26,4 +26,9 @@ object FluidAmountUtil {
   }
 
   def fromTag(tag: CompoundTag): FluidAmount = implicitly[GenericAccess[Fluid]].read(tag)
+
+  /**
+   * Helper for Java code
+   */
+  def access: GenericAccess[Fluid] = implicitly[GenericAccess[Fluid]]
 }

@@ -2,7 +2,8 @@ package com.kotori316.fluidtank.forge.render
 
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.forge.FluidTank
-import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier, TileTank}
+import com.kotori316.fluidtank.forge.tank.TileTankForge
+import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier}
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
@@ -16,7 +17,7 @@ import scala.collection.mutable
 
 class RenderItemTank extends BlockEntityWithoutLevelRenderer(Minecraft.getInstance.getBlockEntityRenderDispatcher, Minecraft.getInstance.getEntityModels) {
 
-  lazy val tileTank = new TileTank(BlockPos.ZERO, FluidTank.TANK_MAP.get(Tier.WOOD).get().defaultBlockState())
+  lazy val tileTank = new TileTankForge(BlockPos.ZERO, FluidTank.TANK_MAP.get(Tier.WOOD).get().defaultBlockState())
   private final val modelWrapperMap = mutable.Map.empty[BakedModel, TankModelWrapper]
 
   override def renderByItem(stack: ItemStack, cameraType: ItemDisplayContext, matrixStack: PoseStack,
@@ -31,13 +32,13 @@ class RenderItemTank extends BlockEntityWithoutLevelRenderer(Minecraft.getInstan
 
         tileTank.tier = tankItem.blockTank.tier
         val compound = BlockItem.getBlockEntityData(stack)
-        if (compound != null)
+        if (compound != null) {
           tileTank.load(compound)
-        //        RenderHelper.disableStandardItemLighting()
-        Minecraft.getInstance.getBlockEntityRenderDispatcher.renderItem(
-          tileTank, matrixStack, renderTypeBuffer, light, otherLight
-        )
-
+          Minecraft.getInstance.getBlockEntityRenderDispatcher.renderItem(
+            tileTank, matrixStack, renderTypeBuffer, light, otherLight
+          )
+          // RenderHelper.disableStandardItemLighting()
+        }
       case _ => FluidTankCommon.LOGGER.info("RenderItemTank is called for " + stack.getItem)
     }
   }

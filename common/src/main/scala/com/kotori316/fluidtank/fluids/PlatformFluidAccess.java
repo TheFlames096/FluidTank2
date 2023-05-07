@@ -96,7 +96,7 @@ class PlatformFluidAccessHolder {
 
         @Override
         public Component getDisplayName(GenericAmount<Fluid> amount) {
-            return Component.literal(com.kotori316.fluidtank.fluids.package$.MODULE$.fluidAccess().asString(amount.content()));
+            return Component.literal(FluidAmountUtil.access().asString(amount.content()));
         }
 
         @Override

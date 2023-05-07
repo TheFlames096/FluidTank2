@@ -1,8 +1,13 @@
 package com.kotori316.fluidtank.forge;
 
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+
+import com.kotori316.fluidtank.forge.render.RenderTank;
 
 public abstract class SideProxy {
 
@@ -17,6 +22,11 @@ public abstract class SideProxy {
     private static class ClientProxy extends SideProxy {
         private static SideProxy client() {
             return new ClientProxy();
+        }
+
+        @SubscribeEvent
+        public void registerTESR(FMLClientSetupEvent event) {
+            BlockEntityRenderers.register(FluidTank.TILE_TANK_TYPE.get(), RenderTank::new);
         }
     }
 
