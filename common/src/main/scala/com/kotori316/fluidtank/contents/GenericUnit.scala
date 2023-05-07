@@ -13,7 +13,7 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
   }
 
   def asForge: Int = {
-    val inForge = this.value / 81
+    val inForge = GenericUnit.asForgeFromBigInt(this.value)
     if (inForge > GenericUnit.INT_MAX) {
       Int.MaxValue
     } else {
@@ -22,7 +22,7 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
   }
 
   def asDisplay: Long = {
-    val inForge = this.value / 81
+    val inForge = GenericUnit.asForgeFromBigInt(this.value)
     if (inForge > GenericUnit.LONG_MAX) {
       Long.MaxValue
     } else {
@@ -52,6 +52,9 @@ object GenericUnit {
 
   def asBigIntFromForge(value: Long): BigInt = BigInt(value * 81)
 
+  @inline
+  def asForgeFromBigInt(value: BigInt): BigInt = value / 81
+
   def fromByteArray(value: Array[Byte]): GenericUnit = new GenericUnit(BigInt(value))
 
   /**
@@ -68,7 +71,7 @@ object GenericUnit {
   private class GroupGenericUnit extends CommutativeGroup[GenericUnit] {
     override def inverse(a: GenericUnit): GenericUnit = new GenericUnit(-a.value)
 
-    override def empty: GenericUnit = new GenericUnit(BigInt(0))
+    override def empty: GenericUnit = GenericUnit.ZERO
 
     override def combine(x: GenericUnit, y: GenericUnit): GenericUnit = new GenericUnit(x.value + y.value)
 
