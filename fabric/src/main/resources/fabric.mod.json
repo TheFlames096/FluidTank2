@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "fluidtank",
   "version": "${version}",
-  "name": "Example Mod",
+  "name": "Fluid Tank",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
     "Me!"
@@ -16,12 +16,14 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+      "com.kotori316.fluidtank.fabric.FluidTank"
+    ],
+    "client": [
+      "com.kotori316.fluidtank.fabric.FluidTankClient"
     ]
   },
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.19.2",
-    "architectury": ">=6.2.43"
+    "minecraft": ">=1.19.4"
   }
 }
