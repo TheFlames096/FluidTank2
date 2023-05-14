@@ -102,14 +102,14 @@ public final class FluidTank {
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
-
+    public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
 
     public static final class LazyHolder {
-        public static final LootItemFunctionType TANK_LOOT_FUNCTION = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-            new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
-            new LootItemFunctionType(new TankLootFunction.TankLootSerializer()));
 
         private static void init() {
+            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
+                new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
+                TANK_LOOT_FUNCTION);
         }
     }
 
@@ -191,7 +191,7 @@ public final class FluidTank {
 
         @Override
         public LootItemFunctionType getTankLoot() {
-            return LazyHolder.TANK_LOOT_FUNCTION;
+            return TANK_LOOT_FUNCTION;
         }
     }
 
