@@ -10,6 +10,10 @@ public interface IMessage<T extends IMessage<T>> {
     void write(FriendlyByteBuf buffer);
 
     default ResourceLocation getIdentifier() {
-        return new ResourceLocation(FluidTankCommon.modId, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, getClass().getSimpleName()));
+        return createIdentifier(getClass());
+    }
+
+    static ResourceLocation createIdentifier(Class<?> clazz) {
+        return new ResourceLocation(FluidTankCommon.modId, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, clazz.getSimpleName()));
     }
 }

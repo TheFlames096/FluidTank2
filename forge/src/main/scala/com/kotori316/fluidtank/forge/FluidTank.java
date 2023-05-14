@@ -11,6 +11,8 @@ import com.mojang.datafixers.DSL;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -30,7 +32,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,23 +130,23 @@ public final class FluidTank {
         }
 
         @Override
-        public @NotNull Pair<GenericAmount<Fluid>, ItemStack> fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer) {
+        public @NotNull TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
                 .map(h -> {
                     int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
-                    return Pair.of(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
+                    return new TransferStack(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
                 })
-                .orElse(Pair.of(FluidAmountUtil.EMPTY(), fluidContainer));
+                .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
         }
 
         @Override
-        public @NotNull Pair<GenericAmount<Fluid>, ItemStack> drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer) {
+        public @NotNull TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
                 .map(h -> {
                     var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
-                    return Pair.of(ForgeConverter.toAmount(drained), h.getContainer());
+                    return new TransferStack(ForgeConverter.toAmount(drained), h.getContainer());
                 })
-                .orElse(Pair.of(FluidAmountUtil.EMPTY(), fluidContainer));
+                .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
         }
 
         @Override

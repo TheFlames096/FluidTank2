@@ -50,7 +50,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
           if (PlatformFluidAccess.getInstance().isFluidContainer(stack)) {
             if (!level.isClientSide) {
               /*return*/
-              TransferFluid.transferFluid(tank.getConnection, stack)
+              TransferFluid.transferFluid(tank.getConnection, stack, player, hand)
                 .map { r => TransferFluid.setItem(player, hand, r, pos); InteractionResult.CONSUME }
                 .getOrElse(InteractionResult.PASS)
             } else {
@@ -95,6 +95,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
         case tank: TileTank => tank.onDestroy()
         case tile => FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_TANK, "There is not TileTank at {}, but {}", pos.show, tile)
       }
+      //noinspection ScalaDeprecation,deprecation
       super.onRemove(state, level, pos, newState, moved)
     }
   }

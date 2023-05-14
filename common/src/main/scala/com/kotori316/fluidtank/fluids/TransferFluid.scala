@@ -7,30 +7,31 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 
 object TransferFluid {
-  case class Result(stack: ItemStack, sound: Option[SoundEvent])
+  case class Result(stack: ItemStack, sound: Option[SoundEvent], shouldMove: Boolean)
 
-  def transferFluid(connection: FluidConnection, playerStack: ItemStack): Option[Result] = {
-    tryFillTank(connection, playerStack) orElse tryFillContainer(connection, playerStack)
+  def transferFluid(connection: FluidConnection, playerStack: ItemStack, player: Player, hand: InteractionHand): Option[Result] = {
+    tryFillTank(connection, playerStack, player, hand) orElse tryFillContainer(connection, playerStack, player, hand)
   }
 
-  private def tryFillTank(connection: FluidConnection, playerStack: ItemStack): Option[Result] = {
+  private def tryFillTank(connection: FluidConnection, playerStack: ItemStack, player: Player, hand: InteractionHand): Option[Result] = {
     val toFill = PlatformFluidAccess.getInstance().getFluidContained(playerStack)
     if (toFill.isEmpty) return None
 
     val fillSimulate = connection.getHandler.fill(toFill, execute = false)
     if (fillSimulate.isEmpty) return None
 
-    val canDrainFromItem = PlatformFluidAccess.getInstance().drainItem(fillSimulate, playerStack)
-    if (canDrainFromItem.getLeft.isEmpty) return None
+    val canDrainFromItem = PlatformFluidAccess.getInstance().drainItem(fillSimulate, playerStack, player, hand, false)
+    if (canDrainFromItem.toReplace.isEmpty) return None
 
     // Assuming canDrainFromItem.getLeft.amount <= fillSimulate.amount
     // Also, tank can accept any fluid whose amount <= fillSimulate.amount
-    val filled: FluidAmount = connection.getHandler.fill(canDrainFromItem.getLeft, execute = true)
-    val drainedItem: ItemStack = PlatformFluidAccess.getInstance().drainItem(filled, playerStack).getRight
-    Option(Result(drainedItem, Option(PlatformFluidAccess.getInstance().getEmptySound(filled))))
+    val filled: FluidAmount = connection.getHandler.fill(canDrainFromItem.moved, execute = true)
+    val transferStack = PlatformFluidAccess.getInstance().drainItem(filled, playerStack, player, hand, true)
+    val drainedItem: ItemStack = transferStack.toReplace
+    Option(Result(drainedItem, Option(PlatformFluidAccess.getInstance().getEmptySound(filled)), transferStack.shouldMove))
   }
 
-  private def tryFillContainer(connection: FluidConnection, playerStack: ItemStack): Option[Result] = {
+  private def tryFillContainer(connection: FluidConnection, playerStack: ItemStack, player: Player, hand: InteractionHand): Option[Result] = {
     val toFillOption = connection.getContent
     if (toFillOption.isEmpty) return None
 
@@ -38,16 +39,16 @@ object TransferFluid {
     val bucketContent = PlatformFluidAccess.getInstance().getFluidContained(playerStack)
     if (bucketContent.nonEmpty && !toFill.contentEqual(bucketContent)) return None
 
-    val fillSimulate = PlatformFluidAccess.getInstance().fillItem(toFill, playerStack).getLeft
+    val fillSimulate = PlatformFluidAccess.getInstance().fillItem(toFill, playerStack, player, hand, false).moved
     if (fillSimulate.isEmpty) return None
 
-    val filled = PlatformFluidAccess.getInstance().fillItem(fillSimulate, playerStack)
-    connection.getHandler.drain(filled.getLeft, execute = true)
-    Option(Result(filled.getRight, Option(PlatformFluidAccess.getInstance().getFillSound(filled.getLeft))))
+    val filled = PlatformFluidAccess.getInstance().fillItem(fillSimulate, playerStack, player, hand, true)
+    connection.getHandler.drain(filled.moved, execute = true)
+    Option(Result(filled.toReplace, Option(PlatformFluidAccess.getInstance().getFillSound(filled.moved)), filled.shouldMove))
   }
 
   def setItem(player: Player, hand: InteractionHand, result: Result, blockPos: BlockPos): Unit = {
-    if (!player.isCreative) {
+    if (result.shouldMove && !player.isCreative) {
       // set item
       if (player.getItemInHand(hand).getCount == 1) {
         // replace

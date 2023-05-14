@@ -4,12 +4,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,20 +51,38 @@ public interface PlatformFluidAccess {
     Component getDisplayName(GenericAmount<Fluid> amount);
 
     /**
+     * @param execute used in fabric, where item transfer will be done in fabric context. In forge, this param has no meaning.
      * @return the filled amount and filled stack
      */
     @NotNull
-    Pair<GenericAmount<Fluid>, ItemStack> fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer);
+    TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
 
     /**
+     * @param execute used in fabric, where item transfer will be done in fabric context. In forge, this param has no meaning.
      * @return the drained amount and drained stack
      */
     @NotNull
-    Pair<GenericAmount<Fluid>, ItemStack> drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer);
+    TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
 
     @Nullable SoundEvent getEmptySound(GenericAmount<Fluid> fluid);
 
     @Nullable SoundEvent getFillSound(GenericAmount<Fluid> fluid);
+
+    /**
+     * The result of transferring fluids.
+     *
+     * @param moved      filled or drained amount
+     * @param toReplace  the result item with transferred fluids
+     * @param shouldMove whether to move {@code toReplace} item into player inventory. In fabric {@code false} and in forge {@code true}.
+     */
+    record TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace, boolean shouldMove) {
+        /**
+         * Helper constructor for forge.
+         */
+        public TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace) {
+            this(moved, toReplace, true);
+        }
+    }
 }
 
 class PlatformFluidAccessHolder {
@@ -100,26 +119,26 @@ class PlatformFluidAccessHolder {
         }
 
         @Override
-        public Pair<GenericAmount<Fluid>, ItemStack> fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer) {
+        public TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             // Just for vanilla bucket
             if (fluidContainer.getItem() == Items.BUCKET && toFill.hasOneBucket()) {
                 var filledItem = toFill.content().getBucket().getDefaultInstance();
                 var filledAmount = toFill.setAmount(GenericUnit.ONE_BUCKET());
-                return Pair.of(filledAmount, filledItem);
+                return new TransferStack(filledAmount, filledItem);
             }
-            return Pair.of(FluidAmountUtil.EMPTY(), fluidContainer);
+            return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer);
         }
 
         @Override
-        public Pair<GenericAmount<Fluid>, ItemStack> drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer) {
+        public TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             var bucketFluid = getFluidContained(fluidContainer);
             if (!toDrain.hasOneBucket() || !toDrain.contentEqual(bucketFluid)) {
                 // Nothing drained
-                return Pair.of(FluidAmountUtil.EMPTY(), fluidContainer);
+                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer);
             }
             var drainedItem = Items.BUCKET.getDefaultInstance();
             var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
-            return Pair.of(drainedAmount, drainedItem);
+            return new TransferStack(drainedAmount, drainedItem);
         }
 
         @Override
