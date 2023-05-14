@@ -59,6 +59,7 @@ public final class FluidTank {
     public static final SideProxy proxy = SideProxy.get();
 
     public FluidTank() {
+        FluidTankCommon.LOGGER.info("Initialize {}", FluidTankCommon.modId);
         ForgeMod.enableMilkFluid();
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCK_REGISTER.register(modBus);
@@ -68,6 +69,7 @@ public final class FluidTank {
         modBus.register(this);
         modBus.register(proxy);
         PacketHandler.init();
+        FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
     }
 
     private static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, FluidTankCommon.modId);
