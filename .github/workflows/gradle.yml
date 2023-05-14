@@ -67,9 +67,34 @@ jobs:
           key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
           fail-on-cache-miss: true
       - run: chmod +x ./gradlew
-      - name: GameTest
+      - name: Forge GameTest
         uses: gradle/gradle-build-action@v2
         env:
           RUN_GAME_TEST: true
         with:
           arguments: :forge:runGameTest
+  fabric-game-test:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache gradle
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            .gradle
+            */.gradle
+          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
+          fail-on-cache-miss: true
+      - run: chmod +x ./gradlew
+      - name: Fabric GameTest
+        uses: gradle/gradle-build-action@v2
+        env:
+          RUN_GAME_TEST: true
+        with:
+          arguments: :fabric:runGameTest
