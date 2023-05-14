@@ -74,7 +74,8 @@ final class FabricPlatformAccess implements PlatformAccess {
         long filled;
         try (Transaction transaction = Transaction.openOuter()) {
             filled = storage.insert(FabricConverter.toVariant(toFill), FabricConverter.fabricAmount(toFill), transaction);
-            if (execute) transaction.commit();
+            // Items in creative player should not be changed.
+            if (execute && !player.isCreative()) transaction.commit();
         }
         FluidTankCommon.LOGGER.warn("Fill context {} {} execute={}", context.getItemVariant(), context.getAmount(), execute);
         return new TransferStack(toFill.setAmount(GenericUnit.fromFabric(filled)), context.getItemVariant().toStack((int) context.getAmount()), false);
@@ -90,7 +91,8 @@ final class FabricPlatformAccess implements PlatformAccess {
         long drained;
         try (Transaction transaction = Transaction.openOuter()) {
             drained = storage.extract(FabricConverter.toVariant(toDrain), FabricConverter.fabricAmount(toDrain), transaction);
-            if (execute) transaction.commit();
+            // Items in creative player should not be changed.
+            if (execute && !player.isCreative()) transaction.commit();
         }
         FluidTankCommon.LOGGER.warn("Drain context {} {} execute={}", context.getItemVariant(), context.getAmount(), execute);
         return new TransferStack(toDrain.setAmount(GenericUnit.fromFabric(drained)), context.getItemVariant().toStack((int) context.getAmount()), false);
