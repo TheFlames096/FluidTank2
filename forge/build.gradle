@@ -61,7 +61,8 @@ configurations {
 
 sourceSets {
     test {
-        if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
+        if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST")) ||
+                Boolean.parseBoolean(System.getenv("RUN_DATA_GEN"))) {
             // TODO better solution
             output.resourcesDir = sourceSets.main.output.resourcesDir
             // Compiled Java classes should use this directory

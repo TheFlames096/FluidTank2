@@ -73,6 +73,36 @@ jobs:
           RUN_GAME_TEST: true
         with:
           arguments: :forge:runGameTest
+  forge-data-gen:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache gradle
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            .gradle
+            */.gradle
+          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
+          fail-on-cache-miss: true
+      - run: chmod +x ./gradlew
+      - name: Compile test
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :forge:compileTestScala
+      - name: Forge DataGen
+        uses: gradle/gradle-build-action@v2
+        timeout-minutes: 5
+        env:
+          RUN_DATA_GEN: true
+        with:
+          arguments: :forge:runData
   fabric-game-test:
     runs-on: ubuntu-latest
     needs: [ build ]
