@@ -35,6 +35,16 @@ loom {
             runDir = "game-test"
             source("test")
         }
+        data {
+            configName = "Data"
+            runDir = "run-server"
+            programArgs('--mod', "fluidtank", '--all',
+                    '--output', file('../common/src/generated/resources/').toString(),
+                    '--existing', file('../common/src/main/resources/').toString(),
+            )
+            data()
+            source("test")
+        }
     }
 }
 

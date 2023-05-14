@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mojang.datafixers.DSL;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.event.CreativeModeTabEvent;
@@ -31,6 +34,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +54,7 @@ import com.kotori316.fluidtank.forge.tank.TileTankForge;
 import com.kotori316.fluidtank.forge.tank.TileVoidTankForge;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
+import com.kotori316.fluidtank.tank.TankLootFunction;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileCreativeTank;
 import com.kotori316.fluidtank.tank.TileTank;
@@ -97,6 +102,16 @@ public final class FluidTank {
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
+
+
+    public static final class LazyHolder {
+        public static final LootItemFunctionType TANK_LOOT_FUNCTION = Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
+            new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
+            new LootItemFunctionType(new TankLootFunction.TankLootSerializer()));
+
+        private static void init() {
+        }
+    }
 
     private static final class ForgePlatformAccess implements PlatformAccess {
 
@@ -173,6 +188,16 @@ public final class FluidTank {
         public BlockEntityType<? extends TileTank> getVoidType() {
             return TILE_VOID_TANK_TYPE.get();
         }
+
+        @Override
+        public LootItemFunctionType getTankLoot() {
+            return LazyHolder.TANK_LOOT_FUNCTION;
+        }
+    }
+
+    @SubscribeEvent
+    public void callRegister(RegisterEvent event) {
+        LazyHolder.init();
     }
 
     @SubscribeEvent
