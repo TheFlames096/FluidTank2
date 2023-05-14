@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
@@ -28,6 +29,7 @@ import com.kotori316.fluidtank.fabric.tank.TileTankFabric;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.BlockVoidTank;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
+import com.kotori316.fluidtank.tank.TankLootFunction;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileCreativeTank;
 import com.kotori316.fluidtank.tank.TileTank;
@@ -57,6 +59,7 @@ public final class FluidTank implements ModInitializer {
         BlockEntityType.Builder.of(TileCreativeTankFabric::new, BLOCK_CREATIVE_TANK).build(DSL.emptyPartType());
     public static final BlockEntityType<TileVoidTank> TILE_VOID_TANK_TYPE =
         BlockEntityType.Builder.of(TileVoidTank::new, BLOCK_VOID_TANK).build(DSL.emptyPartType());
+    public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
 
     private static void registerObjects() {
         Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
@@ -64,7 +67,7 @@ public final class FluidTank implements ModInitializer {
         TANK_ITEM_MAP.forEach((tier, itemBlockTank) -> Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(FluidTankCommon.modId, tier.getBlockName()), itemBlockTank));
         Map.of(TileTank.class, TILE_TANK_TYPE, TileCreativeTank.class, TILE_CREATIVE_TANK_TYPE, TileVoidTank.class, TILE_VOID_TANK_TYPE)
             .forEach((c, t) -> Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, new ResourceLocation(FluidTankCommon.modId, c.getSimpleName().toLowerCase(Locale.ROOT)), t));
-
+        Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME), TANK_LOOT_FUNCTION);
         var builder = FabricItemGroup.builder(new ResourceLocation(FluidTankCommon.modId, FluidTankCommon.modId));
         createTab(builder);
         builder.build();

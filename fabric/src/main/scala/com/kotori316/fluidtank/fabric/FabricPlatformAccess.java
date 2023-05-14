@@ -15,6 +15,7 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scala.Option;
@@ -121,5 +122,10 @@ final class FabricPlatformAccess implements PlatformAccess {
     @Override
     public BlockEntityType<? extends TileTank> getVoidType() {
         return FluidTank.TILE_VOID_TANK_TYPE;
+    }
+
+    @Override
+    public LootItemFunctionType getTankLoot() {
+        return FluidTank.TANK_LOOT_FUNCTION;
     }
 }
