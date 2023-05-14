@@ -1,8 +1,8 @@
-package com.kotori316.fluidtank.forge.tank
+package com.kotori316.fluidtank.tank
 
 import cats.implicits.catsSyntaxEq
 import com.kotori316.fluidtank.contents.GenericUnit
-import com.kotori316.fluidtank.forge.render.Box
+import com.kotori316.fluidtank.render.Box
 import net.minecraft.util.Mth
 
 import scala.math.Ordering.Implicits.infixOrderingOps

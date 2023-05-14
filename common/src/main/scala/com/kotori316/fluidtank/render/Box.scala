@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.forge.render
+package com.kotori316.fluidtank.render
 
 import com.mojang.blaze3d.vertex.{PoseStack, VertexConsumer}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite

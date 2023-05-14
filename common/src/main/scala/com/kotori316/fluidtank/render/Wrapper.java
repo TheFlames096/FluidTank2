@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.forge.render;
+package com.kotori316.fluidtank.render;
 
 import java.util.Objects;
 

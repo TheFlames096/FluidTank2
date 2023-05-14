@@ -17,6 +17,7 @@ import com.kotori316.fluidtank.forge.message.FluidTankContentMessageForge;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
+import com.kotori316.fluidtank.tank.VisualTank;
 
 public final class TileTankForge extends TileTank {
     public TileTankForge(Tier tier, BlockPos p, BlockState s) {

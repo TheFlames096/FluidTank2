@@ -2,8 +2,9 @@ package com.kotori316.fluidtank.forge.render
 
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
 import com.kotori316.fluidtank.forge.render.RenderTank.getVisualTank
-import com.kotori316.fluidtank.forge.tank.{TileCreativeTankForge, TileTankForge, VisualTank}
-import com.kotori316.fluidtank.tank.TileTank
+import com.kotori316.fluidtank.forge.tank.{TileCreativeTankForge, TileTankForge}
+import com.kotori316.fluidtank.render.Box
+import com.kotori316.fluidtank.tank.{TileTank, VisualTank}
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.blockentity.{BlockEntityRenderer, BlockEntityRendererProvider}

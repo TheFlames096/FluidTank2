@@ -16,6 +16,7 @@ import com.kotori316.fluidtank.fluids.FluidConnection;
 import com.kotori316.fluidtank.forge.message.FluidTankContentMessageForge;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.tank.TileCreativeTank;
+import com.kotori316.fluidtank.tank.VisualTank;
 
 public final class TileCreativeTankForge extends TileCreativeTank {
     public TileCreativeTankForge(BlockPos p, BlockState s) {
