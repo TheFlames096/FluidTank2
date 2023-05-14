@@ -11,6 +11,28 @@ architectury {
 }
 
 loom {
+    runs {
+        client {
+            configName = "Fabric Client"
+            runDir = "run"
+        }
+        server {
+            configName = "Fabric Server"
+            runDir = "run-server"
+        }
+
+        gameTest {
+            name "Fabric GameTest"
+            server()
+            vmArg "-ea"
+            //noinspection SpellCheckingInspection
+            property("fabric-api.gametest")
+            //noinspection SpellCheckingInspection
+            property("fabric-api.gametest.report-file", "game-test/test-results/game_test.xml")
+            runDir = "game-test"
+            source sourceSets.test
+        }
+    }
 }
 
 configurations {
@@ -19,12 +41,15 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
+
+    testCompileClasspath.extendsFrom(compileClasspath)
+    testRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    
+
     implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
     implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version)
 
