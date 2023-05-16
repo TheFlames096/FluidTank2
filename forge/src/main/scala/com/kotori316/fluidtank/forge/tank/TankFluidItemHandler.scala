@@ -89,4 +89,9 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends IFluidHandlerIt
     if (fluidAction.execute()) updateTank(newTank)
     (drainAmount - rest).toStack
   }
+
+  @VisibleForTesting
+  def fill(fill: FluidAmount, execute: Boolean): Unit = {
+    this.fill(fill.toStack, if (execute) IFluidHandler.FluidAction.EXECUTE else IFluidHandler.FluidAction.SIMULATE)
+  }
 }
