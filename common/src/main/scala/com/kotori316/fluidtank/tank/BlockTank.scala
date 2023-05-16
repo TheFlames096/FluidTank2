@@ -127,7 +127,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(Fluid
     if (level.isClientSide) {
       super.getTicker(level, state, blockEntityType)
     } else {
-      if (PlatformTileAccess.isTankType(blockEntityType)) {
+      if (PlatformTankAccess.isTankType(blockEntityType)) {
         (_, _, _, tile) => tile.asInstanceOf[TileTank].onTickLoading()
       } else {
         null

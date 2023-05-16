@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.state.BlockState
 
 class TileVoidTank(p: BlockPos, s: BlockState)
-  extends TileTank(Tier.CREATIVE, PlatformTileAccess.getInstance().getVoidType, p, s) {
+  extends TileTank(Tier.CREATIVE, PlatformTankAccess.getInstance().getVoidType, p, s) {
 
   setTank(VoidTank.apply)
 }

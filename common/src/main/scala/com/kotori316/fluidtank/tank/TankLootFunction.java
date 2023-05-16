@@ -27,7 +27,7 @@ public final class TankLootFunction extends LootItemConditionalFunction {
 
     @Override
     public LootItemFunctionType getType() {
-        return PlatformTileAccess.getInstance().getTankLoot();
+        return PlatformTankAccess.getInstance().getTankLoot();
     }
 
     public static LootItemConditionalFunction.Builder<?> builder() {

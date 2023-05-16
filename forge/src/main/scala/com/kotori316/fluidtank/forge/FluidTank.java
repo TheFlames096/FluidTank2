@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -192,6 +193,17 @@ public final class FluidTank {
         @Override
         public LootItemFunctionType getTankLoot() {
             return TANK_LOOT_FUNCTION;
+        }
+
+        @Override
+        public Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap() {
+            return Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+
+        @Override
+        public @NotNull ItemStack getCraftingRemainingItem(ItemStack stack) {
+            return stack.getCraftingRemainingItem();
         }
     }
 

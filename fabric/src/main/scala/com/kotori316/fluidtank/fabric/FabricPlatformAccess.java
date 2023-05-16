@@ -1,5 +1,10 @@
 package com.kotori316.fluidtank.fabric;
 
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -26,6 +31,8 @@ import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.tank.BlockTank;
+import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -127,5 +134,17 @@ final class FabricPlatformAccess implements PlatformAccess {
     @Override
     public LootItemFunctionType getTankLoot() {
         return FluidTank.TANK_LOOT_FUNCTION;
+    }
+
+    @Override
+    public Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap() {
+        return Stream.concat(FluidTank.TANK_MAP.entrySet().stream(),
+                Stream.of(Map.entry(Tier.CREATIVE, FluidTank.BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, FluidTank.BLOCK_VOID_TANK)))
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> e::getValue));
+    }
+
+    @Override
+    public @NotNull ItemStack getCraftingRemainingItem(ItemStack stack) {
+        return stack.getRecipeRemainder();
     }
 }

@@ -21,11 +21,11 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
   extends BlockEntity(t, p, s) with Nameable {
 
   def this(p: BlockPos, s: BlockState) = {
-    this(Tier.INVALID, PlatformTileAccess.getInstance.getNormalType, p, s)
+    this(Tier.INVALID, PlatformTankAccess.getInstance.getNormalType, p, s)
   }
 
   def this(tier: Tier, p: BlockPos, s: BlockState) = {
-    this(tier, PlatformTileAccess.getInstance.getNormalType, p, s)
+    this(tier, PlatformTankAccess.getInstance.getNormalType, p, s)
   }
 
   private var connection: FluidConnection = new FluidConnection(Nil)

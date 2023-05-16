@@ -1,18 +1,21 @@
 package com.kotori316.fluidtank.tank;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-public interface PlatformTileAccess {
+public interface PlatformTankAccess {
     @NotNull
-    static PlatformTileAccess getInstance() {
-        return PlatformTileAccessHolder.access;
+    static PlatformTankAccess getInstance() {
+        return PlatformTankAccessHolder.access;
     }
 
-    static void setInstance(PlatformTileAccess instance) {
-        PlatformTileAccessHolder.access = instance;
+    static void setInstance(PlatformTankAccess instance) {
+        PlatformTankAccessHolder.access = instance;
     }
 
     BlockEntityType<? extends TileTank> getNormalType();
@@ -27,14 +30,16 @@ public interface PlatformTileAccess {
     }
 
     LootItemFunctionType getTankLoot();
+
+    Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap();
 }
 
-class PlatformTileAccessHolder {
+class PlatformTankAccessHolder {
     @NotNull
-    static PlatformTileAccess access = new Default();
+    static PlatformTankAccess access = new Default();
 
     @ApiStatus.Internal
-    private static class Default implements PlatformTileAccess {
+    private static class Default implements PlatformTankAccess {
 
         @Override
         public BlockEntityType<? extends TileTank> getNormalType() {
@@ -54,6 +59,11 @@ class PlatformTileAccessHolder {
         @Override
         public LootItemFunctionType getTankLoot() {
             return null;
+        }
+
+        @Override
+        public Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap() {
+            return Map.of();
         }
     }
 }
