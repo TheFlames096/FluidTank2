@@ -19,7 +19,7 @@ public final class TierRecipeFabric extends TierRecipe {
         return SERIALIZER;
     }
 
-    private static class Serializer extends SerializerBase {
+    public static class Serializer extends SerializerBase {
         @Override
         protected TierRecipe createInstance(ResourceLocation id, Tier tier, Ingredient tankItem, Ingredient subItem) {
             return new TierRecipeFabric(id, tier, tankItem, subItem);

@@ -1,7 +1,6 @@
 package com.kotori316.fluidtank.fabric.gametest;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -13,7 +12,6 @@ import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.TestFunction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import org.junit.platform.commons.function.Try;
@@ -58,13 +56,8 @@ public final class GameTestUtil {
 
     private static TestFunction createInternal(String modID, String batch, String testName, String structureName, Consumer<GameTestHelper> wrapped) {
         var snakeTestName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, testName);
-        ResourceLocation structureLocation;
-        if (structureName.contains(":"))
-            structureLocation = new ResourceLocation(structureName.toLowerCase(Locale.ROOT));
-        else
-            structureLocation = new ResourceLocation(modID.toLowerCase(Locale.ROOT), structureName.toLowerCase(Locale.ROOT));
         return new TestFunction(
-            batch, snakeTestName, structureLocation.toString(), 100, 0L,
+            batch, snakeTestName, structureName, 100, 0L,
             true, wrapped
         );
     }
