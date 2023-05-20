@@ -9,7 +9,11 @@ pluginManagement {
 }
 
 include("common")
-include("fabric")
-include("forge")
+if (!Boolean.parseBoolean(System.getenv("FORGE_ONLY"))) {
+    include("fabric")
+}
+if (!Boolean.parseBoolean(System.getenv("FABRIC_ONLY"))) {
+    include("forge")
+}
 
 rootProject.name = "FluidTank-rewrite"
