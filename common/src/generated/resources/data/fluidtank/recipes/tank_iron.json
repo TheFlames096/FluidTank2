@@ -1,0 +1,29 @@
+{
+  "type": "fluidtank:crafting_grade_up",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/iron"
+      }
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:iron_ingots"
+      ]
+    }
+  ],
+  "sub_item": [
+    {
+      "tag": "forge:ingots/iron"
+    },
+    {
+      "tag": "c:iron_ingots"
+    }
+  ],
+  "tier": "IRON"
+}

@@ -1,0 +1,29 @@
+{
+  "type": "fluidtank:crafting_grade_up",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gems/emerald"
+      }
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:emeralds"
+      ]
+    }
+  ],
+  "sub_item": [
+    {
+      "tag": "forge:gems/emerald"
+    },
+    {
+      "tag": "c:emeralds"
+    }
+  ],
+  "tier": "EMERALD"
+}

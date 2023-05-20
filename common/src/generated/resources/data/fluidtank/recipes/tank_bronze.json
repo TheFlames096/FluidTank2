@@ -1,0 +1,29 @@
+{
+  "type": "fluidtank:crafting_grade_up",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/bronze"
+      }
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:bronze_ingots"
+      ]
+    }
+  ],
+  "sub_item": [
+    {
+      "tag": "forge:ingots/bronze"
+    },
+    {
+      "tag": "c:bronze_ingots"
+    }
+  ],
+  "tier": "BRONZE"
+}

@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:glass"
+      }
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:glass_blocks"
+      ]
+    }
+  ],
+  "key": {
+    "p": {
+      "tag": "minecraft:logs"
+    },
+    "x": [
+      {
+        "tag": "forge:glass"
+      },
+      {
+        "tag": "c:glass_blocks"
+      }
+    ]
+  },
+  "pattern": [
+    "x x",
+    "xpx",
+    "xxx"
+  ],
+  "result": {
+    "item": "fluidtank:tank_wood"
+  },
+  "show_notification": true
+}

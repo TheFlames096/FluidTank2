@@ -1,0 +1,22 @@
+{
+  "type": "fluidtank:crafting_grade_up",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:stone"
+      }
+    }
+  ],
+  "fabric:load_conditions": [ ],
+  "sub_item": [
+    {
+      "tag": "forge:stone"
+    },
+    {
+      "item": "minecraft:stone"
+    }
+  ],
+  "tier": "STONE"
+}

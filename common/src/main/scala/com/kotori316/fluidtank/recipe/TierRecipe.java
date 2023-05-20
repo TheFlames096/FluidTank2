@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.recipe;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +62,6 @@ public abstract class TierRecipe implements CraftingRecipe {
 
         LOGGER.debug("{} instance({}) created for Tier {}({}).", getClass().getSimpleName(), id, tier, result);
     }
-
 
     @Override
     public boolean matches(CraftingContainer inv, @Nullable Level worldIn) {
@@ -208,13 +209,18 @@ public abstract class TierRecipe implements CraftingRecipe {
 
         @Override
         public TierRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Tier tier = Tier.valueOf(GsonHelper.getAsString(serializedRecipe, KEY_TIER));
+            Tier tier = Tier.valueOf(GsonHelper.getAsString(serializedRecipe, KEY_TIER).toUpperCase(Locale.ROOT));
             Ingredient tankItem = getIngredientTankForTier(tier);
             Ingredient subItem = Ingredient.fromJson(serializedRecipe.get(KEY_SUB_ITEM));
             if (subItem == Ingredient.EMPTY)
                 LOGGER.warn("Empty ingredient was loaded for {}, data: {}", recipeId, serializedRecipe);
             LOGGER.debug("Serializer loaded {} from json for tier {}, sub {}.", recipeId, tier, PlatformItemAccess.convertIngredientToString(subItem));
             return createInstance(recipeId, tier, tankItem, subItem);
+        }
+
+        public void toJson(JsonObject object, TierRecipe recipe) {
+            object.addProperty(KEY_TIER, recipe.tier.name());
+            object.add(KEY_SUB_ITEM, recipe.subItem.toJson());
         }
 
         @Override
@@ -237,7 +243,8 @@ public abstract class TierRecipe implements CraftingRecipe {
             LOGGER.debug("Serialized {} to packet for tier {}.", recipe.id, recipe.tier);
         }
 
-        protected static Ingredient getIngredientTankForTier(Tier tier) {
+        @VisibleForTesting
+        public static Ingredient getIngredientTankForTier(Tier tier) {
             var targetTiers = Stream.of(Tier.values()).filter(t -> t.getRank() == tier.getRank() - 1);
             var itemStream = targetTiers.map(PlatformTankAccess.getInstance().getTankBlockMap()::get).map(Supplier::get).map(ItemStack::new);
             return Ingredient.of(itemStream);

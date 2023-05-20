@@ -1,6 +1,10 @@
 package com.kotori316.fluidtank.forge.gametest;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +31,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.platform.commons.support.ReflectionSupport;
 import scala.jdk.javaapi.CollectionConverters;
@@ -42,6 +47,7 @@ import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.testutil.GameTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -250,10 +256,28 @@ final class RecipeTest {
         var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_serialize"),
             Tier.STONE, TierRecipeForge.Serializer.getIngredientTankForTier(Tier.STONE), Ingredient.of(Items.DIAMOND));
 
-
         assertAll(
             () -> assertEquals(recipe.getId(), read.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), read.getResultItem(RegistryAccess.EMPTY)))
         );
+    }
+
+    @GameTestGenerator
+    @SuppressWarnings("ConstantConditions")
+    List<TestFunction> loadJsonInData() throws IOException {
+        var recipeParent = Path.of("../../common/src/generated/resources", "data/fluidtank/recipes");
+        try (var files = Files.find(recipeParent, 1, (path, a) -> path.getFileName().toString().endsWith(".json"))) {
+            return files.map(p -> GameTestUtil.create(FluidTankCommon.modId, "recipe_test", "load_" + FilenameUtils.getBaseName(p.getFileName().toString()),
+                () -> loadFromFile(p))).toList();
+        }
+    }
+
+    void loadFromFile(Path path) {
+        try {
+            var json = GsonHelper.parse(Files.newBufferedReader(path));
+            assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json, ICondition.IContext.EMPTY));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

@@ -1,0 +1,29 @@
+{
+  "type": "fluidtank:crafting_grade_up",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:ingots/gold"
+      }
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:gold_ingots"
+      ]
+    }
+  ],
+  "sub_item": [
+    {
+      "tag": "forge:ingots/gold"
+    },
+    {
+      "tag": "c:gold_ingots"
+    }
+  ],
+  "tier": "GOLD"
+}
