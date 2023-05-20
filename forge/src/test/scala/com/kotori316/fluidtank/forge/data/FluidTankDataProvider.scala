@@ -26,13 +26,15 @@ object FluidTankDataProvider {
     ))
     // State and model
     event.getGenerator.addProvider(event.includeClient(), new StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
+    // Recipe
+    event.getGenerator.addProvider(event.includeServer(), new RecipeProvider(event.getGenerator))
   }
 
   def makeForgeConditionArray(conditions: List[PlatformedCondition]): JsonArray = {
-    conditions.foldLeft(new JsonArray) { case (a, c) => a.add(c.forgeCondition); a }
+    conditions.flatMap(_.forgeCondition).foldLeft(new JsonArray) { case (a, c) => a.add(c); a }
   }
 
   def makeFabricConditionArray(conditions: List[PlatformedCondition]): JsonArray = {
-    conditions.foldLeft(new JsonArray) { case (a, c) => a.add(c.fabricCondition); a }
+    conditions.flatMap(_.fabricCondition).foldLeft(new JsonArray) { case (a, c) => a.add(c); a }
   }
 }

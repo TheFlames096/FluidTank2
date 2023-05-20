@@ -74,6 +74,7 @@ public final class FluidTank {
         BLOCK_REGISTER.register(modBus);
         ITEM_REGISTER.register(modBus);
         BLOCK_ENTITY_REGISTER.register(modBus);
+        RECIPE_REGISTER.register(modBus);
         PlatformAccess.setInstance(new ForgePlatformAccess());
         modBus.register(this);
         modBus.register(proxy);

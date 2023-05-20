@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
 import net.minecraft.data.recipes.{FinishedRecipe, RecipeBuilder, SpecialRecipeBuilder}
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.tags.TagKey
 import net.minecraft.world.item.crafting.{CraftingRecipe, RecipeSerializer}
 
 case class RecipeSerializeHelper(recipe: FinishedRecipe,
@@ -17,8 +16,8 @@ case class RecipeSerializeHelper(recipe: FinishedRecipe,
   def addCondition(condition: PlatformedCondition): RecipeSerializeHelper =
     copy(conditions = condition :: this.conditions)
 
-  def addTagCondition(forgeTag: TagKey[_], fabricTag: TagKey[_]): RecipeSerializeHelper =
-    addCondition(PlatformedCondition.Tag(forgeTag, fabricTag))
+  def addTagCondition(ingredientHelper: RecipeIngredientHelper): RecipeSerializeHelper =
+    addCondition(PlatformedCondition.Tag(ingredientHelper))
 
   def build: JsonObject = {
     val o = recipe.serializeRecipe()

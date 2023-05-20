@@ -3,17 +3,28 @@ package com.kotori316.fluidtank.forge.gametest;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonObject;
+import io.netty.buffer.ByteBufAllocator;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +32,8 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import scala.jdk.javaapi.CollectionConverters;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.forge.recipe.RecipeInventoryUtil;
@@ -28,6 +41,8 @@ import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.testutil.GameTestUtil;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -122,4 +137,123 @@ final class RecipeTest {
         ))), null));
     }
 
+    @GameTestGenerator
+    List<TestFunction> combineFluids() {
+        var fluids = IntStream.of(500, 1000, 2000, 3000, 4000)
+            .mapToObj(GenericUnit::fromForge)
+            .flatMap(a -> Stream.of(FluidAmountUtil.BUCKET_WATER(), FluidAmountUtil.BUCKET_LAVA())
+                .map(f -> f.setAmount(a)));
+
+        return fluids.flatMap(f -> {
+            var name = "%s_%s".formatted(FluidAmountUtil.access().getKey(f.content()).getPath(), GenericUnit.asForgeFromBigInt(f.amount()));
+            return Stream.of(
+                GameTestUtil.create(FluidTankCommon.modId, "recipe_test", getClass().getSimpleName() + "_combine1_" + name, () -> combine1(f)),
+                GameTestUtil.create(FluidTankCommon.modId, "recipe_test", getClass().getSimpleName() + "_combine2_" + name, () -> combine2(f))
+            );
+        }).toList();
+    }
+
+    void combine1(GenericAmount<Fluid> amount) {
+        var filled = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
+        RecipeInventoryUtil.getFluidHandler(filled).fill(amount, true);
+        var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
+        var recipe = getRecipe();
+
+        var inv = RecipeInventoryUtil.getInv("ksk", "s s", "kst", CollectionConverters.asScala(Map.of(
+            't', filled,
+            'k', empty,
+            's', new ItemStack(Items.STONE)
+        )));
+        assertTrue(recipe.matches(inv, null));
+        var result = recipe.assemble(inv, RegistryAccess.EMPTY);
+        var contains = RecipeInventoryUtil.getFluidHandler(result).getTank().content();
+        assertEquals(amount, contains);
+        assertEquals(Tier.STONE.getCapacity(), RecipeInventoryUtil.getFluidHandler(result).getTank().capacity());
+    }
+
+    void combine2(GenericAmount<Fluid> amount) {
+        var filled = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
+        RecipeInventoryUtil.getFluidHandler(filled).fill(amount, true);
+        var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
+        var recipe = getRecipe();
+
+        var inv = RecipeInventoryUtil.getInv("kst", "s s", "kst", CollectionConverters.asScala(Map.of(
+            't', filled,
+            'k', empty,
+            's', new ItemStack(Items.STONE)
+        )));
+        assertTrue(recipe.matches(inv, null));
+        var result = recipe.assemble(inv, RegistryAccess.EMPTY);
+        var contains = RecipeInventoryUtil.getFluidHandler(result).getTank().content();
+        assertEquals(amount.add(amount), contains);
+        assertEquals(Tier.STONE.getCapacity(), RecipeInventoryUtil.getFluidHandler(result).getTank().capacity());
+    }
+
+    @GameTestGenerator
+    List<TestFunction> serialize() {
+        return Stream.of(Tier.values()).filter(Tier::isNormalTankTier)
+            .filter(Predicate.isEqual(Tier.WOOD).negate())
+            .flatMap(t -> Stream.of(
+                GameTestUtil.create(FluidTankCommon.modId, "recipe_test", getClass().getSimpleName() + "_json_" + t.name().toLowerCase(Locale.ROOT), () -> serializeJson(t)),
+                GameTestUtil.create(FluidTankCommon.modId, "recipe_test", getClass().getSimpleName() + "_packet_" + t.name().toLowerCase(Locale.ROOT), () -> serializePacket(t))
+            ))
+            .toList();
+    }
+
+    void serializeJson(Tier tier) {
+        var subItem = Ingredient.of(Items.APPLE);
+        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
+            tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
+
+        var fromSerializer = new JsonObject();
+        ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).toJson(fromSerializer, recipe);
+        var finishedRecipe = new TierRecipeForge.TierFinishedRecipe(recipe.getId(), tier, subItem);
+        var fromFinishedRecipe = new JsonObject();
+        finishedRecipe.serializeRecipeData(fromFinishedRecipe);
+        assertEquals(fromSerializer, fromFinishedRecipe);
+
+        var deserialized = TierRecipeForge.SERIALIZER.fromJson(recipe.getId(), fromSerializer, ICondition.IContext.EMPTY);
+        assertNotNull(deserialized);
+        assertAll(
+            () -> assertEquals(recipe.getId(), deserialized.getId()),
+            () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
+        );
+    }
+
+    void serializePacket(Tier tier) {
+        var subItem = Ingredient.of(Items.APPLE);
+        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
+            tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
+
+        var buffer = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
+        TierRecipeForge.SERIALIZER.toNetwork(buffer, recipe);
+        var deserialized = TierRecipeForge.SERIALIZER.fromNetwork(recipe.getId(), buffer);
+        assertNotNull(deserialized);
+        assertAll(
+            () -> assertEquals(recipe.getId(), deserialized.getId()),
+            () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
+        );
+    }
+
+    void getRecipeFromJson() {
+        // language=json
+        String jsonString = """
+            {
+              "type": "%s",
+              "tier": "STONE",
+              "sub_item": {
+                "item": "minecraft:diamond"
+              }
+            }
+            """.formatted(TierRecipeForge.Serializer.LOCATION.toString());
+        var read = RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString), ICondition.IContext.EMPTY);
+        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_serialize"),
+            Tier.STONE, TierRecipeForge.Serializer.getIngredientTankForTier(Tier.STONE), Ingredient.of(Items.DIAMOND));
+
+
+        assertAll(
+            () -> assertEquals(recipe.getId(), read.getId()),
+            () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), read.getResultItem(RegistryAccess.EMPTY)))
+        );
+    }
 }
