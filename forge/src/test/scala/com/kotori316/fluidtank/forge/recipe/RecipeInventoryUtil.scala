@@ -14,7 +14,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler
 object RecipeInventoryUtil {
 
   def getInv(s1: String = "", s2: String = "", s3: String = "", itemMap: scala.collection.Map[Character, ItemStack]): CraftingContainer = {
-    val map = itemMap + (Character.valueOf(' ') -> ItemStack.EMPTY)
+    val map = itemMap.toMap + (Character.valueOf(' ') -> ItemStack.EMPTY)
     val cf = new CraftingContainer(new DummyContainer(), 3, 3)
 
     require(s1.length <= 3 && s2.length <= 3 && s3.length <= 3, s"Over 4 elements are not allowed. ${(s1, s2, s3)}")

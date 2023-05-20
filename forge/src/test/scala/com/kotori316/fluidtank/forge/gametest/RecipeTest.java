@@ -100,8 +100,7 @@ final class RecipeTest {
 
     void match2() {
         var recipe = getRecipe();
-        var stack = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(stack).fill(FluidAmountUtil.BUCKET_WATER(), true);
+        var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
 
         assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "tst", CollectionConverters.asScala(Map.of(
             't', stack,
@@ -111,8 +110,7 @@ final class RecipeTest {
 
     void match3() {
         var recipe = getRecipe();
-        var stack = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(stack).fill(FluidAmountUtil.BUCKET_WATER(), true);
+        var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
 
         assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.asScala(Map.of(
             't', stack,
@@ -123,10 +121,8 @@ final class RecipeTest {
 
     void notMatch4() {
         var recipe = getRecipe();
-        var stack = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(stack).fill(FluidAmountUtil.BUCKET_WATER(), true);
-        var stack2 = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(stack2).fill(FluidAmountUtil.BUCKET_LAVA(), true);
+        var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
+        var stack2 = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_LAVA());
 
         assertFalse(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.asScala(Map.of(
             't', stack,
@@ -160,8 +156,7 @@ final class RecipeTest {
     }
 
     void combine1(GenericAmount<Fluid> amount) {
-        var filled = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(filled).fill(amount, true);
+        var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
 
@@ -178,8 +173,7 @@ final class RecipeTest {
     }
 
     void combine2(GenericAmount<Fluid> amount) {
-        var filled = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
-        RecipeInventoryUtil.getFluidHandler(filled).fill(amount, true);
+        var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
 
