@@ -1,36 +1,36 @@
 package com.kotori316.fluidtank.forge.data
 
+import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.{ItemTags, TagKey}
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.level.ItemLike
+import net.minecraftforge.common.crafting.CompoundIngredient
 
-import scala.jdk.javaapi.CollectionConverters
-
-case class RecipeIngredientHelper(forgeIngredient: Ingredient,
-                                  fabricIngredient: Option[Ingredient],
+case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
+                                  fabricIngredient: Option[IgnoreUnknownTagIngredient],
                                   forgeTagLimit: Option[ResourceLocation],
                                   fabricTagLimit: Option[ResourceLocation],
                                  ) {
   def ingredient: Ingredient = {
-    Ingredient.merge(CollectionConverters.asJava(Seq(forgeIngredient, fabricIngredient.getOrElse(Ingredient.EMPTY))))
+    CompoundIngredient.of(forgeIngredient, fabricIngredient.getOrElse(Ingredient.EMPTY))
   }
 }
 
 object RecipeIngredientHelper {
   def vanillaTag(key: TagKey[Item]): RecipeIngredientHelper = {
-    RecipeIngredientHelper(Ingredient.of(key), None, None, None)
+    RecipeIngredientHelper(IgnoreUnknownTagIngredient.of(key), None, None, None)
   }
 
   def item(item: ItemLike): RecipeIngredientHelper = {
-    RecipeIngredientHelper(Ingredient.of(item), None, None, None)
+    RecipeIngredientHelper(IgnoreUnknownTagIngredient.of(item), None, None, None)
   }
 
   def bothTag(forgeTag: TagKey[Item], fabricTag: String): RecipeIngredientHelper = {
     val fTag = ItemTags.create(new ResourceLocation(fabricTag))
     RecipeIngredientHelper(
-      Ingredient.of(forgeTag), Some(Ingredient.of(fTag)),
+      IgnoreUnknownTagIngredient.of(forgeTag), Some(IgnoreUnknownTagIngredient.of(fTag)),
       Some(forgeTag.location()), Some(fTag.location())
     )
   }
@@ -39,14 +39,14 @@ object RecipeIngredientHelper {
     val forgeKey = ItemTags.create(new ResourceLocation(forgeTag))
     val fabricKey = ItemTags.create(new ResourceLocation(fabricTag))
     RecipeIngredientHelper(
-      Ingredient.of(forgeKey), Some(Ingredient.of(fabricKey)),
+      IgnoreUnknownTagIngredient.of(forgeKey), Some(IgnoreUnknownTagIngredient.of(fabricKey)),
       Some(forgeKey.location()), Some(fabricKey.location())
     )
   }
 
   def forgeTagFabricItem(forgeTag: TagKey[Item], fabricItem: ItemLike): RecipeIngredientHelper = {
     RecipeIngredientHelper(
-      Ingredient.of(forgeTag), Some(Ingredient.of(fabricItem)),
+      IgnoreUnknownTagIngredient.of(forgeTag), Some(IgnoreUnknownTagIngredient.of(fabricItem)),
       Some(forgeTag.location()), None
     )
   }

@@ -4,11 +4,14 @@ import com.google.gson.JsonObject
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
 import net.minecraft.data.recipes.{FinishedRecipe, RecipeBuilder, SpecialRecipeBuilder}
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.{CraftingRecipe, RecipeSerializer}
 
 case class RecipeSerializeHelper(recipe: FinishedRecipe,
                                  conditions: List[PlatformedCondition] = Nil,
-                                 saveName: ResourceLocation = null) {
+                                 saveName: ResourceLocation = null,
+                                 advancement: AdvancementSerializeHelper = AdvancementSerializeHelper(),
+                                ) {
   def this(c: RecipeBuilder, saveName: ResourceLocation) = {
     this(RecipeSerializeHelper.getConsumeValue(c), saveName = saveName)
   }
@@ -30,6 +33,11 @@ case class RecipeSerializeHelper(recipe: FinishedRecipe,
 
   def location: ResourceLocation = if (saveName == null) recipe.getId else saveName
 
+  def addItemCriterion(item: Item): RecipeSerializeHelper =
+    this.copy(advancement = advancement.addItemCriterion(item))
+
+  def addItemCriterion(ingredientHelper: RecipeIngredientHelper): RecipeSerializeHelper =
+    this.copy(advancement = advancement.addItemCriterion(ingredientHelper))
 }
 
 object RecipeSerializeHelper {

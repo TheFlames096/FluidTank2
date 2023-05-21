@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import com.mojang.datafixers.DSL;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -27,11 +28,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -48,6 +51,7 @@ import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
+import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
 import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
 import com.kotori316.fluidtank.forge.tank.BlockTankForge;
@@ -112,10 +116,12 @@ public final class FluidTank {
 
     public static final class LazyHolder {
 
-        private static void init() {
-            Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-                new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
-                TANK_LOOT_FUNCTION);
+        private static void init(RegisterEvent event) {
+            if (event.getRegistryKey().equals(Registries.LOOT_FUNCTION_TYPE)) {
+                Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
+                    new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
+                    TANK_LOOT_FUNCTION);
+            }
         }
     }
 
@@ -213,8 +219,15 @@ public final class FluidTank {
     }
 
     @SubscribeEvent
+    public void setup(FMLCommonSetupEvent event) {
+    }
+
+    @SubscribeEvent
     public void callRegister(RegisterEvent event) {
-        LazyHolder.init();
+        LazyHolder.init(event);
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
+            CraftingHelper.register(new ResourceLocation(FluidTankCommon.modId, "ignore_unknown_tag_ingredient"), IgnoreUnknownTagIngredient.SERIALIZER);
+        }
     }
 
     @SubscribeEvent

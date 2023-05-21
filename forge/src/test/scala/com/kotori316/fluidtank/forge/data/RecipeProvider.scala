@@ -19,12 +19,24 @@ import scala.jdk.javaapi.CollectionConverters
 
 class RecipeProvider(gen: DataGenerator) extends DataProvider {
   override def run(output: CachedOutput): CompletableFuture[_] = {
-    val outputWork = for (recipe <- getRecipes) yield {
-      val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${recipe.location.getNamespace}/recipes/${recipe.location.getPath}.json")
-      DataProvider.saveStable(output, recipe.build, out)
-    }
+    val outputWork = for {
+      recipe <- getRecipes
+      future <- Seq(saveRecipe(output, recipe), saveAdvancement(output, recipe))
+    } yield future
 
     CompletableFuture.allOf(outputWork: _*)
+  }
+
+  private def saveRecipe(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[_] = {
+    val location = recipe.location
+    val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/recipes/${location.getPath}.json")
+    DataProvider.saveStable(output, recipe.build, out)
+  }
+
+  private def saveAdvancement(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[_] = {
+    val location = recipe.location
+    val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/advancements/recipes/tank/${location.getPath}.json")
+    DataProvider.saveStable(output, recipe.advancement.build(location), out)
   }
 
   def getRecipes: Seq[RecipeSerializeHelper] = {
@@ -37,17 +49,23 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
       .pattern("xpx")
       .pattern("xxx"))
       .addTagCondition(glassSubItem)
+      .addItemCriterion(Items.WATER_BUCKET)
+      .addItemCriterion(glassSubItem)
+    val obsidianSubItem = getSubItem(Tier.VOID)
     val voidTank = RecipeSerializeHelper.by(
       ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_VOID_TANK.get())
-        .define('o', getComposed(Tags.Items.OBSIDIAN, Items.OBSIDIAN)).define('t', woodTankBlock)
+        .define('o', obsidianSubItem.ingredient).define('t', woodTankBlock)
         .pattern("ooo")
         .pattern("oto")
         .pattern("ooo"))
+      .addTagCondition(obsidianSubItem)
+      .addItemCriterion(woodTankBlock.asItem())
     val normalTanks = Tier.values().filter(_.isNormalTankTier).filterNot(_ == Tier.WOOD)
       .map { t =>
         val subItem = getSubItem(t)
         RecipeSerializeHelper(new TierRecipeForge.TierFinishedRecipe(new ResourceLocation(FluidTankCommon.modId, t.getBlockName), t, subItem.ingredient))
           .addTagCondition(subItem)
+          .addItemCriterion(subItem)
       }
 
     Seq(woodTank, voidTank) ++ normalTanks
