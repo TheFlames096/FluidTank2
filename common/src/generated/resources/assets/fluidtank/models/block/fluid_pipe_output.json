@@ -1,8 +1,0 @@
-{
-  "parent": "fluidtank:block/pipe_in_out",
-  "textures": {
-    "particle": "fluidtank:block/frame",
-    "side": "fluidtank:block/frame_output",
-    "texture": "fluidtank:block/frame"
-  }
-}

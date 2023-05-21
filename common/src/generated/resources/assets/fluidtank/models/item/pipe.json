@@ -1,6 +1,0 @@
-{
-  "parent": "fluidtank:item/pipe_base",
-  "textures": {
-    "texture": "fluidtank:block/frame"
-  }
-}
