@@ -1,17 +1,19 @@
 modLoader = "javafml"
 loaderVersion = "[43,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "https://github.com/Kotori316/FluidTank2/issues"
+license = "All rights reserved"
 
 [[mods]]
 modId = "fluidtank"
 version = "${version}"
 displayName = "Fluid Tank"
-authors = "Me!"
+displayURL = "https://github.com/Kotori316/FluidTank2"
+credits = "Kotori316"
+authors = "Kotori316"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+FluidTank
 '''
-#logoFile = ""
+logoFile = "assets/fluidtank/textures/icon.png"
 
 [[dependencies.fluidtank]]
 modId = "forge"

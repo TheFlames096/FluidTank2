@@ -3,16 +3,17 @@
   "id": "fluidtank",
   "version": "${version}",
   "name": "Fluid Tank",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "FluidTank",
   "authors": [
-    "Me!"
+    "Kotori316"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://modrinth.com/mod/large-fluid-tank",
+    "sources": "https://github.com/Kotori316/FluidTank2",
+    "issues": "https://github.com/Kotori316/FluidTank2/issues"
   },
-  "license": "Insert License Here",
-  "icon": "assets/examplemod/icon.png",
+  "license": "All rights reserved",
+  "icon": "assets/fluidtank/textures/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -24,6 +25,7 @@
   },
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.19.4"
+    "minecraft": ">=1.19.4",
+    "fabric-language-scala": ">=1.0.0"
   }
 }

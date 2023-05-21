@@ -1,6 +1,8 @@
 plugins {
     id("scala")
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id("com.github.johnrengelman.shadow").version("8.1.1")
+    id("com.matthewprenger.cursegradle").version("1.4.0")
+    id("com.modrinth.minotaur").version("2.+")
 }
 
 archivesBaseName = "${project.archives_base_name}-forge"
@@ -144,9 +146,18 @@ components.java {
     }
 }
 
+final boolean RELEASE_DEBUG = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
+
+String createChangelog() {
+    return """\
+## Large Fluid Tank for forge
+
+"""
+}
+
 publishing {
     publications {
-        mavenForge(MavenPublication) {
+        mavenFabric(MavenPublication) {
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java
         }
@@ -154,6 +165,59 @@ publishing {
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Add repositories to publish to here.
+        if (!Boolean.parseBoolean(System.getenv("CI")) || !RELEASE_DEBUG) {
+            maven {
+                name = "AzureRepository"
+                url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+                credentials {
+                    username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                    password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+                }
+            }
+        }
+    }
+}
+
+curseforge {
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSEFORGE_API_KEY") ?: ""
+    project {
+        id = "291006"
+        changelogType = "markdown"
+        changelog = project.createChangelog()
+        releaseType = "release"
+        addGameVersion("Forge")
+        addGameVersion("1.19.4")
+        mainArtifact(tasks.remapJar) {
+            displayName = "${project.version}-forge"
+        }
+        addArtifact(tasks.jar)
+        addArtifact(tasks.sourcesJar)
+        relations {
+            requiredDependency 'scalable-cats-force'
+        }
+    }
+    options {
+        curseGradleOptions.debug = RELEASE_DEBUG // defaults to false
+        javaVersionAutoDetect = false
+        forgeGradleIntegration = false
+    }
+}
+
+modrinth {
+    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
+    projectId = "large-fluid-tank"
+    versionType = "release"
+    versionName = "${project.version}-forge"
+    uploadFile = tasks.remapJar
+    getAdditionalFiles().set([
+            tasks.jar,
+            tasks.sourcesJar,
+    ])
+    getGameVersions().set([project.minecraft_version])
+    getLoaders().set(["forge"])
+    changelog = project.createChangelog()
+    debugMode = RELEASE_DEBUG
+    dependencies {
+        required.project("scalable-cats-force")
     }
 }
