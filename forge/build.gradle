@@ -93,7 +93,11 @@ dependencies {
     // Other mods
     modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id)
     modImplementation(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id)
-    modImplementation(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version)
+    if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
+        modCompileOnly(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version)
+    } else {
+        modImplementation(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version)
+    }
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
