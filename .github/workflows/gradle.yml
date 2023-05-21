@@ -43,16 +43,17 @@ jobs:
           path: "*/build/libs/*.jar"
           if-no-files-found: error
           retention-days: 7
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
 
-  forge-game-test:
+  test:
     runs-on: ubuntu-latest
     needs: [ build ]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ forge, fabric ]
     env:
-      FORGE_ONLY: true
+      FORGE_ONLY: ${{ matrix.platform == 'forge' }}
+      FABRIC_ONLY: ${{ matrix.platform == 'fabric' }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java JDK
@@ -69,12 +70,16 @@ jobs:
           key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
           fail-on-cache-miss: true
       - run: chmod +x ./gradlew
-      - name: Forge GameTest
+      - name: ${{ matrix.platform }} JUnit
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :${{ matrix.platform }}:test
+      - name: ${{ matrix.platform }} GameTest
         uses: gradle/gradle-build-action@v2
         env:
           RUN_GAME_TEST: true
         with:
-          arguments: :forge:runGameTest
+          arguments: :${{ matrix.platform }}:runGameTest
   forge-data-gen:
     runs-on: ubuntu-latest
     needs: [ build ]
@@ -106,30 +111,3 @@ jobs:
           RUN_DATA_GEN: true
         with:
           arguments: :forge:runData
-  fabric-game-test:
-    runs-on: ubuntu-latest
-    needs: [ build ]
-    env:
-      FABRIC_ONLY: true
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Java JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Cache gradle
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            .gradle
-            */.gradle
-          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
-          fail-on-cache-miss: true
-      - run: chmod +x ./gradlew
-      - name: Fabric GameTest
-        uses: gradle/gradle-build-action@v2
-        env:
-          RUN_GAME_TEST: true
-        with:
-          arguments: :fabric:runGameTest
