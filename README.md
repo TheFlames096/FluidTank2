@@ -5,9 +5,10 @@ The main parts of code are shared between Forge and Fabric.
 
 [![](http://cf.way2muchnoise.eu/versions/largefluidtank.svg)][CurseForge Forge]
 [![](http://cf.way2muchnoise.eu/full_largefluidtank_downloads.svg)][CurseForge Forge]
-[![](https://img.shields.io/modrinth/game-versions/uMlJQMHT)][Modrinth]
 
-[![](https://github.com/Kotori316/FluidTank/workflows/Java%20CI/badge.svg)](https://github.com/Kotori316/FluidTank/actions)
+[![](https://img.shields.io/modrinth/dt/large-fluid-tank?logo=modrinth&style=flat-square)][Modrinth]
+
+[![Java CI](https://github.com/Kotori316/FluidTank2/actions/workflows/gradle.yml/badge.svg)](https://github.com/Kotori316/FluidTank2/actions)
 
 [CurseForge Forge]: https://www.curseforge.com/minecraft/mc-mods/largefluidtank
 [Modrinth]: https://modrinth.com/mod/large-fluid-tank
