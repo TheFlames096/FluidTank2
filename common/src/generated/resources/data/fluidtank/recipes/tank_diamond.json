@@ -19,9 +19,11 @@
   ],
   "sub_item": [
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "tag": "forge:gems/diamond"
     },
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "tag": "c:diamonds"
     }
   ],

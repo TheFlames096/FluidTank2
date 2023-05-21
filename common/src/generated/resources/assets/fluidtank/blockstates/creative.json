@@ -1,16 +1,16 @@
 {
   "variants": {
     "tank_pos=bottom": {
-      "model": "fluidtank:block/tank_creative"
+      "model": "fluidtank:block/creative"
     },
     "tank_pos=middle": {
-      "model": "fluidtank:block/tank_creative"
+      "model": "fluidtank:block/creative"
     },
     "tank_pos=single": {
-      "model": "fluidtank:block/tank_creative"
+      "model": "fluidtank:block/creative"
     },
     "tank_pos=top": {
-      "model": "fluidtank:block/tank_creative"
+      "model": "fluidtank:block/creative"
     }
   }
 }

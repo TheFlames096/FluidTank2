@@ -1,12 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:obsidian"
+      }
+    }
+  ],
+  "fabric:load_conditions": [ ],
   "key": {
     "o": [
       {
+        "type": "fluidtank:ignore_unknown_tag_ingredient",
         "tag": "forge:obsidian"
       },
       {
+        "type": "fluidtank:ignore_unknown_tag_ingredient",
         "item": "minecraft:obsidian"
       }
     ],

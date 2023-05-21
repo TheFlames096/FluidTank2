@@ -12,9 +12,11 @@
   "fabric:load_conditions": [ ],
   "sub_item": [
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "tag": "forge:stone"
     },
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "item": "minecraft:stone"
     }
   ],

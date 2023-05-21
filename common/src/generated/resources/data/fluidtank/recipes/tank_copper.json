@@ -19,9 +19,11 @@
   ],
   "sub_item": [
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "tag": "forge:ingots/copper"
     },
     {
+      "type": "fluidtank:ignore_unknown_tag_ingredient",
       "tag": "c:copper_ingots"
     }
   ],

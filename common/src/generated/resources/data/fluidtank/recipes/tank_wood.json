@@ -24,9 +24,11 @@
     },
     "x": [
       {
+        "type": "fluidtank:ignore_unknown_tag_ingredient",
         "tag": "forge:glass"
       },
       {
+        "type": "fluidtank:ignore_unknown_tag_ingredient",
         "tag": "c:glass_blocks"
       }
     ]

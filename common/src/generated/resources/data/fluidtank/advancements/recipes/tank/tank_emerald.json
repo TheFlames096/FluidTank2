@@ -1,0 +1,60 @@
+{
+  "parent": "minecraft:recipes/root",
+  "conditions": [
+    {
+      "type": "forge:not",
+      "value": {
+        "type": "forge:tag_empty",
+        "tag": "forge:gems/emerald"
+      }
+    }
+  ],
+  "criteria": {
+    "has_fabric_emeralds": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "c:emeralds"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_forge_gems/emerald": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:gems/emerald"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "fluidtank:tank_emerald"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:item_tags_populated",
+      "values": [
+        "c:emeralds"
+      ]
+    }
+  ],
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_forge_gems/emerald",
+      "has_fabric_emeralds"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fluidtank:tank_emerald"
+    ]
+  }
+}

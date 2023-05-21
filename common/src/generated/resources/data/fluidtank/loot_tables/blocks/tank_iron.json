@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "fluidtank:content_tank"
+    }
+  ],
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fluidtank:tank_iron"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}
