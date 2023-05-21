@@ -37,6 +37,16 @@ loom {
     }
 }
 
+repositories {
+    maven {
+        name = "Azure-SLP"
+        url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+        content {
+            it.includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
+        }
+    }
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -54,6 +64,7 @@ dependencies {
 
     implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
     implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version)
+    modRuntimeOnly(group: 'com.kotori316', name: 'scalable-cats-force-fabric', version: project.slp_fabric_version, classifier: 'dev') { transitive false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
