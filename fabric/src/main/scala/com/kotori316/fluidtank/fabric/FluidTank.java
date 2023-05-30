@@ -73,9 +73,9 @@ public final class FluidTank implements ModInitializer {
             .forEach((c, t) -> Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, new ResourceLocation(FluidTankCommon.modId, c.getSimpleName().toLowerCase(Locale.ROOT)), t));
         Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME), TANK_LOOT_FUNCTION);
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, TierRecipe.SerializerBase.LOCATION, TIER_RECIPE_SERIALIZER);
-        var builder = FabricItemGroup.builder(new ResourceLocation(FluidTankCommon.modId, FluidTankCommon.modId));
+        var builder = FabricItemGroup.builder();
         createTab(builder);
-        builder.build();
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(FluidTankCommon.modId, FluidTankCommon.modId), builder.build());
     }
 
     private static void createTab(CreativeModeTab.Builder builder) {

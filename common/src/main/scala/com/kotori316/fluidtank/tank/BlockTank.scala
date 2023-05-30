@@ -11,13 +11,14 @@ import net.minecraft.world.item.{BlockItem, Item, ItemStack}
 import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityTicker, BlockEntityType}
 import net.minecraft.world.level.block.state.{BlockBehaviour, BlockState, StateDefinition}
 import net.minecraft.world.level.block.{Block, EntityBlock}
+import net.minecraft.world.level.material.PushReaction
 import net.minecraft.world.level.{BlockGetter, Level}
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.{CollisionContext, VoxelShape}
 import net.minecraft.world.{InteractionHand, InteractionResult}
 import org.jetbrains.annotations.Nullable
 
-class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of(FluidTankCommon.TANK_MATERIAL).strength(1f).dynamicShape()) with EntityBlock {
+class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK)) with EntityBlock {
 
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
   final val itemBlock: ItemBlockTank = createTankItem()

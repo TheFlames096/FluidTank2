@@ -2,9 +2,9 @@ name: Java CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "1.20" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "1.20" ]
 
 permissions:
   contents: read
@@ -36,7 +36,8 @@ jobs:
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :fabric:remapJar :forge:remapJar
+          # TODO Forge
+          arguments: :fabric:remapJar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -52,7 +53,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ forge, fabric ]
+        # platform: [ forge, fabric ] # TODO forge
+        platform: [ fabric ]
     env:
       FORGE_ONLY: ${{ matrix.platform == 'forge' }}
       FABRIC_ONLY: ${{ matrix.platform == 'fabric' }}
