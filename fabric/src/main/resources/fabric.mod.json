@@ -26,6 +26,6 @@
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.19.4",
-    "fabric-language-scala": ">=1.0.0"
+    "kotori_scala": ">=1.0.0"
   }
 }

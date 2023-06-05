@@ -70,17 +70,48 @@ public interface PlatformFluidAccess {
 
     /**
      * The result of transferring fluids.
-     *
-     * @param moved      filled or drained amount
-     * @param toReplace  the result item with transferred fluids
-     * @param shouldMove whether to move {@code toReplace} item into player inventory. In fabric {@code false} and in forge {@code true}.
      */
-    record TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace, boolean shouldMove) {
+    final class TransferStack {
+        private final GenericAmount<Fluid> moved;
+        private final ItemStack toReplace;
+        private final boolean shouldMove;
+
+        /**
+         * @param moved      filled or drained amount
+         * @param toReplace  the result item with transferred fluids
+         * @param shouldMove whether to move {@code toReplace} item into player inventory. In fabric {@code false} and in forge {@code true}.
+         */
+        public TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace, boolean shouldMove) {
+            this.moved = moved;
+            this.toReplace = toReplace;
+            this.shouldMove = shouldMove;
+        }
+
         /**
          * Helper constructor for forge.
          */
         public TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace) {
             this(moved, toReplace, true);
+        }
+
+        public GenericAmount<Fluid> moved() {
+            return moved;
+        }
+
+        public ItemStack toReplace() {
+            return toReplace;
+        }
+
+        public boolean shouldMove() {
+            return shouldMove;
+        }
+
+        @Override
+        public String toString() {
+            return "TransferStack[" +
+                   "moved=" + moved + ", " +
+                   "toReplace=" + toReplace + ", " +
+                   "shouldMove=" + shouldMove + ']';
         }
     }
 }

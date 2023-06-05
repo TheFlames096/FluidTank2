@@ -16,4 +16,4 @@ if (false && !Boolean.parseBoolean(System.getenv("FABRIC_ONLY"))) {
     include("forge")
 }
 
-rootProject.name = "FluidTank-rewrite"
+rootProject.name = "FluidTank-1.20"

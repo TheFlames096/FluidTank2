@@ -56,8 +56,8 @@ allprojects {
             name = "Azure-SLP"
             url = "https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1"
             content {
-                it.includeVersion("org.typelevel", "cats-core_2.13", project.cats_version)
-                it.includeVersion("org.typelevel", "cats-kernel_2.13", project.cats_version)
+                it.includeVersion("org.typelevel", "cats-core_3", project.cats_version)
+                it.includeVersion("org.typelevel", "cats-kernel_3", project.cats_version)
                 it.includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
                 it.includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
                 // Required these libraries to execute the tests.

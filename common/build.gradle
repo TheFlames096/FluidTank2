@@ -10,7 +10,7 @@ loom {
 }
 
 compileScala {
-    scalaCompileOptions.additionalParameters = ["-Ytasty-reader"]
+    scalaCompileOptions.additionalParameters = []
 }
 
 sourceSets {
@@ -31,9 +31,8 @@ dependencies {
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
-    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version) {
-        exclude(group: 'org.scala-lang', module: 'scala3-library_3')
-    }
+    implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
+    implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
 }
 
 publishing {

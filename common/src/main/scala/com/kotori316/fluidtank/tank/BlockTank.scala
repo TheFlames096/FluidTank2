@@ -18,6 +18,8 @@ import net.minecraft.world.phys.shapes.{CollisionContext, VoxelShape}
 import net.minecraft.world.{InteractionHand, InteractionResult}
 import org.jetbrains.annotations.Nullable
 
+import scala.annotation.nowarn
+
 class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK)) with EntityBlock {
 
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
@@ -97,7 +99,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().str
         case tile => FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_TANK, "There is not TileTank at {}, but {}", pos.show, tile)
       }
       //noinspection ScalaDeprecation,deprecation
-      super.onRemove(state, level, pos, newState, moved)
+      super.onRemove(state, level, pos, newState, moved): @nowarn
     }
   }
 

@@ -30,7 +30,7 @@ object TankUtil {
       case _: CreativeTank[_] => "CreativeTank"
       case _: VoidTank[_] => "VoidTank"
       case _: Tank[_] => "Tank"
-      case _ => throw new IllegalArgumentException("Unknown type of tank, %s".formatted(tank.getClass))
+      case null => throw new IllegalArgumentException("Unknown type of tank, %s".formatted(tank.getClass))
     }
   }
 }

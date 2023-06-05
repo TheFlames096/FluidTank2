@@ -21,10 +21,18 @@ public final class PacketHandler {
         public static void initServer() {
             var list = List.<ServerPacketInit>of(
             );
-            list.forEach(i -> ServerPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
+            list.forEach(i -> ServerPlayNetworking.registerGlobalReceiver(i.name, i.handler));
         }
 
-        private record ServerPacketInit(ResourceLocation name, ServerPlayNetworking.PlayChannelHandler handler) {
+        @SuppressWarnings("ClassCanBeRecord")
+        private static final class ServerPacketInit {
+            private final ResourceLocation name;
+            private final ServerPlayNetworking.PlayChannelHandler handler;
+
+            private ServerPacketInit(ResourceLocation name, ServerPlayNetworking.PlayChannelHandler handler) {
+                this.name = name;
+                this.handler = handler;
+            }
         }
     }
 
@@ -34,10 +42,18 @@ public final class PacketHandler {
             var list = List.of(
                 new ClientPacketInit(FluidTankContentMessageFabric.NAME, FluidTankContentMessageFabric.HandlerHolder.HANDLER)
             );
-            list.forEach(i -> ClientPlayNetworking.registerGlobalReceiver(i.name(), i.handler()));
+            list.forEach(i -> ClientPlayNetworking.registerGlobalReceiver(i.name, i.handler));
         }
 
-        private record ClientPacketInit(ResourceLocation name, ClientPlayNetworking.PlayChannelHandler handler) {
+        @SuppressWarnings("ClassCanBeRecord")
+        private static final class ClientPacketInit {
+            private final ResourceLocation name;
+            private final ClientPlayNetworking.PlayChannelHandler handler;
+
+            private ClientPacketInit(ResourceLocation name, ClientPlayNetworking.PlayChannelHandler handler) {
+                this.name = name;
+                this.handler = handler;
+            }
         }
     }
 

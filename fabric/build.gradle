@@ -57,7 +57,8 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
 
     implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
-    implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version)
+    implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
+    implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
     modRuntimeOnly(group: 'com.kotori316', name: 'scalable-cats-force-fabric', version: project.slp_fabric_version, classifier: 'dev') { transitive false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
