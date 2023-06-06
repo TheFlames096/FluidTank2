@@ -2,9 +2,9 @@ package com.kotori316.fluidtank.connection
 
 import cats.data.Chain
 import com.kotori316.fluidtank.contents
-import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit, Tank}
+import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit, Tank, gaString}
 import net.minecraft.core.BlockPos
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.function.Executable
 import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
 

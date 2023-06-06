@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank
 
 import cats.data.Chain
-import com.kotori316.fluidtank.contents.{ChainTanksHandler, CreativeTank, GenericAmount, GenericUnit, Tank, VoidTank}
+import com.kotori316.fluidtank.contents.{ChainTanksHandler, CreativeTank, GenericAmount, GenericUnit, Tank, VoidTank, gaString}
 import net.minecraft.core.BlockPos
 
 package object connection {
@@ -29,6 +29,9 @@ package object connection {
   implicit final val stringConnectionHelper: ConnectionHelper.Aux[StringTile, String, StringTanksHandler] = new StringConnectionHelper
 
   private final class StringConnectionHelper extends ConnectionHelper[StringTile] {
+
+    import com.kotori316.fluidtank.connection.stringConnectionHelper
+
     override type Content = String
     override type Handler = StringTanksHandler
     override type ConnectionType = StringConnection

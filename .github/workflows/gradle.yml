@@ -46,6 +46,34 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  common-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [ build ]
+    env:
+      FORGE_ONLY: true
+      FABRIC_ONLY: true
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache gradle
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            .gradle
+            */.gradle
+          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
+          fail-on-cache-miss: true
+      - run: chmod +x ./gradlew
+      - name: Common JUnit
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :common:test
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
