@@ -7,7 +7,7 @@ import com.kotori316.fluidtank.forge.tank.TankFluidItemHandler
 import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier}
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.inventory.{AbstractContainerMenu, CraftingContainer, Slot}
+import net.minecraft.world.inventory.{AbstractContainerMenu, CraftingContainer, Slot, TransientCraftingContainer}
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.fluids.capability.IFluidHandler
 
@@ -15,7 +15,7 @@ object RecipeInventoryUtil {
 
   def getInv(s1: String = "", s2: String = "", s3: String = "", itemMap: scala.collection.Map[Character, ItemStack]): CraftingContainer = {
     val map = itemMap.toMap + (Character.valueOf(' ') -> ItemStack.EMPTY)
-    val cf = new CraftingContainer(new DummyContainer(), 3, 3)
+    val cf = new TransientCraftingContainer(new DummyContainer(), 3, 3)
 
     require(s1.length <= 3 && s2.length <= 3 && s3.length <= 3, s"Over 4 elements are not allowed. ${(s1, s2, s3)}")
     require(s1.nonEmpty || s2.nonEmpty || s3.nonEmpty, "All Empty?")

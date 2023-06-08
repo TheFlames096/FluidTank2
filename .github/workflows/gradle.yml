@@ -36,8 +36,7 @@ jobs:
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
-          # TODO Forge
-          arguments: :fabric:remapJar
+          arguments: :fabric:remapJar :forge:remapJar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -81,8 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # platform: [ forge, fabric ] # TODO forge
-        platform: [ fabric ]
+        platform: [ forge, fabric ]
     env:
       FORGE_ONLY: ${{ matrix.platform == 'forge' }}
       FABRIC_ONLY: ${{ matrix.platform == 'fabric' }}

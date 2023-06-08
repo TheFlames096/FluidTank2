@@ -74,7 +74,13 @@ sourceSets {
 }
 
 repositories {
-
+    maven {
+        name = "Azure-SLP"
+        url = "https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1"
+        content {
+            it.includeModule("com.kotori316", "slp2")
+        }
+    }
 }
 
 dependencies {
@@ -84,7 +90,7 @@ dependencies {
     implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
     implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
 
-    runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'with-library') {
+    runtimeOnly(group: 'com.kotori316', name: 'slp2'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'shadowed') {
         transitive(false)
     }
 
@@ -92,19 +98,20 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     // Other mods
-    modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id)
-    modImplementation(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id)
-    if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
-        modCompileOnly(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version)
-    } else {
-        modImplementation(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version)
-    }
+    // modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id)
+    // modCompileOnly(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id)
+    // if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
+    //     modCompileOnly(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version) { transitive false }
+    // } else {
+    //     modCompileOnly(group: "mezz.jei", name: "jei-1.19.4-forge", version: project.jei_forge_version) { transitive false }
+    // }
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
     modImplementation(group: "com.kotori316", name: "test_utility", version: project.testUtilVersion)
-    implementation(group: "com.kotori316", name: "test_utility_dependency", version: "1.0-SNAPSHOT")
+    testImplementation(group: 'org.mockito', name: 'mockito-core', version: project.mockitoVersion)
+    testImplementation(group: 'org.mockito', name: 'mockito-inline', version: project.mockitoVersion)
     forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     forgeRuntimeLibrary('org.junit.jupiter:junit-jupiter')
 }
@@ -187,7 +194,7 @@ curseforge {
         changelog = project.createChangelog()
         releaseType = "release"
         addGameVersion("Forge")
-        addGameVersion("1.19.4")
+        addGameVersion(project.minecraft_version)
         mainArtifact(tasks.remapJar) {
             displayName = "${project.version}-forge"
         }

@@ -77,7 +77,13 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         return json;
     }
 
-    private record TagValue(TagKey<Item> tag) implements Ingredient.Value {
+    @SuppressWarnings("ClassCanBeRecord")
+    private static final class TagValue implements Value {
+        private final TagKey<Item> tag;
+
+        private TagValue(TagKey<Item> tag) {
+            this.tag = tag;
+        }
 
         @Override
         public Collection<ItemStack> getItems() {

@@ -29,7 +29,6 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -77,6 +76,7 @@ public final class FluidTank {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCK_REGISTER.register(modBus);
         ITEM_REGISTER.register(modBus);
+        CREATIVE_TAB_REGISTER.register(modBus);
         BLOCK_ENTITY_REGISTER.register(modBus);
         RECIPE_REGISTER.register(modBus);
         PlatformAccess.setInstance(new ForgePlatformAccess());
@@ -90,6 +90,7 @@ public final class FluidTank {
     private static final DeferredRegister<Item> ITEM_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, FluidTankCommon.modId);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, FluidTankCommon.modId);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, FluidTankCommon.modId);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FluidTankCommon.modId);
 
     public static final Map<Tier, RegistryObject<BlockTankForge>> TANK_MAP = Stream.of(Tier.values())
         .filter(Tier::isNormalTankTier)
@@ -113,6 +114,11 @@ public final class FluidTank {
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
     public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
+    public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
+        var b = CreativeModeTab.builder();
+        createTab(b);
+        return b.build();
+    });
 
     public static final class LazyHolder {
 
@@ -228,11 +234,6 @@ public final class FluidTank {
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
             CraftingHelper.register(new ResourceLocation(FluidTankCommon.modId, "ignore_unknown_tag_ingredient"), IgnoreUnknownTagIngredient.SERIALIZER);
         }
-    }
-
-    @SubscribeEvent
-    public void registerCreativeTab(CreativeModeTabEvent.Register event) {
-        event.registerCreativeModeTab(new ResourceLocation(FluidTankCommon.modId, "tab"), FluidTank::createTab);
     }
 
     private static void createTab(CreativeModeTab.Builder builder) {
