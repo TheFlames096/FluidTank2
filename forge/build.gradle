@@ -160,13 +160,15 @@ String createChangelog() {
     return """\
 ## Large Fluid Tank for forge
 
+* Minecraft: ${project.minecraft_version}
+* Forge: ${project.forge_version}
 """
 }
 
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
+            artifactId = rootProject.maven_base_name + "-" + project.name + "-" + project.minecraft_version
             from components.java
         }
     }
@@ -227,5 +229,48 @@ modrinth {
     debugMode = RELEASE_DEBUG
     dependencies {
         required.project("scalable-cats-force")
+    }
+}
+
+remapJar.finalizedBy("jksSignJar")
+
+tasks.register("jksSignJar") {
+    dependsOn("remapJar")
+    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
+            project.hasProperty("jarSign.keyLocation") &&
+            project.hasProperty("jarSign.storePass")
+    onlyIf { executeCondition }
+    doLast {
+        //noinspection HttpUrlsUsage
+        ant.signjar(
+                jar: remapJar.archiveFile.get(),
+                alias: project.findProperty("jarSign.keyAlias") ?: "",
+                keystore: project.findProperty("jarSign.keyLocation") ?: "",
+                storepass: project.findProperty("jarSign.storePass") ?: "",
+                sigalg: "Ed25519",
+                digestalg: "SHA-256",
+                tsaurl: "http://timestamp.digicert.com",
+        )
+    }
+}
+
+signing {
+    sign(publishing.publications)
+    sign(tasks.jar, tasks.remapJar, tasks.sourcesJar)
+}
+
+boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
+        project.hasProperty("signing.password") &&
+        project.hasProperty("signing.secretKeyRingFile")
+
+tasks.withType(Sign).configureEach {
+    it.onlyIf {
+        hasGpgSignature
+    }
+}
+
+tasks.withType(AbstractPublishToMaven).configureEach {
+    if (hasGpgSignature) {
+        it.dependsOn(":forge:signRemapJar")
     }
 }
