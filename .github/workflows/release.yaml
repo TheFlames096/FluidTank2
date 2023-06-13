@@ -26,7 +26,6 @@ jobs:
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
           service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
-          create_credentials_file: false
       - name: Download Private Key
         run: gcloud storage cp gs://kotori316-resources/secring.gpg "${HOME}/secring.gpg"
       - name: Download JKS
