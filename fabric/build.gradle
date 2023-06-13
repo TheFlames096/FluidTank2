@@ -145,7 +145,7 @@ publishing {
 }
 
 curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSEFORGE_API_KEY") ?: ""
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
     project {
         id = "411564"
         changelogType = "markdown"

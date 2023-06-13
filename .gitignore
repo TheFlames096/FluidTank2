@@ -17,6 +17,7 @@ logs/
 classes/
 .metadata
 .vscode
+.metals/
 .settings
 *.launch
 .cache
