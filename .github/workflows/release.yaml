@@ -26,6 +26,7 @@ jobs:
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
           service_account: ${{secrets.GCP_SERVICE_ACCOUNT}}
+          create_credentials_file: false
       - name: Download Private Key
         run: gcloud storage cp gs://kotori316-resources/secring.gpg "${HOME}/secring.gpg"
       - name: Download JKS
@@ -76,3 +77,35 @@ jobs:
           CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
           RELEASE_DEBUG: true
+      - name: Verify Build Files
+        run: |
+          for f in $(find ./ -name "*.asc") ; do
+            echo "${f:0:-4}"
+            gpg --verify "$f" "${f:0:-4}"
+          done
+      - name: Verify Forge Main Jar
+        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls forge/build/libs/*.jar | grep -v "dev" | grep -v "sources")" -strict
+      - name: Verify Fabric Main Jar
+        run: jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$(ls fabric/build/libs/*.jar | grep -v "dev" | grep -v "sources")" -strict
+      - name: Verify Maven Local
+        run: |
+          for f in $(find ~/.m2 -name "*.asc") ; do
+            echo "${f:0:-4}"
+            gpg --verify "$f" "${f:0:-4}"
+          done
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: FluidTank-Release-${{ github.run_number }}
+          retention-days: 7
+          path: |
+            */build/*libs/*.jar
+            */build/*libs/*.asc
+      - name: Upload Local Maven
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: FluidTank-Maven-${{ github.run_number }}
+          retention-days: 1
+          path: ~/.m2
