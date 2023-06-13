@@ -76,7 +76,6 @@ jobs:
           JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
           CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
-          RELEASE_DEBUG: true
       - name: Verify Build Files
         run: |
           for f in $(find ./ -name "*.asc") ; do
