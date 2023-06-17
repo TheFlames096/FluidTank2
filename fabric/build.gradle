@@ -65,8 +65,8 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     // Other mods
-    modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_fabric_id)
-    modCompileOnly(group: "mezz.jei", name: "jei-1.19.4-fabric", version: project.jei_fabric_version)
+    modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_fabric_id)
+    modImplementation(group: "mezz.jei", name: "jei-1.20.1-fabric", version: project.jei_fabric_version)
 
     testImplementation "net.fabricmc:fabric-loader-junit:${project.fabric_loader_version}"
 }
