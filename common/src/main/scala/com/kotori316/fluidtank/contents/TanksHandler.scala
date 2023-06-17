@@ -72,4 +72,18 @@ abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit mo
     }
     action(op, resource, execute)
   }
+
+  /**
+   * Remove all contents and fill with given resource
+   *
+   * @param resource to be set
+   * @return filled amount
+   */
+  def set(resource: GenericAmount[T]): GenericAmount[T] = {
+    // Empty tanks
+    // Just change the field is fine, as `updateTanks` will be called in filling
+    this.tanks = monad.map(this.tanks) { tank => tank.copy(content = tank.content.createEmpty) }
+    // Fill tanks
+    fill(resource, execute = true)
+  }
 }

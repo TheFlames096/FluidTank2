@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.kotori316.fluidtank.fabric.tank.*;
 import com.mojang.datafixers.DSL;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -24,10 +25,6 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
 import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
-import com.kotori316.fluidtank.fabric.tank.BlockCreativeTankFabric;
-import com.kotori316.fluidtank.fabric.tank.BlockTankFabric;
-import com.kotori316.fluidtank.fabric.tank.TileCreativeTankFabric;
-import com.kotori316.fluidtank.fabric.tank.TileTankFabric;
 import com.kotori316.fluidtank.recipe.TierRecipe;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.BlockVoidTank;
@@ -45,6 +42,7 @@ public final class FluidTank implements ModInitializer {
         PacketHandler.Server.initServer();
         PlatformAccess.setInstance(new FabricPlatformAccess());
         registerObjects();
+        ConnectionStorage.register();
         FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
     }
 

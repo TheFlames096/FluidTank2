@@ -348,6 +348,85 @@ class TanksHandlerTest {
   }
 
   @Nested
+  class SetTest {
+    @TestFactory
+    def replace(): Array[DynamicNode] = {
+      testBothMany(Seq(
+        ("empty", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+        }),
+        ("filled1", tanks => {
+          tanks.updateTanks(createTanks(("a", 50, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+        }),
+        ("filled2", tanks => {
+          tanks.updateTanks(createTanks(("b", 50, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+        }),
+        ("filled3", tanks => {
+          tanks.updateTanks(createTanks(("b", 600, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000)), tanks.getTank)
+        }),
+        ("over1", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(2000), None))
+          assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
+          assertEquals(createTanks(("a", 1000, 1000)), tanks.getTank)
+        }),
+        ("over2", tanks => {
+          tanks.updateTanks(createTanks(("a", 50, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(2000), None))
+          assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
+          assertEquals(createTanks(("a", 1000, 1000)), tanks.getTank)
+        }),
+        ("over3", tanks => {
+          tanks.updateTanks(createTanks(("b", 50, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(2000), None))
+          assertEquals(GenericAmount("a", GenericUnit(1000), None), filled)
+          assertEquals(createTanks(("a", 1000, 1000)), tanks.getTank)
+        }),
+        ("empty2tanks", tanks => {
+          tanks.updateTanks(createTanks(("", 0, 1000), ("", 0, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000), ("", 0, 1000)), tanks.getTank)
+        }),
+        ("2tanks1", tanks => {
+          tanks.updateTanks(createTanks(("a", 10, 1000), ("", 0, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(100), None))
+          assertEquals(GenericAmount("a", GenericUnit(100), None), filled)
+          assertEquals(createTanks(("a", 100, 1000), ("", 0, 1000)), tanks.getTank)
+        }),
+        ("2tanksOver", tanks => {
+          tanks.updateTanks(createTanks(("a", 10, 1000), ("", 0, 1000)))
+
+          val filled = tanks.set(GenericAmount("a", GenericUnit(6000), None))
+          assertEquals(GenericAmount("a", GenericUnit(2000), None), filled)
+          assertEquals(createTanks(("a", 1000, 1000), ("a", 1000, 1000)), tanks.getTank)
+        }),
+      ))
+    }
+  }
+
+  @Nested
   class VoidTest {
     @TestFactory
     def fillVoid(): Array[DynamicNode] = {
