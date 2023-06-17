@@ -57,27 +57,27 @@ allprojects {
             name = "Azure-SLP"
             url = "https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1"
             content {
-                it.includeVersion("org.typelevel", "cats-core_3", project.cats_version)
-                it.includeVersion("org.typelevel", "cats-kernel_3", project.cats_version)
-                it.includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
-                it.includeModule("com.kotori316", "ScalableCatsForce".toLowerCase())
+                includeVersion("org.typelevel", "cats-core_3", project.cats_version)
+                includeVersion("org.typelevel", "cats-kernel_3", project.cats_version)
+                includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
+                includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion)
                 // Required these libraries to execute the tests.
-                it.includeVersion("com.kotori316", "test_utility", project.testUtilVersion)
-                it.includeVersion("com.kotori316", "test_utility_dependency", "1.0-SNAPSHOT")
+                includeVersion("com.kotori316", "test_utility", project.testUtilVersion)
+                includeModule("com.kotori316", "test_utility_dependency")
             }
         }
         maven {
             name = "Curse"
             url = "https://www.cursemaven.com"
             content {
-                it.includeGroup("curse.maven")
+                includeGroup("curse.maven")
             }
         }
         maven {
             name = "JEI"
             url = "https://maven.blamejared.com/"
             content {
-                it.includeGroup("mezz.jei")
+                includeGroup("mezz.jei")
             }
         }
     }

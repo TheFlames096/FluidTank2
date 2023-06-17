@@ -90,7 +90,7 @@ dependencies {
     implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
     implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
 
-    runtimeOnly(group: 'com.kotori316', name: 'slp2'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'shadowed') {
+    runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'with-library') {
         transitive(false)
     }
 
