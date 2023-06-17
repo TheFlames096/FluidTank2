@@ -20,15 +20,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Cache gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            .gradle
-            */.gradle
-          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
-          restore-keys: Gradle-Dot-${{ runner.os }}-
       - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
       - name: Tool chain check
         uses: gradle/gradle-build-action@v2
         with:
@@ -58,15 +54,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Cache gradle
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            .gradle
-            */.gradle
-          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
-          fail-on-cache-miss: true
       - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
       - name: Common JUnit
         uses: gradle/gradle-build-action@v2
         with:
@@ -89,15 +81,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Cache gradle
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            .gradle
-            */.gradle
-          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
-          fail-on-cache-miss: true
       - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
       - name: ${{ matrix.platform }} JUnit
         uses: gradle/gradle-build-action@v2
         with:
@@ -119,15 +107,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Cache gradle
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            .gradle
-            */.gradle
-          key: Gradle-Dot-${{ runner.os }}-${{ hashFiles('build.gradle', 'gradle.properties') }}
-          fail-on-cache-miss: true
       - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: false
+          gradle-home-cache-cleanup: true
       - name: Compile test
         uses: gradle/gradle-build-action@v2
         with:
