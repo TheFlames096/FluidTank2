@@ -48,7 +48,6 @@ jobs:
   common-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [ build ]
     env:
       FORGE_ONLY: true
       FABRIC_ONLY: true
@@ -76,7 +75,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [ build ]
     strategy:
       fail-fast: false
       matrix:
@@ -110,9 +108,9 @@ jobs:
           RUN_GAME_TEST: true
         with:
           arguments: :${{ matrix.platform }}:runGameTest
+
   forge-data-gen:
     runs-on: ubuntu-latest
-    needs: [ build ]
     if: false
     steps:
       - uses: actions/checkout@v3
