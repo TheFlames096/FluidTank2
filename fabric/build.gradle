@@ -67,6 +67,7 @@ dependencies {
     // Other mods
     modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_fabric_id)
     modImplementation(group: "mezz.jei", name: "jei-1.20.1-fabric", version: project.jei_fabric_version)
+    modImplementation(group: "appeng", name: "appliedenergistics2-fabric", version: project.ae2_fabric_version) { transitive false }
 
     testImplementation "net.fabricmc:fabric-loader-junit:${project.fabric_loader_version}"
 }

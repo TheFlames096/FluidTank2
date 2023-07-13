@@ -80,6 +80,15 @@ allprojects {
                 includeGroup("mezz.jei")
             }
         }
+        maven {
+            // location of a maven mirror for JEI files, as a fallback
+            name = "ModMaven"
+            url = "https://modmaven.dev/"
+            content {
+                includeVersion("appeng", "appliedenergistics2-forge", project.ae2_forge_version)
+                includeVersion("appeng", "appliedenergistics2-fabric", project.ae2_fabric_version)
+            }
+        }
     }
 
     dependencies {
