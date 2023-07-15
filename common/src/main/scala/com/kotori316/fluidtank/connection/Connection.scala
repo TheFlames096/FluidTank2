@@ -32,7 +32,7 @@ abstract class Connection[TileType] protected(protected val sortedTanks: Seq[Til
 
   def capacity: GenericUnit = handler.getSumOfCapacity
 
-  def amount: GenericUnit = this.sortedTanks.foldMap(_.getAmount)
+  def amount: GenericUnit = this.sortedTanks.foldMap(_.getAmount) min GenericUnit.CREATIVE_TANK
 
   def getContent: Option[GenericAmount[helper.Content]] =
     Option(contentType).filter(_.nonEmpty).map(_.setAmount(this.amount))

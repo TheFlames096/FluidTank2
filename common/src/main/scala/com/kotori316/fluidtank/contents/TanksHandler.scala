@@ -5,6 +5,8 @@ import cats.implicits._
 import cats.{Foldable, Monad, MonoidK}
 import com.kotori316.fluidtank.contents.Operations.ListTankOperation
 
+import scala.math.Ordering.Implicits.infixOrderingOps
+
 abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit monoidK: MonoidK[ListType], monad: Monad[ListType], f: Foldable[ListType], reversible: Reversible[ListType]) {
   protected var tanks: ListType[Tank[T]] = monoidK.empty
 
@@ -27,7 +29,7 @@ abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit mo
 
   protected def updateTanks(newTanks: ListType[Tank[T]]): Unit = this.tanks = newTanks
 
-  def getSumOfCapacity: GenericUnit = this.tanks.foldMap(_.capacity)
+  def getSumOfCapacity: GenericUnit = this.tanks.foldMap(_.capacity) min GenericUnit.CREATIVE_TANK
 
   /**
    * @param resource to be filled

@@ -91,7 +91,7 @@ public enum Tier {
             Map.entry(DIAMOND, fromForge(16_384_000)),
             Map.entry(EMERALD, fromForge(65_536_000)),
             Map.entry(STAR, fromForge(1_048_576_000)),
-            Map.entry(CREATIVE, fromForge(Long.MAX_VALUE)),
+            Map.entry(CREATIVE, GenericUnit.CREATIVE_TANK()),
             Map.entry(VOID, fromForge(0)),
             Map.entry(COPPER, fromForge(40_000)),
             Map.entry(TIN, fromForge(48_000)),

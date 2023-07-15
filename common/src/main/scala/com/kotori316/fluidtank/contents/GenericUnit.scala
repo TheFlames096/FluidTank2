@@ -21,6 +21,9 @@ class GenericUnit private(val value: BigInt) extends AnyVal {
     }
   }
 
+  /**
+   * Returns forge unit amount
+   */
   def asDisplay: Long = {
     val inForge = GenericUnit.asForgeFromBigInt(this.value)
     if (inForge > GenericUnit.LONG_MAX) {
@@ -45,6 +48,7 @@ object GenericUnit {
   final val ZERO: GenericUnit = new GenericUnit(BigInt(0))
   final val ONE_BUCKET: GenericUnit = new GenericUnit(BigInt(FABRIC_ONE_BUCKET))
   final val MAX: GenericUnit = new GenericUnit(GenericUnit.LONG_MAX * BigInt(FABRIC_ONE_BUCKET))
+  final val CREATIVE_TANK: GenericUnit = fromForge(100_000_000_000_000L * 1000)
 
   def fromFabric(value: Long): GenericUnit = new GenericUnit(BigInt(value))
 
