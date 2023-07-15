@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
 import com.mojang.datafixers.DSL;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -83,6 +84,7 @@ public final class FluidTank {
         modBus.register(this);
         modBus.register(proxy);
         PacketHandler.init();
+        AE2FluidTankIntegration.onAPIAvailable();
         FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
     }
 
