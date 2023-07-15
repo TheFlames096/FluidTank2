@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.fabric;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
-import com.kotori316.fluidtank.fabric.ae2.AE2FluidTankIntegration;
+import com.kotori316.fluidtank.fabric.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
 import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
 import com.kotori316.fluidtank.fabric.tank.*;

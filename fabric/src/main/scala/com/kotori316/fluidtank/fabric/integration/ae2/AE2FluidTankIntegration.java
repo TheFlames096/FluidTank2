@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.fabric.ae2;
+package com.kotori316.fluidtank.fabric.integration.ae2;
 
 import appeng.api.storage.MEStorage;
 import com.kotori316.fluidtank.tank.PlatformTankAccess;
