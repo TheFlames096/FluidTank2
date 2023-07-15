@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("scala")
     id("architectury-plugin")
     id("dev.architectury.loom")
     id("maven-publish")
@@ -22,6 +23,8 @@ repositories {
         content {
             includeVersion("org.typelevel", "cats-core_3", project.cats_version)
             includeVersion("org.typelevel", "cats-kernel_3", project.cats_version)
+            includeVersion("org.typelevel", "cats-core_2.13", project.cats_version)
+            includeVersion("org.typelevel", "cats-kernel_2.13", project.cats_version)
             includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
             includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion)
             // Required these libraries to execute the tests.
@@ -72,6 +75,14 @@ dependencies {
         it.parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
     }
 
+    implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
+    if (Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
+        // In idea sync, use scala2 to enable syntax highlight
+        implementation(group: 'org.typelevel', name: "cats-core_2.13", version: project.cats_version)
+    } else {
+        implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
+        implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
+    }
     testImplementation(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     testImplementation('org.junit.jupiter:junit-jupiter')
 }
@@ -84,6 +95,13 @@ tasks.named("test", Test.class) {
 }
 
 tasks.withType(JavaCompile.class).configureEach {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(ScalaCompile.class).configureEach {
+    if (Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
+        scalaCompileOptions.additionalParameters = ["-X" + "source:3"]
+    }
     options.encoding = "UTF-8"
 }
 

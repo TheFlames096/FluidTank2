@@ -1,6 +1,5 @@
 plugins {
     id("my.common")
-    id("scala")
     id("architectury-plugin").version("3.4-SNAPSHOT")
     id("dev.architectury.loom").version("1.2-SNAPSHOT")
     id("com.github.johnrengelman.shadow").version("8.1.1")
@@ -88,10 +87,6 @@ repositories {
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-
-    implementation(group: 'org.scala-lang', name: 'scala-library', version: project.scala2_version)
-    implementation(group: 'org.scala-lang', name: 'scala3-library_3', version: project.scala3_version)
-    implementation(group: 'org.typelevel', name: "cats-core_3", version: project.cats_version)
 
     runtimeOnly(group: 'com.kotori316', name: 'ScalableCatsForce'.toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: 'with-library') {
         transitive(false)
