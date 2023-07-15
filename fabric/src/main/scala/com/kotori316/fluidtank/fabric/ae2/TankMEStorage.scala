@@ -28,7 +28,7 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
     MEStorage.checkPreconditions(what, amount, mode, source)
     what match
       case key: AEFluidKey =>
-        val filled = this.tank.getConnection.getHandler.fill(fromAeFluid(key, amount), !mode.isSimulate)
+        val filled = this.tank.getConnection.getHandler.fill(fromAeFluid(key, amount), mode == Actionable.MODULATE)
         filled.amount.asForge
       case _ => 0
   }
@@ -37,7 +37,7 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
     MEStorage.checkPreconditions(what, amount, mode, source)
     what match
       case key: AEFluidKey =>
-        val drained = this.tank.getConnection.getHandler.drain(fromAeFluid(key, amount), !mode.isSimulate)
+        val drained = this.tank.getConnection.getHandler.drain(fromAeFluid(key, amount), mode == Actionable.MODULATE)
         drained.amount.asForge
       case _ => 0
   }
