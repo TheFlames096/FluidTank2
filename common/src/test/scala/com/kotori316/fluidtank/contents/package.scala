@@ -26,7 +26,7 @@ package object contents {
 
     override def fromKey(key: ResourceLocation): String = key.getPath
 
-    override def asString(a: String) = a
+    override def asString(a: String): String = a
 
     override def empty: String = ""
 

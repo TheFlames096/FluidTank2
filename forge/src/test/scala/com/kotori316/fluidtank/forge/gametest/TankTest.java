@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.forge.gametest;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.tank.TankPos;
@@ -41,6 +42,9 @@ final class TankTest {
                 GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain3", this::drain3),
                 GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fillFail1", this::fillFail1),
                 GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capability1", this::capability1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capacityWithCreative", this::capacityWithCreative),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "amountWithCreative1", this::amountWithCreative1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "amountWithCreative2", this::amountWithCreative2),
                 GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place", this::place),
                 GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place2", this::place2)
         );
@@ -60,7 +64,12 @@ final class TankTest {
     }
 
     TileTank placeTank(GameTestHelper helper, BlockPos pos, Tier tier) {
-        helper.setBlock(pos, FluidTank.TANK_MAP.get(tier).get());
+        var block = switch (tier) {
+            case CREATIVE -> FluidTank.BLOCK_CREATIVE_TANK;
+            case VOID -> FluidTank.BLOCK_VOID_TANK;
+            default -> FluidTank.TANK_MAP.get(tier);
+        };
+        helper.setBlock(pos, block.get());
         var tile = helper.getBlockEntity(pos);
         if (tile instanceof TileTank tileTank) {
             tileTank.onBlockPlacedBy();
@@ -187,6 +196,36 @@ final class TankTest {
         assertTrue(cap.isPresent());
         var handler = cap.orElseThrow(AssertionError::new);
         assertEquals(20000, handler.getTankCapacity(0));
+        helper.succeed();
+    }
+
+    void capacityWithCreative(GameTestHelper helper) {
+        var basePos = BlockPos.ZERO.above();
+        var tile = placeTank(helper, basePos, Tier.WOOD);
+        placeTank(helper, basePos.above(1), Tier.CREATIVE);
+
+        assertEquals(GenericUnit.CREATIVE_TANK(), tile.getConnection().capacity());
+        helper.succeed();
+    }
+
+    void amountWithCreative1(GameTestHelper helper) {
+        var basePos = BlockPos.ZERO.above();
+        var tile = placeTank(helper, basePos, Tier.WOOD);
+        placeTank(helper, basePos.above(1), Tier.CREATIVE);
+        tile.getConnection().getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+
+        assertEquals(GenericUnit.CREATIVE_TANK(), tile.getConnection().amount());
+        helper.succeed();
+    }
+
+    void amountWithCreative2(GameTestHelper helper) {
+        var basePos = BlockPos.ZERO.above();
+        var tile = placeTank(helper, basePos, Tier.WOOD);
+        placeTank(helper, basePos.above(1), Tier.CREATIVE);
+        placeTank(helper, basePos.above(2), Tier.CREATIVE);
+        tile.getConnection().getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+
+        assertEquals(GenericUnit.CREATIVE_TANK(), tile.getConnection().amount());
         helper.succeed();
     }
 }

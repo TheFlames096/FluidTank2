@@ -1,12 +1,13 @@
 package com.kotori316.fluidtank.connection
 
 import cats.data.Chain
+import cats.implicits.{catsSyntaxSemigroup, toFoldableOps}
 import com.kotori316.fluidtank.contents
-import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit, Tank, gaString}
+import com.kotori316.fluidtank.contents.{CreativeTank, GenericAmount, GenericUnit, Tank, gaString}
 import net.minecraft.core.BlockPos
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.function.Executable
-import org.junit.jupiter.api.*
 
 class ConnectionTest {
 
@@ -278,6 +279,50 @@ class ConnectionTest {
       assertNotEquals(c21, c22)
       assertEquals(1, c21.getTiles.size)
       assertEquals(1, c22.getTiles.size)
+    }
+  }
+
+  @Nested
+  class CapacityTest {
+    @Test
+    def normalTanks(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("", 0, 1000), ("", 0, 700))
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+      val c1 = tanks.head.connection.get
+
+      assertEquals(GenericUnit.fromFabric(100), c1.amount)
+      assertEquals(GenericUnit.fromFabric(2700), c1.capacity)
+    }
+
+    @Test
+    def withCreative1(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("", 0, 1000), ("", 0, 700)) :+ new CreativeTank(GenericAmount("a", GenericUnit.CREATIVE_TANK, Option.empty), GenericUnit.CREATIVE_TANK)
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+      val c1 = tanks.head.connection.get
+
+      val totalCapacity = initialTank.foldMap(_.capacity)
+      assertEquals(GenericUnit.fromFabric(2700) |+| GenericUnit.CREATIVE_TANK, totalCapacity, "The actual capacity must be calculated")
+      val totalAmount = initialTank.map(_.amount).fold
+      assertEquals(GenericUnit.fromFabric(100) |+| GenericUnit.CREATIVE_TANK, totalAmount, "The actual amount must be calculated")
+
+      assertEquals(GenericUnit.CREATIVE_TANK, c1.capacity, "The capacity of a connection must not over GenericUnit.CREATIVE_TANK")
+      assertEquals(GenericUnit.CREATIVE_TANK, c1.amount, "The amount of a connection must not over GenericUnit.CREATIVE_TANK")
+    }
+
+    @Test
+    def withCreative2(): Unit = {
+      val initialTank = contents.createTanks(("a", 100, 1000), ("", 0, 1000), ("", 0, 700)) ++
+        Chain(
+          new CreativeTank(GenericAmount("a", GenericUnit.CREATIVE_TANK, Option.empty), GenericUnit.CREATIVE_TANK),
+          new CreativeTank(GenericAmount("a", GenericUnit.CREATIVE_TANK, Option.empty), GenericUnit.CREATIVE_TANK))
+      val tanks = initialTank.zipWithIndex.map { case (tank, index) => StringTile(BlockPos.ZERO.atY(index), tank, None) }.toList
+      Connection.createAndInit(tanks)
+      val c1 = tanks.head.connection.get
+
+      assertEquals(GenericUnit.CREATIVE_TANK, c1.capacity, "The capacity of a connection must not over GenericUnit.CREATIVE_TANK")
+      assertEquals(GenericUnit.CREATIVE_TANK, c1.amount, "The amount of a connection must not over GenericUnit.CREATIVE_TANK")
     }
   }
 }

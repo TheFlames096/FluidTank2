@@ -17,6 +17,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.level.material.Fluids;
 import org.junit.platform.commons.support.ReflectionSupport;
+import scala.math.BigInt;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -89,6 +90,44 @@ public final class ConnectionStorageTest implements FabricGameTest {
         assertTrue(storage.isResourceBlank());
         assertEquals(FluidVariant.blank(), storage.getResource());
 
+        helper.succeed();
+    }
+
+    void getCapacity3(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.CREATIVE);
+        var storage = getStorage(helper, pos);
+
+        assertEquals(GenericUnit.CREATIVE_TANK(), BigInt.apply(storage.getCapacity()),
+                "Connection capacity must not be over GenericUnit.CREATIVE_TANK");
+        helper.succeed();
+    }
+
+    void getAmountWithCreative1(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tank = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.CREATIVE);
+
+        tank.getConnection().getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+
+        var storage = getStorage(helper, pos);
+        assertEquals(GenericUnit.CREATIVE_TANK(), BigInt.apply(storage.getAmount()),
+                "Connection capacity must not be over GenericUnit.CREATIVE_TANK");
+        helper.succeed();
+    }
+
+    void getAmountWithCreative2(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tank = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(1), Tier.CREATIVE);
+        TankTest.placeTank(helper, pos.above(2), Tier.CREATIVE);
+
+        tank.getConnection().getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+
+        var storage = getStorage(helper, pos);
+        assertEquals(GenericUnit.CREATIVE_TANK(), BigInt.apply(storage.getAmount()),
+                "Connection capacity must not be over GenericUnit.CREATIVE_TANK");
         helper.succeed();
     }
 
