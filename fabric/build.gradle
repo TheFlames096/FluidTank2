@@ -55,10 +55,10 @@ configurations {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation(group: "net.fabricmc", name: "fabric-loader", version: project.fabric_loader_version)
+    modApi(group: "net.fabricmc.fabric-api", name: "fabric-api", version: project.fabric_api_version)
 
-    modRuntimeOnly(group: 'com.kotori316', name: 'scalable-cats-force-fabric', version: project.slp_fabric_version, classifier: 'dev') { transitive false }
+    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.slp_fabric_version, classifier: "dev") { transitive false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -125,9 +125,9 @@ String createChangelog() {
 
 publishing {
     publications {
-        mavenFabric(MavenPublication) {
+        create("mavenFabric", MavenPublication.class) {
             artifactId = rootProject.maven_base_name + "-" + project.name + "-" + project.minecraft_version
-            from components.java
+            from(components["java"])
         }
     }
 
@@ -161,7 +161,7 @@ curseforge {
         addArtifact(tasks.jar)
         addArtifact(tasks.sourcesJar)
         relations {
-            requiredDependency 'scalable-cats-force'
+            requiredDependency "scalable-cats-force"
         }
     }
     options {
