@@ -8,6 +8,8 @@ pluginManagement {
     }
 }
 
+includeBuild("gradle-plugins")
+
 include("common")
 if (!Boolean.parseBoolean(System.getenv("FORGE_ONLY"))) {
     include("fabric")

@@ -1,0 +1,13 @@
+
+
+rootProject.name = "gradle-plugins"
+
+dependencyResolutionManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        google()
+    }
+}
+
+include("common")
