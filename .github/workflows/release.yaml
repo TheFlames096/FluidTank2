@@ -35,6 +35,8 @@ jobs:
             (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
       - name: GameTest
         run: ./gradlew runGameTest
+        env:
+          RUN_GAME_TEST: true
       - uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{secrets.GCP_IDENTITY_PROVIDER}}
