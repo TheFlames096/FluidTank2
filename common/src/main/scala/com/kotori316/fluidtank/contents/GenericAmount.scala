@@ -1,12 +1,11 @@
 package com.kotori316.fluidtank.contents
 
-import java.util.Objects
-
 import cats.Hash
 import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, catsSyntaxSemigroup}
-import com.kotori316.fluidtank.MCImplicits._
+import com.kotori316.fluidtank.MCImplicits.*
 import net.minecraft.nbt.CompoundTag
 
+import java.util.Objects
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit, nbt: Option[CompoundTag])

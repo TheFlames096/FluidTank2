@@ -1,8 +1,8 @@
 package com.kotori316.fluidtank.contents
 
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.function.Executable
-import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
+import org.junit.jupiter.api.*
 
 import scala.jdk.javaapi.CollectionConverters
 

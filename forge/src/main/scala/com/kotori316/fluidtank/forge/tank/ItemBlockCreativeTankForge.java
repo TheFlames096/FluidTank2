@@ -1,13 +1,12 @@
 package com.kotori316.fluidtank.forge.tank;
 
-import java.util.function.Consumer;
-
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-
 import com.kotori316.fluidtank.forge.render.RenderItemTank;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.ItemBlockCreativeTank;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+
+import java.util.function.Consumer;
 
 public final class ItemBlockCreativeTankForge extends ItemBlockCreativeTank {
     public ItemBlockCreativeTankForge(BlockTank b) {

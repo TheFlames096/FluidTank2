@@ -1,6 +1,8 @@
 package com.kotori316.fluidtank.forge.recipe;
 
 import com.google.gson.JsonObject;
+import com.kotori316.fluidtank.recipe.TierRecipe;
+import com.kotori316.fluidtank.tank.Tier;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -9,9 +11,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
-
-import com.kotori316.fluidtank.recipe.TierRecipe;
-import com.kotori316.fluidtank.tank.Tier;
 
 public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<CraftingContainer> {
     public static final RecipeSerializer<TierRecipe> SERIALIZER = new Serializer();

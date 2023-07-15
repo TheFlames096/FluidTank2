@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.forge.tank
 
 import com.kotori316.fluidtank.contents.{DefaultTransferEnv, GenericUnit, Tank, TankUtil}
 import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, fluidAccess}
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.minecraft.core.Direction
 import net.minecraft.world.item.{BlockItem, ItemStack}

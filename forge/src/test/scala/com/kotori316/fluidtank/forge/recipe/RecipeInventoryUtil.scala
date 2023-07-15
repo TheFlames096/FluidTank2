@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.forge.recipe
 
 import com.kotori316.fluidtank.fluids.FluidAmount
 import com.kotori316.fluidtank.forge.FluidTank
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.forge.tank.TankFluidItemHandler
 import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier}
 import net.minecraft.world.SimpleContainer

@@ -1,8 +1,5 @@
 package com.kotori316.fluidtank;
 
-import java.util.IdentityHashMap;
-import java.util.List;
-
 import com.google.common.collect.Iterables;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.MappedRegistry;
@@ -10,6 +7,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
+
+import java.util.IdentityHashMap;
+import java.util.List;
 
 public class BeforeMC {
 

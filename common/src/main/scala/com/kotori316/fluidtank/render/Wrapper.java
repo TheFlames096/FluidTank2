@@ -1,11 +1,11 @@
 package com.kotori316.fluidtank.render;
 
-import java.util.Objects;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+
+import java.util.Objects;
 
 final class Wrapper {
 
@@ -75,6 +75,6 @@ final class Wrapper {
     @Override
     public String toString() {
         return "Wrapper[" +
-               "buffer=" + buffer + ']';
+                "buffer=" + buffer + ']';
     }
 }

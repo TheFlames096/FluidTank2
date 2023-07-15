@@ -1,13 +1,13 @@
 package com.kotori316.fluidtank.tank
 
-import java.util
-
 import com.kotori316.fluidtank.contents.{GenericAccess, GenericUnit}
 import com.kotori316.fluidtank.fluids.{PlatformFluidAccess, fluidAccess}
 import net.minecraft.network.chat.Component
-import net.minecraft.world.item.{BlockItem, Item, ItemStack, Rarity, TooltipFlag}
+import net.minecraft.world.item.*
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.material.Fluid
+
+import java.util
 
 class ItemBlockTank(val blockTank: BlockTank) extends BlockItem(blockTank, new Item.Properties()) {
   override def toString: String = blockTank.tier.getBlockName

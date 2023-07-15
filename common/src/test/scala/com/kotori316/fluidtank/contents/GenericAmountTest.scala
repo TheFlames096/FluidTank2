@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.contents
 
 import net.minecraft.nbt.CompoundTag
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotEquals, assertNotNull, assertTrue}
-import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
+import org.junit.jupiter.api.*
 
 import scala.language.implicitConversions
 

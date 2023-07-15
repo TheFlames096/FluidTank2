@@ -1,11 +1,10 @@
 package com.kotori316.fluidtank.fabric.recipe;
 
+import com.kotori316.fluidtank.recipe.TierRecipe;
+import com.kotori316.fluidtank.tank.Tier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-
-import com.kotori316.fluidtank.recipe.TierRecipe;
-import com.kotori316.fluidtank.tank.Tier;
 
 public final class TierRecipeFabric extends TierRecipe {
     public static final RecipeSerializer<TierRecipe> SERIALIZER = new Serializer();

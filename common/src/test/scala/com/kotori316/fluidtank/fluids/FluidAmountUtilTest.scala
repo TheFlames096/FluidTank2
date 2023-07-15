@@ -3,8 +3,8 @@ package com.kotori316.fluidtank.fluids
 import com.kotori316.fluidtank.BeforeMC
 import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit, gaString}
 import net.minecraft.world.item.{ItemStack, Items}
-import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.*
 
 class FluidAmountUtilTest extends BeforeMC {
 

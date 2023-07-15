@@ -3,14 +3,14 @@ package com.kotori316.fluidtank.forge.tank
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank, TankUtil}
 import com.kotori316.fluidtank.fluids.{FluidAmountUtil, fluidAccess}
 import com.kotori316.fluidtank.forge.BeforeMC
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.{BlockItem, ItemStack, Items}
 import net.minecraft.world.level.material.Fluids
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.capability.IFluidHandler
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{DynamicTest, Nested, Test, TestFactory}
 
 class TankFluidItemHandlerTest extends BeforeMC {

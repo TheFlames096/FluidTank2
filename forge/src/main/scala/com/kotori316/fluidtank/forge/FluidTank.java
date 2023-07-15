@@ -1,14 +1,17 @@
 package com.kotori316.fluidtank.forge;
 
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.PlatformAccess;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
+import com.kotori316.fluidtank.forge.message.PacketHandler;
+import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
+import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
+import com.kotori316.fluidtank.forge.tank.*;
+import com.kotori316.fluidtank.tank.*;
 import com.mojang.datafixers.DSL;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -44,28 +47,13 @@ import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.PlatformAccess;
-import com.kotori316.fluidtank.contents.GenericAmount;
-import com.kotori316.fluidtank.contents.GenericUnit;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
-import com.kotori316.fluidtank.forge.message.PacketHandler;
-import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
-import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
-import com.kotori316.fluidtank.forge.tank.BlockCreativeTankForge;
-import com.kotori316.fluidtank.forge.tank.BlockTankForge;
-import com.kotori316.fluidtank.forge.tank.BlockVoidTankForge;
-import com.kotori316.fluidtank.forge.tank.TileCreativeTankForge;
-import com.kotori316.fluidtank.forge.tank.TileTankForge;
-import com.kotori316.fluidtank.forge.tank.TileVoidTankForge;
-import com.kotori316.fluidtank.tank.BlockTank;
-import com.kotori316.fluidtank.tank.ItemBlockTank;
-import com.kotori316.fluidtank.tank.TankLootFunction;
-import com.kotori316.fluidtank.tank.Tier;
-import com.kotori316.fluidtank.tank.TileCreativeTank;
-import com.kotori316.fluidtank.tank.TileTank;
-import com.kotori316.fluidtank.tank.TileVoidTank;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mod(FluidTankCommon.modId)
 public final class FluidTank {
@@ -95,25 +83,25 @@ public final class FluidTank {
     private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FluidTankCommon.modId);
 
     public static final Map<Tier, RegistryObject<BlockTankForge>> TANK_MAP = Stream.of(Tier.values())
-        .filter(Tier::isNormalTankTier)
-        .collect(Collectors.toMap(Function.identity(), t -> BLOCK_REGISTER.register(t.getBlockName(), () -> new BlockTankForge(t))));
+            .filter(Tier::isNormalTankTier)
+            .collect(Collectors.toMap(Function.identity(), t -> BLOCK_REGISTER.register(t.getBlockName(), () -> new BlockTankForge(t))));
     public static final RegistryObject<BlockCreativeTankForge> BLOCK_CREATIVE_TANK =
-        BLOCK_REGISTER.register(Tier.CREATIVE.getBlockName(), BlockCreativeTankForge::new);
+            BLOCK_REGISTER.register(Tier.CREATIVE.getBlockName(), BlockCreativeTankForge::new);
     public static final RegistryObject<BlockVoidTankForge> BLOCK_VOID_TANK =
-        BLOCK_REGISTER.register(Tier.VOID.getBlockName(), BlockVoidTankForge::new);
+            BLOCK_REGISTER.register(Tier.VOID.getBlockName(), BlockVoidTankForge::new);
     public static final Map<Tier, RegistryObject<ItemBlockTank>> TANK_ITEM_MAP =
-        Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> ITEM_REGISTER.register(e.getKey().getBlockName(), () -> e.getValue().get().itemBlock())));
+            Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> ITEM_REGISTER.register(e.getKey().getBlockName(), () -> e.getValue().get().itemBlock())));
     public static final RegistryObject<BlockEntityType<TileTankForge>> TILE_TANK_TYPE =
-        BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
-                .build(DSL.emptyPartType()));
+            BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+                    BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
+                            .build(DSL.emptyPartType()));
     public static final RegistryObject<BlockEntityType<TileCreativeTankForge>> TILE_CREATIVE_TANK_TYPE =
-        BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileCreativeTankForge::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
+            BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+                    BlockEntityType.Builder.of(TileCreativeTankForge::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
-        BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-            BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
+            BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+                    BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
     public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
@@ -127,8 +115,8 @@ public final class FluidTank {
         private static void init(RegisterEvent event) {
             if (event.getRegistryKey().equals(Registries.LOOT_FUNCTION_TYPE)) {
                 Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-                    new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
-                    TANK_LOOT_FUNCTION);
+                        new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
+                        TANK_LOOT_FUNCTION);
             }
         }
     }
@@ -150,8 +138,8 @@ public final class FluidTank {
         @NotNull
         public GenericAmount<Fluid> getFluidContained(ItemStack stack) {
             return FluidUtil.getFluidContained(stack)
-                .map(ForgeConverter::toAmount)
-                .orElse(FluidAmountUtil.EMPTY());
+                    .map(ForgeConverter::toAmount)
+                    .orElse(FluidAmountUtil.EMPTY());
         }
 
         @Override
@@ -167,21 +155,21 @@ public final class FluidTank {
         @Override
         public @NotNull TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
-                .map(h -> {
-                    int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
-                    return new TransferStack(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
-                })
-                .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
+                    .map(h -> {
+                        int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
+                        return new TransferStack(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
+                    })
+                    .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
         }
 
         @Override
         public @NotNull TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
-                .map(h -> {
-                    var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
-                    return new TransferStack(ForgeConverter.toAmount(drained), h.getContainer());
-                })
-                .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
+                    .map(h -> {
+                        var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
+                        return new TransferStack(ForgeConverter.toAmount(drained), h.getContainer());
+                    })
+                    .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
         }
 
         @Override
@@ -217,7 +205,7 @@ public final class FluidTank {
         @Override
         public Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap() {
             return Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
         @Override
@@ -244,7 +232,7 @@ public final class FluidTank {
         builder.displayItems((parameters, output) -> {
             // Tanks
             TANK_ITEM_MAP.values().stream().map(RegistryObject::get).sorted(Comparator.comparing(i -> i.blockTank().tier()))
-                .forEach(output::accept);
+                    .forEach(output::accept);
         });
     }
 }

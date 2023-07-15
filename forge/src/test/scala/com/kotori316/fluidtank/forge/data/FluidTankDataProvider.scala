@@ -1,7 +1,5 @@
 package com.kotori316.fluidtank.forge.data
 
-import java.util.Collections
-
 import com.google.gson.JsonArray
 import com.kotori316.fluidtank.FluidTankCommon
 import net.minecraft.data.loot.LootTableProvider
@@ -11,6 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import org.slf4j.MarkerFactory
 
+import java.util.Collections
 import scala.jdk.javaapi.CollectionConverters
 
 @Mod.EventBusSubscriber(modid = FluidTankCommon.modId, bus = Mod.EventBusSubscriber.Bus.MOD)

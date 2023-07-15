@@ -1,12 +1,12 @@
 package com.kotori316.fluidtank.tank;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 public interface PlatformTankAccess {
     @NotNull

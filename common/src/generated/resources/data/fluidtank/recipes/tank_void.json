@@ -10,7 +10,7 @@
       }
     }
   ],
-  "fabric:load_conditions": [ ],
+  "fabric:load_conditions": [],
   "key": {
     "o": [
       {

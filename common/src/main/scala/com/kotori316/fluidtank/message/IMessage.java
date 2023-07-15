@@ -1,10 +1,9 @@
 package com.kotori316.fluidtank.message;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.fluidtank.FluidTankCommon;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-
-import com.kotori316.fluidtank.FluidTankCommon;
 
 public interface IMessage<T extends IMessage<T>> {
     void write(FriendlyByteBuf buffer);

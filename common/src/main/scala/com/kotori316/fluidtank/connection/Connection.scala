@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.connection
 
 import cats.implicits.{toFoldableOps, toShow}
 import com.kotori316.fluidtank.FluidTankCommon
-import com.kotori316.fluidtank.MCImplicits._
+import com.kotori316.fluidtank.MCImplicits.*
 import com.kotori316.fluidtank.connection.ConnectionHelper.ConnectionHelperMethods
 import com.kotori316.fluidtank.contents.{ChainTanksHandler, GenericAmount, GenericUnit}
 import com.kotori316.fluidtank.tank.TankPos

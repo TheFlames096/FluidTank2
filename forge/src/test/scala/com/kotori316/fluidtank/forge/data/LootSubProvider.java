@@ -1,19 +1,18 @@
 package com.kotori316.fluidtank.forge.data;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.stream.Stream;
-
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.forge.FluidTank;
+import com.kotori316.fluidtank.tank.BlockTank;
+import com.kotori316.fluidtank.tank.TankLootFunction;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.registries.RegistryObject;
 
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.forge.FluidTank;
-import com.kotori316.fluidtank.tank.BlockTank;
-import com.kotori316.fluidtank.tank.TankLootFunction;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Stream;
 
 final class LootSubProvider extends BlockLootSubProvider {
     LootSubProvider() {
@@ -38,6 +37,6 @@ final class LootSubProvider extends BlockLootSubProvider {
 
     private LootTable.Builder tankContent(BlockTank tank) {
         return createSingleItemTable(tank)
-            .apply(TankLootFunction.builder());
+                .apply(TankLootFunction.builder());
     }
 }

@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.forge.fluid
 
 import com.kotori316.fluidtank.fluids.FluidAmountUtil
 import com.kotori316.fluidtank.forge.BeforeMC
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import net.minecraft.world.level.material.Fluids
 import net.minecraftforge.fluids.{FluidStack, FluidType}
 import org.junit.jupiter.api.{Assertions, DynamicNode, DynamicTest, TestFactory}

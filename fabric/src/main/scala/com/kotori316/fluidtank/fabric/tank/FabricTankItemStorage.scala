@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.fabric.tank
 
-import com.kotori316.fluidtank.contents.{DefaultTransferEnv, GenericUnit, Operations, Tank, TankUtil}
+import com.kotori316.fluidtank.contents.*
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter
 import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, fluidAccess}
 import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier, TileTank}

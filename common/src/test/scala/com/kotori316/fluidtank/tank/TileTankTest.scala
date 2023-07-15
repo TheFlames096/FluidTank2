@@ -3,10 +3,10 @@ package com.kotori316.fluidtank.tank
 import com.kotori316.fluidtank.BeforeMC
 import com.kotori316.fluidtank.connection.Connection
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank}
-import com.kotori316.fluidtank.fluids._
+import com.kotori316.fluidtank.fluids.*
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{Nested, Test}
 
 class TileTankTest extends BeforeMC {

@@ -1,10 +1,12 @@
 package com.kotori316.fluidtank.forge.gametest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
-
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.forge.FluidTank;
+import com.kotori316.fluidtank.tank.TankPos;
+import com.kotori316.fluidtank.tank.Tier;
+import com.kotori316.fluidtank.tank.TileTank;
+import com.kotori316.testutil.GameTestUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -17,18 +19,12 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.forge.FluidTank;
-import com.kotori316.fluidtank.tank.TankPos;
-import com.kotori316.fluidtank.tank.Tier;
-import com.kotori316.fluidtank.tank.TileTank;
-import com.kotori316.testutil.GameTestUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
@@ -38,26 +34,26 @@ final class TankTest {
         final var prefix = getClass().getSimpleName().toLowerCase(Locale.ROOT) + "_";
         final var batch = "defaultBatch";
         List<TestFunction> testFunctions = List.of(
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill1", this::fill1),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill2", this::fill2),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain1", this::drain1),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain2", this::drain2),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain3", this::drain3),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fillFail1", this::fillFail1),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capability1", this::capability1),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place", this::place),
-            GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place2", this::place2)
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill1", this::fill1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill2", this::fill2),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain1", this::drain1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain2", this::drain2),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain3", this::drain3),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fillFail1", this::fillFail1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capability1", this::capability1),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place", this::place),
+                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place2", this::place2)
         );
         var expectCount = Stream.of(getClass().getDeclaredMethods())
-            .filter(m -> m.getReturnType() == Void.TYPE)
-            .filter(m -> m.getParameterCount() > 0)
-            .filter(m -> m.getParameterTypes()[0] == GameTestHelper.class)
-            .count();
+                .filter(m -> m.getReturnType() == Void.TYPE)
+                .filter(m -> m.getParameterCount() > 0)
+                .filter(m -> m.getParameterTypes()[0] == GameTestHelper.class)
+                .count();
         if (expectCount != testFunctions.size()) {
             // Not all test registered.
             var copy = new ArrayList<>(testFunctions);
             copy.add(GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "assumption_fail", g ->
-                g.fail("Not all test registered in TankTest, expect: %d, actual: %d".formatted(expectCount, testFunctions.size()))));
+                    g.fail("Not all test registered in TankTest, expect: %d, actual: %d".formatted(expectCount, testFunctions.size()))));
             return copy;
         }
         return testFunctions;
@@ -119,7 +115,7 @@ final class TankTest {
         helper.useBlock(basePos, player);
         assertEquals(FluidAmountUtil.BUCKET_WATER(), tile.getTank().content());
         assertEquals(Items.BUCKET, player.getItemInHand(InteractionHand.MAIN_HAND).getItem(),
-            "Inventory item must be consumed and replaced.");
+                "Inventory item must be consumed and replaced.");
         helper.succeed();
     }
 

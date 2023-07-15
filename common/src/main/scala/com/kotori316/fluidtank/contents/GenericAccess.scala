@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.contents
 
-import net.minecraft.nbt.{CompoundTag, Tag => NbtTag}
+import net.minecraft.nbt.{CompoundTag, Tag as NbtTag}
 import net.minecraft.resources.ResourceLocation
 
 import scala.reflect.ClassTag

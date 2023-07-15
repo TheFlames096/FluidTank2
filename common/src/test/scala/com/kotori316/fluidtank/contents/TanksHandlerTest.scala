@@ -1,12 +1,12 @@
 package com.kotori316.fluidtank.contents
 
 import cats.data.Chain
-import org.junit.jupiter.api.Assertions._
-import org.junit.jupiter.api.{DynamicNode, DynamicTest, Nested, Test, TestFactory}
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.*
 
 class TanksHandlerTest {
 
-  import TanksHandlerTest._
+  import TanksHandlerTest.*
 
   def testBothMany(executables: Seq[(String, ImplForTest => Unit)]): Array[DynamicNode] = {
     val emptyTanks = Seq(("No Limit", new ImplNoLimit), ("With Limit", new ImplLimit))

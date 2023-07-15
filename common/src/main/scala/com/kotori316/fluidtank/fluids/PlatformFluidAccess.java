@@ -1,5 +1,8 @@
 package com.kotori316.fluidtank.fluids;
 
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -14,10 +17,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.contents.GenericAmount;
-import com.kotori316.fluidtank.contents.GenericUnit;
 
 public interface PlatformFluidAccess {
     @NotNull
@@ -109,9 +108,9 @@ public interface PlatformFluidAccess {
         @Override
         public String toString() {
             return "TransferStack[" +
-                   "moved=" + moved + ", " +
-                   "toReplace=" + toReplace + ", " +
-                   "shouldMove=" + shouldMove + ']';
+                    "moved=" + moved + ", " +
+                    "toReplace=" + toReplace + ", " +
+                    "shouldMove=" + shouldMove + ']';
         }
     }
 }

@@ -1,9 +1,8 @@
 package com.kotori316.fluidtank.forge;
 
-import org.junit.jupiter.api.BeforeAll;
-
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.testutil.MCTestInitializer;
+import org.junit.jupiter.api.BeforeAll;
 
 public abstract class BeforeMC {
     @BeforeAll

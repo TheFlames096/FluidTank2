@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.forge;
 
-import java.util.Optional;
-
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.forge.render.RenderTank;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -13,8 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.forge.render.RenderTank;
+import java.util.Optional;
 
 public abstract class SideProxy {
 

@@ -1,5 +1,12 @@
 package com.kotori316.fluidtank.forge.tank;
 
+import com.kotori316.fluidtank.contents.Tank;
+import com.kotori316.fluidtank.fluids.FluidConnection;
+import com.kotori316.fluidtank.forge.message.FluidTankContentMessageForge;
+import com.kotori316.fluidtank.forge.message.PacketHandler;
+import com.kotori316.fluidtank.tank.Tier;
+import com.kotori316.fluidtank.tank.TileTank;
+import com.kotori316.fluidtank.tank.VisualTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -10,14 +17,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import com.kotori316.fluidtank.contents.Tank;
-import com.kotori316.fluidtank.fluids.FluidConnection;
-import com.kotori316.fluidtank.forge.message.FluidTankContentMessageForge;
-import com.kotori316.fluidtank.forge.message.PacketHandler;
-import com.kotori316.fluidtank.tank.Tier;
-import com.kotori316.fluidtank.tank.TileTank;
-import com.kotori316.fluidtank.tank.VisualTank;
 
 public final class TileTankForge extends TileTank {
     public TileTankForge(Tier tier, BlockPos p, BlockState s) {

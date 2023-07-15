@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.forge.render
 
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter._
+import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.forge.render.RenderTank.getVisualTank
 import com.kotori316.fluidtank.forge.tank.{TileCreativeTankForge, TileTankForge}
 import com.kotori316.fluidtank.render.Box

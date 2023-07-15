@@ -1,7 +1,5 @@
 package com.kotori316.fluidtank.forge.data
 
-import java.util.concurrent.CompletableFuture
-
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.forge.FluidTank
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge
@@ -15,6 +13,7 @@ import net.minecraft.world.item.{Item, Items}
 import net.minecraft.world.level.ItemLike
 import net.minecraftforge.common.Tags
 
+import java.util.concurrent.CompletableFuture
 import scala.jdk.javaapi.CollectionConverters
 
 class RecipeProvider(gen: DataGenerator) extends DataProvider {

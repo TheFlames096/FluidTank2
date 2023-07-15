@@ -39,7 +39,7 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "fabric:load_conditions": [ ],
+  "fabric:load_conditions": [],
   "requirements": [
     [
       "has_the_recipe",

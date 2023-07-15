@@ -1,15 +1,14 @@
 package com.kotori316.fluidtank.fabric.tank;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-
 import com.kotori316.fluidtank.contents.Tank;
 import com.kotori316.fluidtank.fabric.message.FluidTankContentMessageFabric;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
 import com.kotori316.fluidtank.tank.VisualTank;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 
 public final class TileTankFabric extends TileTank {
     public TileTankFabric(Tier tier, BlockPos p, BlockState s) {

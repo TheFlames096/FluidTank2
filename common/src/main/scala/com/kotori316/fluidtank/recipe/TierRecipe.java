@@ -1,14 +1,18 @@
 package com.kotori316.fluidtank.recipe;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.google.gson.JsonObject;
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
+import com.kotori316.fluidtank.contents.Tank;
+import com.kotori316.fluidtank.contents.TankUtil;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidKey;
+import com.kotori316.fluidtank.item.PlatformItemAccess;
+import com.kotori316.fluidtank.tank.ItemBlockTank;
+import com.kotori316.fluidtank.tank.PlatformTankAccess;
+import com.kotori316.fluidtank.tank.Tier;
+import com.kotori316.fluidtank.tank.TileTank;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -29,18 +33,13 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.contents.GenericAmount;
-import com.kotori316.fluidtank.contents.GenericUnit;
-import com.kotori316.fluidtank.contents.Tank;
-import com.kotori316.fluidtank.contents.TankUtil;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.fluids.FluidKey;
-import com.kotori316.fluidtank.item.PlatformItemAccess;
-import com.kotori316.fluidtank.tank.ItemBlockTank;
-import com.kotori316.fluidtank.tank.PlatformTankAccess;
-import com.kotori316.fluidtank.tank.Tier;
-import com.kotori316.fluidtank.tank.TileTank;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class TierRecipe implements CraftingRecipe {
     private static final Logger LOGGER = LoggerFactory.getLogger(TierRecipe.class);
@@ -104,36 +103,36 @@ public abstract class TierRecipe implements CraftingRecipe {
 
         // Items are placed correctly.
         List<ItemStack> tankStacks = IntStream.range(0, craftingInventory.getContainerSize())
-            .mapToObj(craftingInventory::getItem)
-            .filter(this.tankItem)
-            .toList();
+                .mapToObj(craftingInventory::getItem)
+                .filter(this.tankItem)
+                .toList();
         return tankStacks.size() == 4 &&
-               tankStacks.stream().map(BlockItem::getBlockEntityData)
-                   .filter(Objects::nonNull)
-                   .map(nbt -> TankUtil.load(nbt.getCompound(TileTank.KEY_TANK()), FluidAmountUtil.access()))
-                   .map(Tank::content)
-                   .filter(GenericAmount::nonEmpty)
-                   .map(FluidKey::from)
-                   .distinct()
-                   .count() <= 1;
+                tankStacks.stream().map(BlockItem::getBlockEntityData)
+                        .filter(Objects::nonNull)
+                        .map(nbt -> TankUtil.load(nbt.getCompound(TileTank.KEY_TANK()), FluidAmountUtil.access()))
+                        .map(Tank::content)
+                        .filter(GenericAmount::nonEmpty)
+                        .map(FluidKey::from)
+                        .distinct()
+                        .count() <= 1;
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
         if (!this.checkInv(inv)) {
             LOGGER.error("Requested to return crafting result for invalid inventory. {}",
-                IntStream.range(0, inv.getContainerSize()).mapToObj(inv::getItem).collect(Collectors.toList()));
+                    IntStream.range(0, inv.getContainerSize()).mapToObj(inv::getItem).collect(Collectors.toList()));
             return ItemStack.EMPTY;
         }
         ItemStack result = getResultItem(access);
         GenericAmount<Fluid> fluidAmount = IntStream.range(0, inv.getContainerSize()).mapToObj(inv::getItem)
-            .filter(s -> s.getItem() instanceof ItemBlockTank)
-            .map(BlockItem::getBlockEntityData)
-            .filter(Objects::nonNull)
-            .map(nbt -> TankUtil.load(nbt.getCompound(TileTank.KEY_TANK()), FluidAmountUtil.access()))
-            .map(Tank::content)
-            .filter(GenericAmount::nonEmpty)
-            .reduce(GenericAmount::add).orElse(FluidAmountUtil.EMPTY());
+                .filter(s -> s.getItem() instanceof ItemBlockTank)
+                .map(BlockItem::getBlockEntityData)
+                .filter(Objects::nonNull)
+                .map(nbt -> TankUtil.load(nbt.getCompound(TileTank.KEY_TANK()), FluidAmountUtil.access()))
+                .map(Tank::content)
+                .filter(GenericAmount::nonEmpty)
+                .reduce(GenericAmount::add).orElse(FluidAmountUtil.EMPTY());
 
         if (fluidAmount.nonEmpty()) {
             CompoundTag compound = new CompoundTag();
@@ -182,12 +181,12 @@ public abstract class TierRecipe implements CraftingRecipe {
     @Override
     public NonNullList<ItemStack> getRemainingItems(CraftingContainer inv) {
         return IntStream.range(0, inv.getContainerSize())
-            .mapToObj(inv::getItem)
-            .map(stack -> {
-                if (stack.getItem() instanceof ItemBlockTank) return ItemStack.EMPTY;
-                else return PlatformItemAccess.getInstance().getCraftingRemainingItem(stack);
-            })
-            .collect(Collectors.toCollection(NonNullList::create));
+                .mapToObj(inv::getItem)
+                .map(stack -> {
+                    if (stack.getItem() instanceof ItemBlockTank) return ItemStack.EMPTY;
+                    else return PlatformItemAccess.getInstance().getCraftingRemainingItem(stack);
+                })
+                .collect(Collectors.toCollection(NonNullList::create));
     }
 
     public Tier getTier() {

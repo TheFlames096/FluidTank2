@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.contents
 
 import cats.data.Chain
-import cats.implicits._
+import cats.implicits.*
 import cats.{Foldable, Monad, MonoidK}
 import com.kotori316.fluidtank.contents.Operations.ListTankOperation
 

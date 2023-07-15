@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [ ],
+  "conditions": [],
   "criteria": {
     "has_tank_wood": {
       "conditions": {
@@ -21,7 +21,7 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "fabric:load_conditions": [ ],
+  "fabric:load_conditions": [],
   "requirements": [
     [
       "has_the_recipe",

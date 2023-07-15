@@ -1,9 +1,9 @@
 package com.kotori316.fluidtank.tank;
 
-import java.util.Locale;
-
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+
+import java.util.Locale;
 
 public enum TankPos implements StringRepresentable, Comparable<TankPos> {
     TOP, MIDDLE, BOTTOM, SINGLE;

@@ -1,5 +1,7 @@
 package com.kotori316.fluidtank.forge.tank;
 
+import com.kotori316.fluidtank.fluids.FluidConnection;
+import com.kotori316.fluidtank.tank.TileVoidTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -9,9 +11,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import com.kotori316.fluidtank.fluids.FluidConnection;
-import com.kotori316.fluidtank.tank.TileVoidTank;
 
 public final class TileVoidTankForge extends TileVoidTank {
     public TileVoidTankForge(BlockPos p, BlockState s) {

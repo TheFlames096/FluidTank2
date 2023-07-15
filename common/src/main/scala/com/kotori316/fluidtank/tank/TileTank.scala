@@ -2,10 +2,10 @@ package com.kotori316.fluidtank.tank
 
 import cats.implicits.toShow
 import com.kotori316.fluidtank.FluidTankCommon
-import com.kotori316.fluidtank.MCImplicits._
+import com.kotori316.fluidtank.MCImplicits.*
 import com.kotori316.fluidtank.connection.Connection
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank, TankUtil}
-import com.kotori316.fluidtank.fluids._
+import com.kotori316.fluidtank.fluids.*
 import com.kotori316.fluidtank.tank.TileTank.{KEY_STACK_NAME, KEY_TANK, KEY_TIER}
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -108,8 +108,7 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
 
   def onTickLoading(): Unit = {
     // Do nothing if the connection is already created.
-    if (!this.connection.isDummy) return
-    {
+    if (!this.connection.isDummy) return {
       FluidTankCommon.LOGGER.debug(FluidTankCommon.MARKER_TANK,
         "Connection {} loaded in onLoading. At={}, connection={}",
         "will be",

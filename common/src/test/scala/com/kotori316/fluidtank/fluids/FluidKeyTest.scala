@@ -5,7 +5,7 @@ import com.kotori316.fluidtank.BeforeMC
 import com.kotori316.fluidtank.contents.GenericUnit
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.material.Fluids
-import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class FluidKeyTest extends BeforeMC {

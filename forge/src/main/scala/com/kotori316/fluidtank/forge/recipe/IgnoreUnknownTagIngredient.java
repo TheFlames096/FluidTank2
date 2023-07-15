@@ -1,15 +1,10 @@
 package com.kotori316.fluidtank.forge.recipe;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.kotori316.fluidtank.FluidTankCommon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +21,11 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import com.kotori316.fluidtank.FluidTankCommon;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
     public static final IIngredientSerializer<IgnoreUnknownTagIngredient> SERIALIZER = new Serializer();
@@ -66,13 +65,13 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
             return json;
         }
         var values = this.values.stream().map(Value::serialize)
-            .reduce(new JsonArray(), (a, object) -> {
-                a.add(object);
-                return a;
-            }, (a1, a2) -> {
-                a1.addAll(a2);
-                return a1;
-            });
+                .reduce(new JsonArray(), (a, object) -> {
+                    a.add(object);
+                    return a;
+                }, (a1, a2) -> {
+                    a1.addAll(a2);
+                    return a1;
+                });
         json.add("values", values);
         return json;
     }
@@ -117,9 +116,9 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
                 valueList = List.of(getValue(json));
             } else if (json.has("values")) {
                 valueList = StreamSupport.stream(json.getAsJsonArray("values").spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(Serializer::getValue)
-                    .toList();
+                        .map(JsonElement::getAsJsonObject)
+                        .map(Serializer::getValue)
+                        .toList();
             } else {
                 throw new JsonParseException("An IgnoreUnknownTagIngredient entry needs either a tag, an item or an array");
             }
