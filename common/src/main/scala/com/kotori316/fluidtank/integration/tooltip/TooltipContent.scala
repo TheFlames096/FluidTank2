@@ -1,8 +1,8 @@
 package com.kotori316.fluidtank.integration.tooltip
 
 import com.kotori316.fluidtank.FluidTankCommon
-import com.kotori316.fluidtank.fluids.{FluidAmountUtil, PlatformFluidAccess}
-import com.kotori316.fluidtank.tank.{TileTank, TileVoidTank}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, PlatformFluidAccess}
+import com.kotori316.fluidtank.tank.{Tier, TileTank, TileVoidTank}
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -15,6 +15,7 @@ import scala.util.chaining.scalaUtilChainingOps
 
 object TooltipContent {
   final val JADE_TOOLTIP_UID = new ResourceLocation(FluidTankCommon.modId, "jade_plugin")
+  final val TOP_TOOLTIP_UID = new ResourceLocation(FluidTankCommon.modId, "top_plugin")
   private final val KEY_TIER = TileTank.KEY_TIER
   private final val KEY_FLUID = "fluid"
   private final val KEY_CAPACITY = "capacity"
@@ -33,10 +34,25 @@ object TooltipContent {
           compoundTag.putLong(KEY_CAPACITY, tank.getConnection.capacity.asDisplay)
           compoundTag.putInt(KEY_COMPARATOR, tank.getConnection.getComparatorLevel)
         }
+      case _ =>
     }
   }
 
   final def getTooltipText(tankData: CompoundTag, tank: TileTank, isShort: Boolean, isCompact: Boolean, locale: Locale): Seq[Component] = {
+    getTooltipText(
+      tier = tank.tier,
+      fluid = FluidAmountUtil.fromTag(tankData.getCompound(KEY_FLUID)),
+      capacity = tankData.getLong(KEY_CAPACITY),
+      comparator = tankData.getInt(KEY_COMPARATOR),
+      hasCreative = tankData.getBoolean(KEY_CREATIVE),
+      isShort = isShort,
+      isCompact = isCompact,
+      locale = locale
+    )
+  }
+
+  final def getTooltipText(tier: Tier, fluid: FluidAmount, capacity: Long, comparator: Int, hasCreative: Boolean,
+                           isShort: Boolean, isCompact: Boolean, locale: Locale): Seq[Component] = {
     val numberFormat: Long => String = if (isCompact) {
       val formatter = NumberFormat.getCompactNumberInstance(locale, NumberFormat.Style.SHORT)
         .tap(_.setMinimumFractionDigits(1))
@@ -45,7 +61,6 @@ object TooltipContent {
     } else {
       (n: Long) => n.toString
     }
-    val fluid = FluidAmountUtil.fromTag(tankData.getCompound(KEY_FLUID))
     val fluidName = if (fluid.nonEmpty) {
       PlatformFluidAccess.getInstance().getDisplayName(fluid)
     } else {
@@ -53,31 +68,31 @@ object TooltipContent {
     }
 
     if (isShort) {
-      if (tank.isInstanceOf[TileVoidTank]) Seq.empty
-      else if (tankData.getBoolean(KEY_CREATIVE)) {
+      if (tier == Tier.VOID) Seq.empty
+      else if (hasCreative) {
         Seq(fluidName)
       } else {
         Seq(Component.translatable("fluidtank.waila.short",
           fluidName,
           numberFormat(fluid.amount.asDisplay),
-          numberFormat(tankData.getLong(KEY_CAPACITY)),
+          numberFormat(capacity),
         ))
       }
     } else {
-      val tier = Seq(Component.translatable("fluidtank.waila.tier", tank.tier.toString))
-      if (tank.isInstanceOf[TileVoidTank]) {
-        tier
+      val tierText = Seq(Component.translatable("fluidtank.waila.tier", tier.toString))
+      if (tier == Tier.VOID) {
+        tierText
       }
-      else if (tankData.getBoolean(KEY_CREATIVE)) {
-        tier ++ Seq(
+      else if (hasCreative) {
+        tierText ++ Seq(
           Component.translatable("fluidtank.waila.content", fluidName),
         )
       } else {
-        tier ++ Seq(
+        tierText ++ Seq(
           Component.translatable("fluidtank.waila.content", fluidName),
           Component.translatable("fluidtank.waila.amount", numberFormat(fluid.amount.asDisplay)),
-          Component.translatable("fluidtank.waila.capacity", tankData.getLong(KEY_CAPACITY)),
-          Component.translatable("fluidtank.waila.comparator", tankData.getLong(KEY_COMPARATOR)),
+          Component.translatable("fluidtank.waila.capacity", capacity),
+          Component.translatable("fluidtank.waila.comparator", comparator),
         )
       }
     }

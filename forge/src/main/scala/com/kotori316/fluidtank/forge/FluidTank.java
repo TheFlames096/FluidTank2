@@ -7,6 +7,7 @@ import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
+import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
@@ -73,6 +74,7 @@ public final class FluidTank {
         modBus.register(proxy);
         PacketHandler.init();
         AE2FluidTankIntegration.onAPIAvailable();
+        FluidTankTopPlugin.sendIMC();
         FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
     }
 
