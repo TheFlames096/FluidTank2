@@ -2,9 +2,10 @@ package com.kotori316.fluidtank.fluids
 
 import com.kotori316.fluidtank.BeforeMC
 import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit, gaString}
-import net.minecraft.world.item.{ItemStack, Items}
-import org.junit.jupiter.api.Assertions.*
+import net.minecraft.world.item.alchemy.{PotionUtils, Potions}
+import net.minecraft.world.item.{Item, ItemStack, Items}
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.*
 
 class FluidAmountUtilTest extends BeforeMC {
 
@@ -21,6 +22,9 @@ class FluidAmountUtilTest extends BeforeMC {
       FluidAmountUtil.EMPTY,
       FluidAmountUtil.BUCKET_WATER,
       FluidAmountUtil.BUCKET_LAVA,
+      FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)),
+      FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY)),
+      FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), Potions.WATER)),
     )
     fluids.combinations(2).map(s =>
       DynamicTest.dynamicTest(s"$s", () =>
@@ -78,6 +82,45 @@ class FluidAmountUtilTest extends BeforeMC {
     def fromLavaBucket(): Unit = {
       val fluid = FluidAmountUtil.fromItem(new ItemStack(Items.LAVA_BUCKET))
       assertEquals(FluidAmountUtil.BUCKET_LAVA, fluid)
+    }
+
+    @Test
+    def fromWaterBottle(): Unit = {
+      val fluid = FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER))
+      assertEquals(FluidLike.POTION_NORMAL, fluid.content)
+      assertTrue(fluid.nbt.nonEmpty)
+      assertEquals(GenericUnit.ONE_BOTTLE, fluid.amount)
+    }
+  }
+
+  @Nested
+  class FillPotionTest {
+
+    @Test
+    def fillBucket(): Unit = {
+      val fluid = FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER))
+
+      val filled = PlatformFluidAccess.getInstance().fillItem(fluid, Items.BUCKET.getDefaultInstance, null, null, true)
+      assertTrue(filled.moved().isEmpty)
+      assertFalse(filled.shouldMove())
+      assertEquals(Items.BUCKET, filled.toReplace.getItem)
+    }
+
+    @TestFactory
+    def fillBottle(): Array[DynamicNode] = {
+      PotionType.values()
+        .map(p => DynamicTest.dynamicTest(s"fillBottle_$p", () => {
+          val fluid = FluidAmountUtil.fromItem(PotionUtils.setPotion(new ItemStack(p.getItem), Potions.WATER))
+          fillBottle(fluid, p.getItem)
+        }))
+    }
+
+    def fillBottle(fluid: FluidAmount, potionItem: Item): Unit = {
+      val filled = PlatformFluidAccess.getInstance().fillItem(fluid, new ItemStack(Items.GLASS_BOTTLE), null, null, true)
+      assertEquals(fluid.setAmount(GenericUnit.ONE_BOTTLE), filled.moved())
+      assertTrue(filled.shouldMove())
+      assertEquals(potionItem, filled.toReplace.getItem)
+      assertEquals(Potions.WATER, PotionUtils.getPotion(filled.toReplace))
     }
   }
 }

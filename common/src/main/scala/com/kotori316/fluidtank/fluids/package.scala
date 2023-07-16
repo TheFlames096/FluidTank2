@@ -7,31 +7,31 @@ import com.kotori316.fluidtank.tank.TileTank
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.level.material.{Fluid, Fluids}
+import net.minecraft.world.level.material.Fluid
 
 import scala.reflect.ClassTag
 
 package object fluids {
 
-  type FluidAmount = GenericAmount[Fluid]
+  type FluidAmount = GenericAmount[FluidLike]
   implicit final val fluidHash: Hash[Fluid] = Hash.fromUniversalHashCode
-  implicit final val fluidAccess: GenericAccess[Fluid] = new FluidAccess
-  implicit final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler] = FluidConnection.fluidConnectionHelper
+  implicit final val fluidAccess: GenericAccess[FluidLike] = new FluidAccess
+  implicit final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, FluidLike, FluidTanksHandler] = FluidConnection.fluidConnectionHelper
 
-  private class FluidAccess extends GenericAccess[Fluid] {
-    override def isEmpty(a: Fluid): Boolean = a == empty
+  private class FluidAccess extends GenericAccess[FluidLike] {
+    override def isEmpty(a: FluidLike): Boolean = a == empty
 
-    override def isGaseous(a: Fluid): Boolean = PlatformFluidAccess.getInstance().isGaseous(a)
+    override def isGaseous(a: FluidLike): Boolean = a.isGaseous
 
-    override def getKey(a: Fluid): ResourceLocation = BuiltInRegistries.FLUID.getKey(a)
+    override def getKey(a: FluidLike): ResourceLocation = a.getKey
 
-    override def fromKey(key: ResourceLocation): Fluid = BuiltInRegistries.FLUID.get(key)
+    override def fromKey(key: ResourceLocation): FluidLike = FluidLike.fromResourceLocation(key)
 
-    override def empty: Fluid = Fluids.EMPTY
+    override def empty: FluidLike = FluidLike.FLUID_EMPTY
 
-    override def classTag: ClassTag[Fluid] = implicitly[ClassTag[Fluid]]
+    override def classTag: ClassTag[FluidLike] = implicitly[ClassTag[FluidLike]]
 
-    override def newInstance(content: Fluid, amount: GenericUnit, nbt: Option[CompoundTag]): FluidAmount =
+    override def newInstance(content: FluidLike, amount: GenericUnit, nbt: Option[CompoundTag]): FluidAmount =
       GenericAmount(content, amount, nbt)
   }
 }

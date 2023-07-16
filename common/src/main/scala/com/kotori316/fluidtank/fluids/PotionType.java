@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.fluids;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 
@@ -16,5 +17,12 @@ public enum PotionType {
 
     public PotionItem getItem() {
         return item;
+    }
+
+    public static PotionType fromItemUnsafe(Item item) {
+        if (item == Items.POTION) return NORMAL;
+        if (item == Items.SPLASH_POTION) return SPLASH;
+        if (item == Items.LINGERING_POTION) return LINGERING;
+        throw new IllegalArgumentException("Unknown potion item, " + item);
     }
 }

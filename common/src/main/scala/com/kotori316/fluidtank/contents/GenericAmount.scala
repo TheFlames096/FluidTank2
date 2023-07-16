@@ -46,6 +46,8 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
 
   final def hasOneBucket: Boolean = this.amount >= GenericUnit.ONE_BUCKET
 
+  final def hasOneBottle: Boolean = this.amount >= GenericUnit.ONE_BOTTLE
+
   override final def equals(obj: Any): Boolean = obj match {
     case that: GenericAmount[_] =>
       val c = this.access.classTag

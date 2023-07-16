@@ -12,10 +12,14 @@ object FluidAmountUtil {
   final val BUCKET_LAVA: FluidAmount = from(Fluids.LAVA, GenericUnit.ONE_BUCKET)
 
   def from(fluid: Fluid, genericUnit: GenericUnit, nbt: Option[CompoundTag]): FluidAmount = {
-    GenericAmount(fluid, genericUnit, nbt)
+    from(FluidLike.of(fluid), genericUnit, nbt)
   }
 
   def from(fluid: Fluid, genericUnit: GenericUnit): FluidAmount = from(fluid, genericUnit, Option.empty)
+
+  def from(fluidLike: FluidLike, genericUnit: GenericUnit, nbt: Option[CompoundTag]): FluidAmount = {
+    GenericAmount(fluidLike, genericUnit, nbt)
+  }
 
   def fromItem(stack: ItemStack): FluidAmount = {
     stack.getItem match {
@@ -25,10 +29,10 @@ object FluidAmountUtil {
     }
   }
 
-  def fromTag(tag: CompoundTag): FluidAmount = implicitly[GenericAccess[Fluid]].read(tag)
+  def fromTag(tag: CompoundTag): FluidAmount = implicitly[GenericAccess[FluidLike]].read(tag)
 
   /**
    * Helper for Java code
    */
-  def access: GenericAccess[Fluid] = implicitly[GenericAccess[Fluid]]
+  def access: GenericAccess[FluidLike] = implicitly[GenericAccess[FluidLike]]
 }
