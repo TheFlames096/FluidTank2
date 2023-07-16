@@ -33,7 +33,7 @@ dependencies {
 publishing {
     publications {
         create("mavenCommon", MavenPublication.class) {
-            artifactId = rootProject.maven_base_name + "-" + project.name + "-" + project.minecraft_version
+            artifactId = project.maven_base_name + "-" + project.name + "-" + project.minecraft_version
             from(components["java"])
         }
     }

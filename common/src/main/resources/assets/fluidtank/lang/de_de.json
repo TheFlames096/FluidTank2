@@ -41,7 +41,7 @@
   "chat.fluidtank.change_source": "Fluid was changed to %s.",
   "chat.fluidtank.connection": "Verbindung von %1$s : %2$s / %3$s mB, Komperator Ausgabe %4$s.",
   "chat.fluidtank.connection_creative": "Verbindung von %1$s in creative, Komperator Ausgabe %2$s.",
-  "chat.fluidtank.empty": "null",
+  "chat.fluidtank.empty": "Empty",
   "config.jade.plugin_fluidtank.fluidtank.compact_number": "Compact Number",
   "config.jade.plugin_fluidtank.fluidtank.short_info": "Short",
   "config.jade.plugin_fluidtank.fluidtank.tank_info": "Showtank Info",

@@ -4,6 +4,7 @@ import cats.Hash
 import cats.implicits.{catsSyntaxEq, catsSyntaxGroup, catsSyntaxSemigroup}
 import com.kotori316.fluidtank.MCImplicits.*
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 
 import java.util.Objects
 import scala.math.Ordering.Implicits.infixOrderingOps

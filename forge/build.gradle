@@ -86,7 +86,7 @@ repositories {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    forge "net.minecraftforge:forge:${project.forge_version}"
 
     runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: "with-library") {
         transitive(false)
@@ -97,7 +97,7 @@ dependencies {
 
     // Other mods
     modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id)
-    // modCompileOnly(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id)
+    modImplementation(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id)
     if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
         modCompileOnly(group: "mezz.jei", name: "jei-1.20.1-forge", version: project.jei_forge_version) { transitive false }
     } else {
@@ -167,7 +167,7 @@ String createChangelog() {
 publishing {
     publications {
         create("mavenForge", MavenPublication.class) {
-            artifactId = rootProject.maven_base_name + "-" + project.name + "-" + project.minecraft_version
+            artifactId = project.maven_base_name + "-" + project.name + "-" + project.minecraft_version
             from(components["java"])
         }
     }
