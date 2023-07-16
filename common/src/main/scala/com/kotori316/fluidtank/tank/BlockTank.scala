@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable
 
 import scala.annotation.nowarn
 
-class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK)) with EntityBlock {
+class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK).forceSolidOn()) with EntityBlock {
 
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
   final val itemBlock: ItemBlockTank = createTankItem()

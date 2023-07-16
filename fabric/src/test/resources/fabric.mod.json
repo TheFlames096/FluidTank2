@@ -7,6 +7,7 @@
     "fabric-gametest": [
       "com.kotori316.fluidtank.fabric.gametest.TankTest",
       "com.kotori316.fluidtank.fabric.gametest.ConnectionStorageTest",
+      "com.kotori316.fluidtank.fabric.gametest.TankPlaceTest",
       "com.kotori316.fluidtank.fabric.gametest.RecipeTest"
     ]
   }

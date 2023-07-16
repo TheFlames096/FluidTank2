@@ -4,6 +4,7 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.forge.FluidTank;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
@@ -16,7 +17,10 @@ final class SideProxyTest {
 
     @GameTest(template = NO_PLACE_STRUCTURE)
     void checkProxyClass(GameTestHelper helper) throws ReflectiveOperationException {
-        var clazz = Class.forName("com.kotori316.fluidtank.forge.SideProxy$ServerProxy");
+        var clazz = switch (FMLEnvironment.dist) {
+            case DEDICATED_SERVER -> Class.forName("com.kotori316.fluidtank.forge.SideProxy$ServerProxy");
+            case CLIENT -> Class.forName("com.kotori316.fluidtank.forge.SideProxy$ClientProxy");
+        };
         assertEquals(clazz, FluidTank.proxy.getClass());
         helper.succeed();
     }

@@ -4,6 +4,7 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.forge.FluidTank;
+import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.TankPos;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
@@ -23,6 +24,7 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,12 +65,16 @@ final class TankTest {
         return testFunctions;
     }
 
-    TileTank placeTank(GameTestHelper helper, BlockPos pos, Tier tier) {
-        var block = switch (tier) {
+    static Supplier<? extends BlockTank> getBlock(Tier tier) {
+        return switch (tier) {
             case CREATIVE -> FluidTank.BLOCK_CREATIVE_TANK;
             case VOID -> FluidTank.BLOCK_VOID_TANK;
             default -> FluidTank.TANK_MAP.get(tier);
         };
+    }
+
+    static TileTank placeTank(GameTestHelper helper, BlockPos pos, Tier tier) {
+        var block = getBlock(tier);
         helper.setBlock(pos, block.get());
         var tile = helper.getBlockEntity(pos);
         if (tile instanceof TileTank tileTank) {

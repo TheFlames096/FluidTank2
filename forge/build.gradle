@@ -123,6 +123,16 @@ processResources {
     }
 }
 
+if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))){
+    tasks.named("compileTestScala", ScalaCompile).configure {
+        it.dependsOn("processTestResources")
+    }
+    tasks.named("runClient").configure {
+        it.dependsOn("compileTestScala")
+        it.dependsOn("processTestResources")
+    }
+}
+
 shadowJar {
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
