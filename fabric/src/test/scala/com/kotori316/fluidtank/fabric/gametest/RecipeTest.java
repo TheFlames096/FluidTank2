@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import io.netty.buffer.ByteBufAllocator;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.RegistryAccess;
@@ -149,7 +150,7 @@ public final class RecipeTest implements FabricGameTest {
         }).toList();
     }
 
-    void combine1(GenericAmount<Fluid> amount) {
+    void combine1(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD));
         var recipe = getRecipe();
@@ -166,7 +167,7 @@ public final class RecipeTest implements FabricGameTest {
         assertEquals(Tier.STONE.getCapacity(), RecipeInventoryUtil.getFluidHandler(result).getTank().capacity());
     }
 
-    void combine2(GenericAmount<Fluid> amount) {
+    void combine2(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD));
         var recipe = getRecipe();

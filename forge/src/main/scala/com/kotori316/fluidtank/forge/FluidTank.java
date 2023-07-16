@@ -138,7 +138,7 @@ public final class FluidTank {
 
         @Override
         @NotNull
-        public GenericAmount<Fluid> getFluidContained(ItemStack stack) {
+        public GenericAmount<FluidLike> getFluidContained(ItemStack stack) {
             return FluidUtil.getFluidContained(stack)
                     .map(ForgeConverter::toAmount)
                     .orElse(FluidAmountUtil.EMPTY());
@@ -150,12 +150,12 @@ public final class FluidTank {
         }
 
         @Override
-        public Component getDisplayName(GenericAmount<Fluid> amount) {
+        public Component getDisplayName(GenericAmount<FluidLike> amount) {
             return ForgeConverter.toStack(amount).getDisplayName();
         }
 
         @Override
-        public @NotNull TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
+        public @NotNull TransferStack fillItem(GenericAmount<FluidLike> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
                     .map(h -> {
                         int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
@@ -165,7 +165,7 @@ public final class FluidTank {
         }
 
         @Override
-        public @NotNull TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
+        public @NotNull TransferStack drainItem(GenericAmount<FluidLike> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
                     .map(h -> {
                         var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
@@ -175,12 +175,12 @@ public final class FluidTank {
         }
 
         @Override
-        public @Nullable SoundEvent getEmptySound(GenericAmount<Fluid> fluid) {
+        public @Nullable SoundEvent getEmptySound(GenericAmount<FluidLike> fluid) {
             return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_EMPTY);
         }
 
         @Override
-        public @Nullable SoundEvent getFillSound(GenericAmount<Fluid> fluid) {
+        public @Nullable SoundEvent getFillSound(GenericAmount<FluidLike> fluid) {
             return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_FILL);
         }
 

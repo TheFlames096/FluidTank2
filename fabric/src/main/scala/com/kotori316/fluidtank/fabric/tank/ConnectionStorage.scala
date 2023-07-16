@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.{FluidStorage, FluidVariant}
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant
+import net.minecraft.world.level.material.Fluids
 
 //noinspection UnstableApiUsage
 class ConnectionStorage(private val connection: FluidConnection) extends SnapshotParticipant[FluidAmount] with SingleSlotStorage[FluidVariant] {
@@ -19,7 +20,7 @@ class ConnectionStorage(private val connection: FluidConnection) extends Snapsho
 
   override def getResource: FluidVariant = {
     val fluid = connection.getContent.getOrElse(FluidAmountUtil.EMPTY)
-    FabricConverter.toVariant(fluid)
+    FabricConverter.toVariant(fluid, Fluids.EMPTY)
   }
 
   override def getAmount: Long = connection.amount.asFabric

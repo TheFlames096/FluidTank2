@@ -149,7 +149,7 @@ final class RecipeTest {
         }).toList();
     }
 
-    void combine1(GenericAmount<Fluid> amount) {
+    void combine1(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
@@ -166,7 +166,7 @@ final class RecipeTest {
         assertEquals(Tier.STONE.getCapacity(), RecipeInventoryUtil.getFluidHandler(result).getTank().capacity());
     }
 
-    void combine2(GenericAmount<Fluid> amount) {
+    void combine2(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();

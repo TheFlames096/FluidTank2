@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.fabric.tank
 
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank, TankUtil}
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, fluidAccess}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, fluidAccess}
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant
 import net.fabricmc.fabric.api.transfer.v1.fluid.base.SingleFluidStorage
@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.ResourceAmount
 import net.fabricmc.fabric.api.transfer.v1.transaction.{Transaction, TransactionContext}
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.{BlockItem, ItemStack}
-import net.minecraft.world.level.material.Fluid
+import net.minecraft.world.level.material.Fluids
 import org.jetbrains.annotations.{NotNull, Nullable}
 
 import scala.util.Using
@@ -48,7 +48,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends SingleFluidStor
       if (nbt == null || !nbt.contains(TileTank.KEY_TANK)) Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
       else TankUtil.load(nbt.getCompound(TileTank.KEY_TANK))
     }
-    this.variant = FabricConverter.toVariant(tank.content)
+    this.variant = FabricConverter.toVariant(tank.content, Fluids.EMPTY)
     this.amount = tank.content.amount.asFabric
   }
 
@@ -71,7 +71,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends SingleFluidStor
 
   def getContainer: ItemStack = stack
 
-  def getTank: Tank[Fluid] = {
+  def getTank: Tank[FluidLike] = {
     val tag = BlockItem.getBlockEntityData(getContainer)
     if (tag == null || !tag.contains(TileTank.KEY_TANK)) return Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
 
@@ -80,7 +80,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends SingleFluidStor
 
   def fill(amount: FluidAmount, execute: Boolean): Unit = {
     Using(Transaction.openOuter()) { transaction =>
-      this.insert(FabricConverter.toVariant(amount), amount.amount.asFabric, transaction)
+      this.insert(FabricConverter.toVariant(amount, Fluids.EMPTY), amount.amount.asFabric, transaction)
       if (execute) transaction.commit()
       else transaction.abort()
     }

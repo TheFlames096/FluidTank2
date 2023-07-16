@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.fabric.message;
 
 import java.util.Objects;
 
+import com.kotori316.fluidtank.fluids.FluidLike;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -23,7 +24,7 @@ import com.kotori316.fluidtank.tank.TileTank;
 public final class FluidTankContentMessageFabric extends FluidTankContentMessage {
     static final ResourceLocation NAME = IMessage.createIdentifier(FluidTankContentMessageFabric.class);
 
-    public FluidTankContentMessageFabric(BlockPos pos, ResourceKey<Level> dim, Tank<Fluid> tank) {
+    public FluidTankContentMessageFabric(BlockPos pos, ResourceKey<Level> dim, Tank<FluidLike> tank) {
         super(pos, dim, tank);
     }
 

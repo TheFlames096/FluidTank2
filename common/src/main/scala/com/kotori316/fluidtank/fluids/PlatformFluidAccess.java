@@ -184,13 +184,25 @@ class PlatformFluidAccessHolder {
         @Override
         public TransferStack drainItem(GenericAmount<FluidLike> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
             var bucketFluid = getFluidContained(fluidContainer);
-            if (!toDrain.hasOneBucket() || !toDrain.contentEqual(bucketFluid)) {
-                // Nothing drained
-                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+            if (toDrain.content() instanceof VanillaFluid) {
+                if (!toDrain.hasOneBucket() || !toDrain.contentEqual(bucketFluid)) {
+                    // Nothing drained
+                    return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+                }
+                var drainedItem = Items.BUCKET.getDefaultInstance();
+                var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
+                return new TransferStack(drainedAmount, drainedItem);
+            } else if (toDrain.content() instanceof VanillaPotion) {
+                if (!toDrain.hasOneBottle() || !toDrain.contentEqual(bucketFluid)) {
+                    // Nothing drained
+                    return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+                }
+                var drainedItem = Items.GLASS_BOTTLE.getDefaultInstance();
+                var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BOTTLE());
+                return new TransferStack(drainedAmount, drainedItem);
+            } else {
+                throw new AssertionError();
             }
-            var drainedItem = Items.BUCKET.getDefaultInstance();
-            var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
-            return new TransferStack(drainedAmount, drainedItem);
         }
 
         @Override
