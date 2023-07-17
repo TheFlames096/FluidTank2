@@ -57,6 +57,8 @@ final class FabricPlatformAccess implements PlatformAccess {
         if (stack.getItem() instanceof PotionItem potionItem) {
             var potionFluid = FluidLike.of(PotionType.fromItemUnsafe(potionItem));
             return FluidAmountUtil.from(potionFluid, GenericUnit.ONE_BOTTLE(), Option.apply(stack.getTag()));
+        }else if (stack.is(Items.GLASS_BOTTLE)) {
+            return FluidAmountUtil.EMPTY();
         }
         var storage = FluidStorage.ITEM.find(stack, ContainerItemContext.withConstant(stack));
         if (storage != null) {

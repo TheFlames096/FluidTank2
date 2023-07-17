@@ -45,6 +45,12 @@ public class FabricPlatformAccessTest extends BeforeMC {
             assertEquals(FluidAmountUtil.EMPTY(), fluid);
         }
 
+        @Test
+        void getEmptyBottle() {
+            var fluid = ACCESS.getFluidContained(new ItemStack(Items.GLASS_BOTTLE));
+            assertEquals(FluidAmountUtil.EMPTY(), fluid);
+        }
+
         @TestFactory
         List<DynamicTest> getPotion() {
             return Stream.of(Potions.WATER, Potions.EMPTY, Potions.NIGHT_VISION)
@@ -65,7 +71,7 @@ public class FabricPlatformAccessTest extends BeforeMC {
         @TestFactory
         List<DynamicTest> containers() {
             return Stream.concat(
-                    Stream.of(Items.WATER_BUCKET, Items.LAVA_BUCKET).map(ItemStack::new),
+                    Stream.of(Items.WATER_BUCKET, Items.LAVA_BUCKET, Items.GLASS_BOTTLE).map(ItemStack::new),
                     Stream.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION).flatMap(
                             i -> BuiltInRegistries.POTION.stream().map(p -> PotionUtils.setPotion(new ItemStack(i), p)))
             ).map(s -> DynamicTest.dynamicTest(s.toString() + " " + s.getTag(),

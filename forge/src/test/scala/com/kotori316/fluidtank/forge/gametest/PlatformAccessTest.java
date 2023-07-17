@@ -23,7 +23,6 @@ import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.platform.commons.support.ReflectionSupport;
-import scala.Option;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -31,12 +30,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("unused")
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
-public class PlatformAccessTest  {
+public class PlatformAccessTest {
     private static final PlatformAccess ACCESS = ForgePlatformAccessTest.ACCESS;
     private static final String BATCH_NAME = "platform_test";
 
@@ -114,9 +114,7 @@ public class PlatformAccessTest  {
     }
 
     static GenericAmount<FluidLike> potionFluid(PotionType potionType, Potion potion) {
-        var dummy = PotionUtils.setPotion(new ItemStack(Items.POTION), potion);
-        return FluidAmountUtil.from(FluidLike.of(potionType), GenericUnit.ONE_BOTTLE(),
-                Option.apply(dummy.getTag()));
+        return FluidAmountUtil.from(potionType, potion, GenericUnit.ONE_BOTTLE());
     }
 
     void fillFail1(GameTestHelper helper) {

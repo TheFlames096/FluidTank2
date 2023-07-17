@@ -55,6 +55,8 @@ final class ForgePlatformAccess implements PlatformAccess {
         if (stack.getItem() instanceof PotionItem potionItem) {
             var potionFluid = FluidLike.of(PotionType.fromItemUnsafe(potionItem));
             return FluidAmountUtil.from(potionFluid, GenericUnit.ONE_BOTTLE(), Option.apply(stack.getTag()));
+        } else if (stack.is(Items.GLASS_BOTTLE)) {
+            return FluidAmountUtil.EMPTY();
         }
         return FluidUtil.getFluidContained(stack)
                 .map(ForgeConverter::toAmount)
@@ -63,7 +65,9 @@ final class ForgePlatformAccess implements PlatformAccess {
 
     @Override
     public boolean isFluidContainer(ItemStack stack) {
-        return stack.getItem() instanceof PotionItem || FluidUtil.getFluidHandler(stack).isPresent();
+        return FluidUtil.getFluidHandler(stack).isPresent() ||
+                stack.getItem() instanceof PotionItem ||
+                stack.is(Items.GLASS_BOTTLE);
     }
 
     @Override

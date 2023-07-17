@@ -49,6 +49,8 @@ public interface PlatformFluidAccess {
         } else if (stack.getItem() instanceof PotionItem potionItem) {
             var potionFluid = FluidLike.of(PotionType.fromItemUnsafe(potionItem));
             return FluidAmountUtil.from(potionFluid, GenericUnit.ONE_BOTTLE(), Option.apply(stack.getTag()));
+        } else if (stack.is(Items.GLASS_BOTTLE)) {
+            return FluidAmountUtil.EMPTY();
         }
         return FluidAmountUtil.EMPTY();
     }
@@ -148,7 +150,9 @@ class PlatformFluidAccessHolder {
 
         @Override
         public boolean isFluidContainer(ItemStack stack) {
-            return stack.getItem() instanceof BucketItem;
+            return stack.getItem() instanceof BucketItem ||
+                    stack.getItem() instanceof PotionItem ||
+                    stack.is(Items.GLASS_BOTTLE);
         }
 
         @Override

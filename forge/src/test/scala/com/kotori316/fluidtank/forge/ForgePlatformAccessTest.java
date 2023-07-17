@@ -5,11 +5,11 @@ import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.fluids.PotionType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,6 +45,12 @@ public class ForgePlatformAccessTest extends BeforeMC {
             assertEquals(FluidAmountUtil.EMPTY(), fluid);
         }
 
+        @Test
+        void getEmptyBottle() {
+            var fluid = ACCESS.getFluidContained(new ItemStack(Items.GLASS_BOTTLE));
+            assertEquals(FluidAmountUtil.EMPTY(), fluid);
+        }
+
         @TestFactory
         List<DynamicTest> getPotion() {
             return Stream.of(Potions.WATER, Potions.EMPTY, Potions.NIGHT_VISION)
@@ -65,9 +71,9 @@ public class ForgePlatformAccessTest extends BeforeMC {
         @TestFactory
         List<DynamicTest> containers() {
             return Stream.concat(
-                    Stream.of(Items.WATER_BUCKET, Items.LAVA_BUCKET).map(ItemStack::new),
+                    Stream.of(Items.WATER_BUCKET, Items.LAVA_BUCKET, Items.GLASS_BOTTLE).map(ItemStack::new),
                     Stream.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION).flatMap(
-                            i -> BuiltInRegistries.POTION.stream().map(p -> PotionUtils.setPotion(new ItemStack(i), p)))
+                            i -> ForgeRegistries.POTIONS.getValues().stream().map(p -> PotionUtils.setPotion(new ItemStack(i), p)))
             ).map(s -> DynamicTest.dynamicTest(s.toString() + " " + s.getTag(),
                     () -> assertTrue(ACCESS.isFluidContainer(s)))).toList();
         }
