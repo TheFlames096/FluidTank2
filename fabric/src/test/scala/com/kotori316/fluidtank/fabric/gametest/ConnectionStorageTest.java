@@ -17,6 +17,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.level.material.Fluids;
 import org.junit.platform.commons.support.ReflectionSupport;
+import scala.Option;
 import scala.math.BigInt;
 
 import java.lang.reflect.Modifier;
@@ -258,4 +259,72 @@ public final class ConnectionStorageTest implements FabricGameTest {
         helper.succeed();
     }
 
+    void drainFromEmpty(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.STONE);
+        var storage = getStorage(helper, pos);
+
+        long drained;
+        try (Transaction transaction = Transaction.openOuter()) {
+            drained = storage.extract(FluidVariant.of(Fluids.WATER), 6 * FluidConstants.BUCKET, transaction);
+            transaction.abort();
+        }
+        assertEquals(0, drained);
+        helper.succeed();
+    }
+
+    void drainFromFilled1(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.STONE);
+        var connection = tile.getConnection();
+        connection.getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+        var storage = getStorage(helper, pos);
+
+        long drained;
+        try (Transaction transaction = Transaction.openOuter()) {
+            drained = storage.extract(FluidVariant.of(Fluids.WATER), 6 * FluidConstants.BUCKET, transaction);
+            transaction.commit();
+        }
+        assertEquals(FluidConstants.BUCKET, drained);
+        assertTrue(connection.getContent().isEmpty());
+        helper.succeed();
+    }
+
+    void drainFromFilled2(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.STONE);
+        var connection = tile.getConnection();
+        connection.getHandler().fill(FluidAmountUtil.BUCKET_WATER().setAmount(GenericUnit.fromForge(20000)), true);
+        var storage = getStorage(helper, pos);
+
+        long drained;
+        try (Transaction transaction = Transaction.openOuter()) {
+            drained = storage.extract(FluidVariant.of(Fluids.WATER), 19 * FluidConstants.BUCKET, transaction);
+            transaction.commit();
+        }
+        assertEquals(FluidConstants.BUCKET * 19, drained);
+        assertEquals(Option.apply(FluidAmountUtil.BUCKET_WATER()), connection.getContent());
+        helper.succeed();
+    }
+
+    void drainFromFilled3(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        TankTest.placeTank(helper, pos.above(), Tier.STONE);
+        var connection = tile.getConnection();
+        connection.getHandler().fill(FluidAmountUtil.BUCKET_WATER(), true);
+        var storage = getStorage(helper, pos);
+
+        long drained;
+        try (Transaction transaction = Transaction.openOuter()) {
+            drained = storage.extract(FluidVariant.of(Fluids.LAVA), 6 * FluidConstants.BUCKET, transaction);
+            transaction.commit();
+        }
+        assertEquals(0, drained);
+        assertEquals(Option.apply(FluidAmountUtil.BUCKET_WATER()), connection.getContent());
+        helper.succeed();
+    }
 }
