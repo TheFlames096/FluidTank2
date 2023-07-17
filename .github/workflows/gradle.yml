@@ -29,6 +29,10 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: javaToolchains
+      - name: Check changelog
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: checkChangelog
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:

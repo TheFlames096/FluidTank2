@@ -165,13 +165,32 @@ components.java {
 
 final boolean RELEASE_DEBUG = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
 
-String createChangelog() {
-    return """\
-## Large Fluid Tank for forge
+String createChangelog(boolean useLongFormat) {
+    String base = """\
+        # Large Fluid Tank for forge
+        
+        | Dependency | Version |
+        | -- | -- |
+        | Minecraft | ${project.minecraft_version} |
+        | Forge | ${project.forge_version} |
+        | scalable-cats-force | ${project.slpVersion} |
+        | Applied Energistics 2 | ${project.ae2_forge_version} |
+        | Jade | File id: ${project.jade_forge_id} |
+        | TheOneProbe | File id: ${project.top_forge_id} |
+        """.stripIndent()
+    String fromFile = rootProject.file(project.changelog_file).text
+    if (useLongFormat) {
+        return base + System.lineSeparator() + fromFile
+    } else {
+        String shortFormat = fromFile.split("---", 2)[0]
+        return base + System.lineSeparator() + shortFormat
+    }
+}
 
-* Minecraft: ${project.minecraft_version}
-* Forge: ${project.forge_version}
-"""
+tasks.register("checkChangelog") {
+    doLast {
+        println(createChangelog(true))
+    }
 }
 
 publishing {
@@ -202,7 +221,7 @@ curseforge {
     project {
         id = "291006"
         changelogType = "markdown"
-        changelog = project.createChangelog()
+        changelog = createChangelog(true)
         releaseType = "release"
         addGameVersion("Forge")
         addGameVersion(project.minecraft_version)
@@ -234,7 +253,7 @@ modrinth {
     ])
     getGameVersions().set([project.minecraft_version])
     getLoaders().set(["forge"])
-    changelog = project.createChangelog()
+    changelog = createChangelog(false)
     debugMode = RELEASE_DEBUG
     dependencies {
         required.project("scalable-cats-force")

@@ -113,14 +113,32 @@ components.java {
 
 final boolean RELEASE_DEBUG = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
 
-String createChangelog() {
-    return """\
-## Large Fluid Tank for fabric
+String createChangelog(boolean useLongFormat) {
+    String base = """\
+        # Large Fluid Tank for fabric
+        
+        | Dependency | Version |
+        | -- | -- |
+        | Minecraft | ${project.minecraft_version} |
+        | Fabric | ${project.fabric_api_version} |
+        | Fabric Loader | ${project.fabric_loader_version} |
+        | scalable-cats-force | ${project.slp_fabric_version} |
+        | Applied Energistics 2 | ${project.ae2_fabric_version} |
+        | Jade | File id: ${project.jade_fabric_id} |
+        """.stripIndent()
+    String fromFile = rootProject.file(project.changelog_file).text
+    if (useLongFormat) {
+        return base + System.lineSeparator() + fromFile
+    } else {
+        String shortFormat = fromFile.split("---", 2)[0]
+        return base + System.lineSeparator() + shortFormat
+    }
+}
 
-* Minecraft: ${project.minecraft_version}
-* Fabric: ${project.fabric_api_version}
-* Fabric Loader: ${project.fabric_loader_version}
-"""
+tasks.register("checkChangelog") {
+    doLast {
+        println(createChangelog(true))
+    }
 }
 
 publishing {
@@ -151,7 +169,7 @@ curseforge {
     project {
         id = "411564"
         changelogType = "markdown"
-        changelog = project.createChangelog()
+        changelog = createChangelog(true)
         releaseType = "release"
         addGameVersion("Fabric")
         addGameVersion(project.minecraft_version)
@@ -183,7 +201,7 @@ modrinth {
     ])
     getGameVersions().set([project.minecraft_version])
     getLoaders().set(["fabric"])
-    changelog = project.createChangelog()
+    changelog = createChangelog(false)
     debugMode = RELEASE_DEBUG
     dependencies {
         required.project("scalable-cats-force")
