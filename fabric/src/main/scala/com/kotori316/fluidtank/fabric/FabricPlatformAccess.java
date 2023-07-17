@@ -80,9 +80,8 @@ final class FabricPlatformAccess implements PlatformAccess {
     public Component getDisplayName(GenericAmount<FluidLike> amount) {
         if (amount.content() instanceof VanillaFluid) {
             return FluidVariantAttributes.getName(FabricConverter.toVariant(amount, Fluids.EMPTY));
-        } else if (amount.content() instanceof VanillaPotion) {
-            var potion = PotionUtils.getPotion(OptionConverters.toJava(amount.nbt()).orElse(null));
-            return Component.literal(potion.getName(""));
+        } else if (amount.content() instanceof VanillaPotion vanillaPotion) {
+            return vanillaPotion.getVanillaPotionName(amount.nbt());
         } else {
             throw new AssertionError();
         }

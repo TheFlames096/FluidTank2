@@ -2,10 +2,6 @@ package com.kotori316.fluidtank.forge;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
-import com.kotori316.fluidtank.contents.GenericAmount;
-import com.kotori316.fluidtank.contents.GenericUnit;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
@@ -19,40 +15,28 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -120,99 +104,6 @@ public final class FluidTank {
                         new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
                         TANK_LOOT_FUNCTION);
             }
-        }
-    }
-
-    private static final class ForgePlatformAccess implements PlatformAccess {
-
-        @Override
-        public boolean isGaseous(Fluid fluid) {
-            return fluid.getFluidType().isLighterThanAir();
-        }
-
-        @Override
-        @NotNull
-        public Fluid getBucketContent(BucketItem bucketItem) {
-            return bucketItem.getFluid();
-        }
-
-        @Override
-        @NotNull
-        public GenericAmount<FluidLike> getFluidContained(ItemStack stack) {
-            return FluidUtil.getFluidContained(stack)
-                    .map(ForgeConverter::toAmount)
-                    .orElse(FluidAmountUtil.EMPTY());
-        }
-
-        @Override
-        public boolean isFluidContainer(ItemStack stack) {
-            return FluidUtil.getFluidHandler(stack).isPresent();
-        }
-
-        @Override
-        public Component getDisplayName(GenericAmount<FluidLike> amount) {
-            return ForgeConverter.toStack(amount).getDisplayName();
-        }
-
-        @Override
-        public @NotNull TransferStack fillItem(GenericAmount<FluidLike> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
-            return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
-                    .map(h -> {
-                        int filledAmount = h.fill(ForgeConverter.toStack(toFill), IFluidHandler.FluidAction.EXECUTE);
-                        return new TransferStack(toFill.setAmount(GenericUnit.fromForge(filledAmount)), h.getContainer());
-                    })
-                    .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
-        }
-
-        @Override
-        public @NotNull TransferStack drainItem(GenericAmount<FluidLike> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
-            return FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(fluidContainer, 1))
-                    .map(h -> {
-                        var drained = h.drain(ForgeConverter.toStack(toDrain), IFluidHandler.FluidAction.EXECUTE);
-                        return new TransferStack(ForgeConverter.toAmount(drained), h.getContainer());
-                    })
-                    .orElse(new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer));
-        }
-
-        @Override
-        public @Nullable SoundEvent getEmptySound(GenericAmount<FluidLike> fluid) {
-            return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_EMPTY);
-        }
-
-        @Override
-        public @Nullable SoundEvent getFillSound(GenericAmount<FluidLike> fluid) {
-            return fluid.content().getFluidType().getSound(ForgeConverter.toStack(fluid), SoundActions.BUCKET_FILL);
-        }
-
-        @Override
-        public BlockEntityType<? extends TileTank> getNormalType() {
-            return TILE_TANK_TYPE.get();
-        }
-
-        @Override
-        public BlockEntityType<? extends TileTank> getCreativeType() {
-            return TILE_CREATIVE_TANK_TYPE.get();
-        }
-
-        @Override
-        public BlockEntityType<? extends TileTank> getVoidType() {
-            return TILE_VOID_TANK_TYPE.get();
-        }
-
-        @Override
-        public LootItemFunctionType getTankLoot() {
-            return TANK_LOOT_FUNCTION;
-        }
-
-        @Override
-        public Map<Tier, Supplier<? extends BlockTank>> getTankBlockMap() {
-            return Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
-
-        @Override
-        public @NotNull ItemStack getCraftingRemainingItem(ItemStack stack) {
-            return stack.getCraftingRemainingItem();
         }
     }
 

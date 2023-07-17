@@ -5,6 +5,7 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.forge.recipe.RecipeInventoryUtil;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;

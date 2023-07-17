@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge.render
 
+import com.kotori316.fluidtank.fluids.{FluidLike, VanillaFluid, VanillaPotion}
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.forge.render.RenderTank.getVisualTank
 import com.kotori316.fluidtank.forge.tank.{TileCreativeTankForge, TileTankForge}
@@ -11,7 +12,9 @@ import net.minecraft.client.renderer.blockentity.{BlockEntityRenderer, BlockEnti
 import net.minecraft.client.renderer.{MultiBufferSource, RenderType}
 import net.minecraft.core.BlockPos
 import net.minecraft.world.inventory.InventoryMenu
+import net.minecraft.world.item.alchemy.PotionUtils
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.material.Fluids
 import net.minecraftforge.api.distmarker.{Dist, OnlyIn}
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions
 import net.minecraftforge.fluids.FluidType
@@ -31,7 +34,7 @@ class RenderTank(d: BlockEntityRendererProvider.Context) extends BlockEntityRend
         val color = RenderTank.color(te)
 
         val fluid = te.getTank.content
-        val value = Box.LightValue(light).overrideBlock(JavaHelper.getFluidType(fluid.content).getLightLevel(fluid.toStack))
+        val value = Box.LightValue(light).overrideBlock(JavaHelper.getLightLevel(fluid))
         val alpha = if ((color >> 24 & 0xFF) > 0) color >> 24 & 0xFF else 0xFF
         tank.box.render(b, matrix, texture, alpha, color >> 16 & 0xFF, color >> 8 & 0xFF, color >> 0 & 0xFF)(value)
       }
@@ -45,26 +48,35 @@ object RenderTank {
   private def textureName(tile: TileTank) = {
     val world = getTankWorld(tile)
     val pos = getTankPos(tile)
-    val attributes = IClientFluidTypeExtensions.of(tile.getTank.content.content)
-    attributes.getStillTexture(tile.getTank.content.content.defaultFluidState, world, pos)
+    val fluid = FluidLike.asFluid(tile.getTank.content.content, Fluids.WATER)
+    val attributes = IClientFluidTypeExtensions.of(fluid)
+    attributes.getStillTexture(fluid.defaultFluidState(), world, pos)
   }
 
   private def color(tile: TileTank) = {
     val fluidAmount = tile.getTank.content
-    val attributes = IClientFluidTypeExtensions.of(fluidAmount.content)
-    val normal = attributes.getTintColor
-    if (attributes.getClass == classOf[FluidType]) {
-      normal
-    } else {
-      val stackColor = attributes.getTintColor(fluidAmount.toStack)
-      if (normal == stackColor) {
-        val world = getTankWorld(tile)
-        val pos = getTankPos(tile)
-        val worldColor = attributes.getTintColor(fluidAmount.content.defaultFluidState, world, pos)
-        worldColor
-      } else {
-        stackColor
-      }
+
+    fluidAmount.content match {
+      case VanillaFluid(fluid) =>
+        val attributes = IClientFluidTypeExtensions.of(fluid)
+        val normal = attributes.getTintColor
+        if (attributes.getClass == classOf[FluidType]) {
+          normal
+        } else {
+          val stackColor = attributes.getTintColor(fluidAmount.toStack)
+          if (normal == stackColor) {
+            val world = getTankWorld(tile)
+            val pos = getTankPos(tile)
+            val worldColor = attributes.getTintColor(fluid.defaultFluidState, world, pos)
+            worldColor
+          } else {
+            stackColor
+          }
+        }
+      case VanillaPotion(_) =>
+        PotionUtils.getColor(
+          fluidAmount.nbt.map(n => PotionUtils.getAllEffects(n)).getOrElse(java.util.List.of())
+        )
     }
   }
 
