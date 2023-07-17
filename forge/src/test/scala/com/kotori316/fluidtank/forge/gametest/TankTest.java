@@ -10,59 +10,48 @@ import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
 import com.kotori316.testutil.GameTestUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTestAssertPosException;
-import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import org.junit.platform.commons.support.ReflectionSupport;
 
-import java.util.ArrayList;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("unused")
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
 final class TankTest {
     @GameTestGenerator
     List<TestFunction> fillTest() {
-        final var prefix = getClass().getSimpleName().toLowerCase(Locale.ROOT) + "_";
+        // no args
         final var batch = "defaultBatch";
-        List<TestFunction> testFunctions = List.of(
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill1", this::fill1),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fill2", this::fill2),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain1", this::drain1),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain2", this::drain2),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "drain3", this::drain3),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "fillFail1", this::fillFail1),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capability1", this::capability1),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "capacityWithCreative", this::capacityWithCreative),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "amountWithCreative1", this::amountWithCreative1),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "amountWithCreative2", this::amountWithCreative2),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place", this::place),
-                GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "place2", this::place2)
-        );
-        var expectCount = Stream.of(getClass().getDeclaredMethods())
+        var noArgs = Stream.of(getClass().getDeclaredMethods())
                 .filter(m -> m.getReturnType() == Void.TYPE)
-                .filter(m -> m.getParameterCount() > 0)
-                .filter(m -> m.getParameterTypes()[0] == GameTestHelper.class)
-                .count();
-        if (expectCount != testFunctions.size()) {
-            // Not all test registered.
-            var copy = new ArrayList<>(testFunctions);
-            copy.add(GameTestUtil.create(FluidTankCommon.modId, batch, prefix + "assumption_fail", g ->
-                    g.fail("Not all test registered in TankTest, expect: %d, actual: %d".formatted(expectCount, testFunctions.size()))));
-            return copy;
-        }
-        return testFunctions;
+                .filter(m -> !m.isAnnotationPresent(GameTest.class))
+                .filter(m -> m.getParameterCount() == 0)
+                .filter(m -> (m.getModifiers() & (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.STATIC)) == 0)
+                .map(m -> GameTestUtil.create(FluidTankCommon.modId, batch,
+                        getClass().getSimpleName() + "_" + m.getName(),
+                        () -> ReflectionSupport.invokeMethod(m, this)));
+        var withHelper = Stream.of(getClass().getDeclaredMethods())
+                .filter(m -> m.getReturnType() == Void.TYPE)
+                .filter(m -> !m.isAnnotationPresent(GameTest.class))
+                .filter(m -> Arrays.equals(m.getParameterTypes(), new Class<?>[]{GameTestHelper.class}))
+                .filter(m -> (m.getModifiers() & (Modifier.PUBLIC | Modifier.PRIVATE | Modifier.STATIC)) == 0)
+                .map(m -> GameTestUtil.create(FluidTankCommon.modId, batch,
+                        getClass().getSimpleName() + "_" + m.getName(),
+                        g -> ReflectionSupport.invokeMethod(m, this, g)));
+        return Stream.concat(noArgs, withHelper).toList();
     }
 
     static Supplier<? extends BlockTank> getBlock(Tier tier) {
