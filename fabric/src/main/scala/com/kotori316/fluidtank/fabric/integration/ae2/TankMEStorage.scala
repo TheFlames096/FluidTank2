@@ -31,7 +31,7 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
     what match {
       case key: AEFluidKey =>
         val filled = this.tank.getConnection.getHandler.fill(fromAeFluid(key, amount), mode == Actionable.MODULATE)
-        filled.amount.asForge
+        filled.amount.asFabric
       case _ => 0
     }
   }
@@ -41,7 +41,7 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
     what match {
       case key: AEFluidKey =>
         val drained = this.tank.getConnection.getHandler.drain(fromAeFluid(key, amount), mode == Actionable.MODULATE)
-        drained.amount.asForge
+        drained.amount.asFabric
       case _ => 0
     }
   }
@@ -56,6 +56,6 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
   }
 
   private def fromAeFluid(fluidKey: AEFluidKey, amount: Long): FluidAmount = {
-    FluidAmountUtil.from(fluidKey.getFluid, GenericUnit.fromForge(amount), Option(fluidKey.copyTag()))
+    FluidAmountUtil.from(fluidKey.getFluid, GenericUnit.fromFabric(amount), Option(fluidKey.copyTag()))
   }
 }
