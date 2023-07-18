@@ -10,6 +10,7 @@ import net.minecraft.world.item.alchemy.PotionUtils
 import net.minecraft.world.level.material.{Fluid, Fluids}
 
 import java.util.Locale
+import scala.util.Try
 
 sealed trait FluidLike {
   def isGaseous: Boolean
@@ -76,11 +77,19 @@ object FluidLike {
 
   def fromResourceLocation(key: ResourceLocation): FluidLike = {
     if (key.getNamespace == FluidTankCommon.modId && key.getPath.startsWith("potion_")) {
-      val potionType = PotionType.valueOf(key.getPath.substring(7).toUpperCase(Locale.ROOT))
-      FluidLike.of(potionType)
+      val potionType = Try(PotionType.valueOf(key.getPath.substring(7).toUpperCase(Locale.ROOT)))
+      potionType.map(FluidLike.of).getOrElse {
+        FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_FLUID_LIKE, "[FluidLike] Get unknown potion type {}", key)
+        FLUID_EMPTY
+      }
     } else {
       // this is a fluid
-      FluidLike.of(BuiltInRegistries.FLUID.get(key))
+      val fluid = Option(key).filter(BuiltInRegistries.FLUID.containsKey)
+        .map(BuiltInRegistries.FLUID.get)
+      fluid.map(FluidLike.of).getOrElse {
+        FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_FLUID_LIKE, "[FluidLike] Get unknown fluid type {}", key)
+        FLUID_EMPTY
+      }
     }
   }
 }
