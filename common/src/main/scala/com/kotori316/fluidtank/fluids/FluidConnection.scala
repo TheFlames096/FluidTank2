@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.world.level.material.Fluid
 
-class FluidConnection(s: Seq[TileTank])(override implicit val helper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler]) extends Connection[TileTank](s) {
+class FluidConnection(s: Seq[TileTank])(override implicit val helper: ConnectionHelper.Aux[TileTank, FluidLike, FluidTanksHandler]) extends Connection[TileTank](s) {
   def getHandler: FluidTanksHandler = this.handler
 
   def getTextComponent: Component = {
@@ -25,10 +25,10 @@ class FluidConnection(s: Seq[TileTank])(override implicit val helper: Connection
 }
 
 object FluidConnection {
-  final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, Fluid, FluidTanksHandler] = new FluidConnectionHelper
+  final val fluidConnectionHelper: ConnectionHelper.Aux[TileTank, FluidLike, FluidTanksHandler] = new FluidConnectionHelper
 
   private final class FluidConnectionHelper extends ConnectionHelper[TileTank] {
-    override type Content = Fluid
+    override type Content = FluidLike
     override type Handler = FluidTanksHandler
     override type ConnectionType = FluidConnection
 
@@ -38,9 +38,9 @@ object FluidConnection {
 
     override def isVoid(t: TileTank): Boolean = t.getTank.isInstanceOf[VoidTank[_]]
 
-    override def getContentRaw(t: TileTank): GenericAmount[Fluid] = t.getTank.content
+    override def getContentRaw(t: TileTank): GenericAmount[FluidLike] = t.getTank.content
 
-    override def defaultAmount: GenericAmount[Fluid] = FluidAmountUtil.EMPTY
+    override def defaultAmount: GenericAmount[FluidLike] = FluidAmountUtil.EMPTY
 
     override def createHandler(s: Seq[TileTank]): FluidTanksHandler = new FluidTanksHandler(s)
 

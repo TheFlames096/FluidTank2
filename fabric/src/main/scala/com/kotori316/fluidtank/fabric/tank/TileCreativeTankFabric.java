@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.fabric.tank;
 import com.kotori316.fluidtank.contents.Tank;
 import com.kotori316.fluidtank.fabric.message.FluidTankContentMessageFabric;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.tank.TileCreativeTank;
 import com.kotori316.fluidtank.tank.VisualTank;
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,7 @@ public final class TileCreativeTankFabric extends TileCreativeTank {
     public VisualTank visualTank = new VisualTank();
 
     @Override
-    public void setTank(Tank<Fluid> tank) {
+    public void setTank(Tank<FluidLike> tank) {
         super.setTank(tank);
         if (this.level != null && !this.level.isClientSide) {
             // Sync to client

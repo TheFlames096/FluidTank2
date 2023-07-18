@@ -29,19 +29,19 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
   }
 
   private var connection: FluidConnection = new FluidConnection(Nil)
-  private var tank: Tank[Fluid] = Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
+  private var tank: Tank[FluidLike] = Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
   private var customName: Option[Component] = None
 
   def setConnection(c: FluidConnection): Unit = this.connection = c
 
   def getConnection: FluidConnection = this.connection
 
-  def setTank(tank: Tank[Fluid]): Unit = {
+  def setTank(tank: Tank[FluidLike]): Unit = {
     this.tank = tank
     this.setChanged()
   }
 
-  def getTank: Tank[Fluid] = this.tank
+  def getTank: Tank[FluidLike] = this.tank
 
   // Override of BlockEntity
   override def load(tag: CompoundTag): Unit = {

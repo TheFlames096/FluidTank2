@@ -7,9 +7,10 @@ import appeng.api.storage.MEStorage
 import cats.implicits.catsSyntaxEq
 import com.kotori316.fluidtank.MCImplicits.*
 import com.kotori316.fluidtank.contents.GenericUnit
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, VanillaFluid, VanillaPotion}
 import com.kotori316.fluidtank.tank.TileTank
 import net.minecraft.network.chat.Component
+import net.minecraft.world.level.material.Fluids
 
 case class TankMEStorage(tank: TileTank) extends MEStorage {
 
@@ -19,7 +20,7 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
     what match {
       case key: AEFluidKey =>
         tank.getConnection.getContent.forall { c =>
-          c.content === key.getFluid && c.nbt === Option(key.getTag)
+          c.content === FluidLike.of(key.getFluid) && c.nbt === Option(key.getTag)
         }
       case _ => false
     }
@@ -52,7 +53,10 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
   }
 
   private def asAeFluid(fluid: FluidAmount): AEFluidKey = {
-    AEFluidKey.of(fluid.content, fluid.nbt.orNull)
+    fluid.content match {
+      case VanillaFluid(f) => AEFluidKey.of(f, fluid.nbt.orNull)
+      case VanillaPotion(_) => AEFluidKey.of(Fluids.EMPTY)
+    }
   }
 
   private def fromAeFluid(fluidKey: AEFluidKey, amount: Long): FluidAmount = {

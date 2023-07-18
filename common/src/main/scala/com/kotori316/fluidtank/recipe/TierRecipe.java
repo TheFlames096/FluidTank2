@@ -7,7 +7,8 @@ import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.contents.Tank;
 import com.kotori316.fluidtank.contents.TankUtil;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.fluids.FluidKey;
+import com.kotori316.fluidtank.fluids.FluidLike;
+import com.kotori316.fluidtank.fluids.FluidLikeKey;
 import com.kotori316.fluidtank.item.PlatformItemAccess;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
 import com.kotori316.fluidtank.tank.PlatformTankAccess;
@@ -112,7 +113,7 @@ public abstract class TierRecipe implements CraftingRecipe {
                         .map(nbt -> TankUtil.load(nbt.getCompound(TileTank.KEY_TANK()), FluidAmountUtil.access()))
                         .map(Tank::content)
                         .filter(GenericAmount::nonEmpty)
-                        .map(FluidKey::from)
+                        .map(FluidLikeKey::from)
                         .distinct()
                         .count() <= 1;
     }
@@ -125,7 +126,7 @@ public abstract class TierRecipe implements CraftingRecipe {
             return ItemStack.EMPTY;
         }
         ItemStack result = getResultItem(access);
-        GenericAmount<Fluid> fluidAmount = IntStream.range(0, inv.getContainerSize()).mapToObj(inv::getItem)
+        GenericAmount<FluidLike> fluidAmount = IntStream.range(0, inv.getContainerSize()).mapToObj(inv::getItem)
                 .filter(s -> s.getItem() instanceof ItemBlockTank)
                 .map(BlockItem::getBlockEntityData)
                 .filter(Objects::nonNull)

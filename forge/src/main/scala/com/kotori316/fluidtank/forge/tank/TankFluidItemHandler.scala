@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.forge.tank
 
 import com.kotori316.fluidtank.contents.{DefaultTransferEnv, GenericUnit, Tank, TankUtil}
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, fluidAccess}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, fluidAccess}
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.minecraft.core.Direction
@@ -24,7 +24,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends IFluidHandlerIt
   override def getContainer: ItemStack = stack
 
   @VisibleForTesting
-  private[tank] def getTank: Tank[Fluid] = {
+  private[tank] def getTank: Tank[FluidLike] = {
     val tag = BlockItem.getBlockEntityData(getContainer)
     if (tag == null || !tag.contains(TileTank.KEY_TANK)) return Tank(FluidAmountUtil.EMPTY, GenericUnit(tier.getCapacity))
 
@@ -32,7 +32,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends IFluidHandlerIt
   }
 
   @VisibleForTesting
-  private[tank] def updateTank(tank: Tank[Fluid]): Unit = {
+  private[tank] def updateTank(tank: Tank[FluidLike]): Unit = {
     if (tank.isEmpty) {
       // remove tags
       val tag = getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)
@@ -84,7 +84,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends IFluidHandlerIt
     }
   }
 
-  private def drainInternal(tank: Tank[Fluid], drainAmount: FluidAmount, fluidAction: IFluidHandler.FluidAction): FluidStack = {
+  private def drainInternal(tank: Tank[FluidLike], drainAmount: FluidAmount, fluidAction: IFluidHandler.FluidAction): FluidStack = {
     val (_, rest, newTank) = tank.drainOp.run(DefaultTransferEnv, drainAmount)
     if (fluidAction.execute()) updateTank(newTank)
     (drainAmount - rest).toStack

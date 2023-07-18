@@ -2,12 +2,13 @@ package com.kotori316.fluidtank.fabric.tank
 
 import com.kotori316.fluidtank.fabric.FluidTank
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidConnection}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidConnection, VanillaFluid, VanillaPotion}
 import com.kotori316.fluidtank.tank.TileTank
 import net.fabricmc.fabric.api.transfer.v1.fluid.{FluidStorage, FluidVariant}
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext
 import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant
+import net.minecraft.world.level.material.Fluids
 
 //noinspection UnstableApiUsage
 class ConnectionStorage(private val connection: FluidConnection) extends SnapshotParticipant[FluidAmount] with SingleSlotStorage[FluidVariant] {
@@ -15,14 +16,28 @@ class ConnectionStorage(private val connection: FluidConnection) extends Snapsho
 
   override def readSnapshot(snapshot: FluidAmount): Unit = connection.getHandler.set(snapshot)
 
-  override def isResourceBlank: Boolean = connection.getContent.isEmpty
+  override def isResourceBlank: Boolean = {
+    connection.getContent.forall { f =>
+      f.content match {
+        case _: VanillaFluid => f.isEmpty
+        case _: VanillaPotion => true
+      }
+    }
+  }
 
   override def getResource: FluidVariant = {
     val fluid = connection.getContent.getOrElse(FluidAmountUtil.EMPTY)
-    FabricConverter.toVariant(fluid)
+    FabricConverter.toVariant(fluid, Fluids.EMPTY)
   }
 
-  override def getAmount: Long = connection.amount.asFabric
+  override def getAmount: Long = {
+    connection.getContent.map { f =>
+      f.content match {
+        case _: VanillaFluid => connection.amount.asFabric
+        case _: VanillaPotion => 0
+      }
+    }.getOrElse(0)
+  }
 
   override def getCapacity: Long = connection.capacity.asFabric
 

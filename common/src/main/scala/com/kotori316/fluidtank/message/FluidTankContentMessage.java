@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.message;
 import com.kotori316.fluidtank.contents.Tank;
 import com.kotori316.fluidtank.contents.TankUtil;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.tank.TileTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
 public class FluidTankContentMessage implements IMessage<FluidTankContentMessage> {
     private final BlockPos pos;
     private final ResourceKey<Level> dim;
-    private final Tank<Fluid> tank;
+    private final Tank<FluidLike> tank;
 
-    public FluidTankContentMessage(BlockPos pos, ResourceKey<Level> dim, Tank<Fluid> tank) {
+    public FluidTankContentMessage(BlockPos pos, ResourceKey<Level> dim, Tank<FluidLike> tank) {
         this.pos = pos;
         this.dim = dim;
         this.tank = tank;

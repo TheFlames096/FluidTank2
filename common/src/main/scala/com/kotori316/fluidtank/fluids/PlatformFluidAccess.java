@@ -12,11 +12,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import scala.Option;
+import scala.jdk.javaapi.OptionConverters;
 
 public interface PlatformFluidAccess {
     @NotNull
@@ -34,44 +39,49 @@ public interface PlatformFluidAccess {
     Fluid getBucketContent(BucketItem bucketItem);
 
     @NotNull
-    default GenericAmount<Fluid> getFluidContained(ItemStack stack) {
+    default GenericAmount<FluidLike> getFluidContained(ItemStack stack) {
         if (stack.getItem() instanceof BucketItem bucketItem) {
             var fluid = getBucketContent(bucketItem);
             if (Fluids.EMPTY.equals(fluid)) {
                 return FluidAmountUtil.EMPTY();
             }
             return FluidAmountUtil.from(fluid, GenericUnit.ONE_BUCKET());
+        } else if (stack.getItem() instanceof PotionItem potionItem) {
+            var potionFluid = FluidLike.of(PotionType.fromItemUnsafe(potionItem));
+            return FluidAmountUtil.from(potionFluid, GenericUnit.ONE_BOTTLE(), Option.apply(stack.getTag()));
+        } else if (stack.is(Items.GLASS_BOTTLE)) {
+            return FluidAmountUtil.EMPTY();
         }
         return FluidAmountUtil.EMPTY();
     }
 
     boolean isFluidContainer(ItemStack stack);
 
-    Component getDisplayName(GenericAmount<Fluid> amount);
+    Component getDisplayName(GenericAmount<FluidLike> amount);
 
     /**
      * @param execute used in fabric, where item transfer will be done in fabric context. In forge, this param has no meaning.
      * @return the filled amount and filled stack
      */
     @NotNull
-    TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
+    TransferStack fillItem(GenericAmount<FluidLike> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
 
     /**
      * @param execute used in fabric, where item transfer will be done in fabric context. In forge, this param has no meaning.
      * @return the drained amount and drained stack
      */
     @NotNull
-    TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
+    TransferStack drainItem(GenericAmount<FluidLike> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute);
 
-    @Nullable SoundEvent getEmptySound(GenericAmount<Fluid> fluid);
+    @Nullable SoundEvent getEmptySound(GenericAmount<FluidLike> fluid);
 
-    @Nullable SoundEvent getFillSound(GenericAmount<Fluid> fluid);
+    @Nullable SoundEvent getFillSound(GenericAmount<FluidLike> fluid);
 
     /**
      * The result of transferring fluids.
      */
     final class TransferStack {
-        private final GenericAmount<Fluid> moved;
+        private final GenericAmount<FluidLike> moved;
         private final ItemStack toReplace;
         private final boolean shouldMove;
 
@@ -80,7 +90,7 @@ public interface PlatformFluidAccess {
          * @param toReplace  the result item with transferred fluids
          * @param shouldMove whether to move {@code toReplace} item into player inventory. In fabric {@code false} and in forge {@code true}.
          */
-        public TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace, boolean shouldMove) {
+        public TransferStack(GenericAmount<FluidLike> moved, ItemStack toReplace, boolean shouldMove) {
             this.moved = moved;
             this.toReplace = toReplace;
             this.shouldMove = shouldMove;
@@ -89,11 +99,11 @@ public interface PlatformFluidAccess {
         /**
          * Helper constructor for forge.
          */
-        public TransferStack(GenericAmount<Fluid> moved, ItemStack toReplace) {
+        public TransferStack(GenericAmount<FluidLike> moved, ItemStack toReplace) {
             this(moved, toReplace, true);
         }
 
-        public GenericAmount<Fluid> moved() {
+        public GenericAmount<FluidLike> moved() {
             return moved;
         }
 
@@ -140,47 +150,75 @@ class PlatformFluidAccessHolder {
 
         @Override
         public boolean isFluidContainer(ItemStack stack) {
-            return stack.getItem() instanceof BucketItem;
+            return stack.getItem() instanceof BucketItem ||
+                    stack.getItem() instanceof PotionItem ||
+                    stack.is(Items.GLASS_BOTTLE);
         }
 
         @Override
-        public Component getDisplayName(GenericAmount<Fluid> amount) {
+        public Component getDisplayName(GenericAmount<FluidLike> amount) {
             return Component.literal(FluidAmountUtil.access().asString(amount.content()));
         }
 
         @Override
-        public TransferStack fillItem(GenericAmount<Fluid> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
-            // Just for vanilla bucket
-            if (fluidContainer.getItem() == Items.BUCKET && toFill.hasOneBucket()) {
-                var filledItem = toFill.content().getBucket().getDefaultInstance();
-                var filledAmount = toFill.setAmount(GenericUnit.ONE_BUCKET());
-                return new TransferStack(filledAmount, filledItem);
+        public TransferStack fillItem(GenericAmount<FluidLike> toFill, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
+            if (toFill.content() instanceof VanillaFluid vanillaFluid) {
+                // Just for vanilla bucket
+                if (fluidContainer.getItem() == Items.BUCKET && toFill.hasOneBucket()) {
+                    var filledItem = vanillaFluid.fluid().getBucket().getDefaultInstance();
+                    var filledAmount = toFill.setAmount(GenericUnit.ONE_BUCKET());
+                    return new TransferStack(filledAmount, filledItem);
+                }
+                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+            } else if (toFill.content() instanceof VanillaPotion vanillaPotion) {
+                if (fluidContainer.is(Items.GLASS_BOTTLE) && toFill.hasOneBottle()) {
+                    var filledItem = PotionUtils.setPotion(
+                            new ItemStack(vanillaPotion.potionType().getItem()),
+                            OptionConverters.toJava(toFill.nbt()).map(PotionUtils::getPotion).orElse(Potions.EMPTY)
+                    );
+                    var filledAmount = toFill.setAmount(GenericUnit.ONE_BOTTLE());
+                    return new TransferStack(filledAmount, filledItem);
+                }
+                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+            } else {
+                throw new IllegalArgumentException();
             }
-            return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer);
         }
 
         @Override
-        public TransferStack drainItem(GenericAmount<Fluid> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
-            var bucketFluid = getFluidContained(fluidContainer);
-            if (!toDrain.hasOneBucket() || !toDrain.contentEqual(bucketFluid)) {
-                // Nothing drained
-                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer);
+        public TransferStack drainItem(GenericAmount<FluidLike> toDrain, ItemStack fluidContainer, Player player, InteractionHand hand, boolean execute) {
+            var content = getFluidContained(fluidContainer);
+            if (toDrain.content() instanceof VanillaFluid) {
+                if (!toDrain.hasOneBucket() || !content.hasOneBottle() || !toDrain.contentEqual(content)) {
+                    // Nothing drained
+                    return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+                }
+                var drainedItem = Items.BUCKET.getDefaultInstance();
+                var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
+                return new TransferStack(drainedAmount, drainedItem);
+            } else if (toDrain.content() instanceof VanillaPotion) {
+                if (!toDrain.hasOneBottle() || !toDrain.contentEqual(content)) {
+                    // Nothing drained
+                    return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+                }
+                var drainedItem = Items.GLASS_BOTTLE.getDefaultInstance();
+                var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BOTTLE());
+                return new TransferStack(drainedAmount, drainedItem);
+            } else {
+                throw new AssertionError();
             }
-            var drainedItem = Items.BUCKET.getDefaultInstance();
-            var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
-            return new TransferStack(drainedAmount, drainedItem);
         }
 
         @Override
         @SuppressWarnings("deprecation")
-        public SoundEvent getEmptySound(GenericAmount<Fluid> fluid) {
-            return fluid.content().is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
+        public SoundEvent getEmptySound(GenericAmount<FluidLike> fluid) {
+            return FluidLike.asFluid(fluid.content(), Fluids.WATER).is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
         }
 
         @Override
         @Nullable
-        public SoundEvent getFillSound(GenericAmount<Fluid> fluid) {
-            return fluid.content().getPickupSound().orElse(null);
+        public SoundEvent getFillSound(GenericAmount<FluidLike> fluid) {
+            return FluidLike.asFluid(fluid.content(), Fluids.WATER).getPickupSound().orElse(null);
         }
     }
 }

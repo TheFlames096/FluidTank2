@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.forge.message;
 
 import com.kotori316.fluidtank.contents.Tank;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.message.FluidTankContentMessage;
 import com.kotori316.fluidtank.tank.TileTank;
@@ -15,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public final class FluidTankContentMessageForge extends FluidTankContentMessage {
-    public FluidTankContentMessageForge(BlockPos pos, ResourceKey<Level> dim, Tank<Fluid> tank) {
+    public FluidTankContentMessageForge(BlockPos pos, ResourceKey<Level> dim, Tank<FluidLike> tank) {
         super(pos, dim, tank);
     }
 

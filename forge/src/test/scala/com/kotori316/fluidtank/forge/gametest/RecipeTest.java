@@ -5,6 +5,7 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.forge.recipe.RecipeInventoryUtil;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
@@ -149,7 +150,7 @@ final class RecipeTest {
         }).toList();
     }
 
-    void combine1(GenericAmount<Fluid> amount) {
+    void combine1(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
@@ -166,7 +167,7 @@ final class RecipeTest {
         assertEquals(Tier.STONE.getCapacity(), RecipeInventoryUtil.getFluidHandler(result).getTank().capacity());
     }
 
-    void combine2(GenericAmount<Fluid> amount) {
+    void combine2(GenericAmount<FluidLike> amount) {
         var filled = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, amount);
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();

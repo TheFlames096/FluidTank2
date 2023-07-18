@@ -47,6 +47,7 @@ object GenericUnit {
   private final val INT_MAX = BigInt(Int.MaxValue)
   final val ZERO: GenericUnit = new GenericUnit(BigInt(0))
   final val ONE_BUCKET: GenericUnit = new GenericUnit(BigInt(FABRIC_ONE_BUCKET))
+  final val ONE_BOTTLE: GenericUnit = new GenericUnit(BigInt(FABRIC_ONE_BUCKET / 3))
   final val MAX: GenericUnit = new GenericUnit(GenericUnit.LONG_MAX * BigInt(FABRIC_ONE_BUCKET))
   final val CREATIVE_TANK: GenericUnit = fromForge(100_000_000_000_000L * 1000)
 

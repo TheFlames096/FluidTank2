@@ -1,12 +1,15 @@
 package com.kotori316.fluidtank.forge.fluid
 
 import com.kotori316.fluidtank.contents.GenericUnit
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, VanillaFluid, VanillaPotion}
 import net.minecraftforge.fluids.FluidStack
 
 object ForgeConverter {
   def toStack(amount: FluidAmount): FluidStack = {
-    new FluidStack(amount.content, amount.amount.asForge, amount.nbt.orNull)
+    amount.content match {
+      case VanillaFluid(fluid) => new FluidStack(fluid, amount.amount.asForge, amount.nbt.orNull)
+      case VanillaPotion(_) => FluidStack.EMPTY
+    }
   }
 
   def toAmount(stack: FluidStack): FluidAmount = {

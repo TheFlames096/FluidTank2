@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.forge.tank;
 
 import com.kotori316.fluidtank.contents.Tank;
 import com.kotori316.fluidtank.fluids.FluidConnection;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.forge.message.FluidTankContentMessageForge;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.tank.Tier;
@@ -38,7 +39,7 @@ public final class TileTankForge extends TileTank {
     }
 
     @Override
-    public void setTank(Tank<Fluid> tank) {
+    public void setTank(Tank<FluidLike> tank) {
         super.setTank(tank);
         if (this.level != null && !this.level.isClientSide) { // In server side
             PacketHandler.sendToClient(new FluidTankContentMessageForge(this), level);

@@ -2,7 +2,7 @@ package com.kotori316.fluidtank.fabric.tank
 
 import com.kotori316.fluidtank.contents.*
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, fluidAccess}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, fluidAccess}
 import com.kotori316.fluidtank.tank.{ItemBlockTank, Tier, TileTank}
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant
@@ -11,7 +11,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleSlotStorage
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext
 import net.minecraft.nbt.{CompoundTag, Tag}
 import net.minecraft.world.item.BlockItem
-import net.minecraft.world.level.material.Fluid
+import net.minecraft.world.level.material.Fluids
 
 //noinspection UnstableApiUsage
 class FabricTankItemStorage(private val context: ContainerItemContext) extends SingleSlotStorage[FluidVariant] {
@@ -25,7 +25,7 @@ class FabricTankItemStorage(private val context: ContainerItemContext) extends S
     move(tank, tank.drainOp, FabricConverter.fromVariant(resource, maxAmount), transaction)
   }
 
-  private def move(tank: Tank[Fluid], op: Operations.TankOperation[Fluid], fluid: FluidAmount, transaction: TransactionContext): Long = {
+  private def move(tank: Tank[FluidLike], op: Operations.TankOperation[FluidLike], fluid: FluidAmount, transaction: TransactionContext): Long = {
     val (_, rest, result) = op.run(DefaultTransferEnv, fluid)
     if (tank != result && this.context.exchange(createNewItem(result), 1, transaction) == 1) {
       val inserted = fluid - rest
@@ -38,13 +38,13 @@ class FabricTankItemStorage(private val context: ContainerItemContext) extends S
 
   override def isResourceBlank: Boolean = getTank.content.isContentEmpty
 
-  override def getResource: FluidVariant = FabricConverter.toVariant(getTank.content)
+  override def getResource: FluidVariant = FabricConverter.toVariant(getTank.content, Fluids.EMPTY)
 
   override def getAmount: Long = getTank.content.amount.asFabric
 
   override def getCapacity: Long = getTank.capacity.asFabric
 
-  def getTank: Tank[Fluid] = {
+  def getTank: Tank[FluidLike] = {
     val tag = context.getItemVariant.getNbt
     if (tag == null || !tag.contains(BlockItem.BLOCK_ENTITY_TAG, Tag.TAG_COMPOUND)) {
       Tank(FluidAmountUtil.EMPTY, GenericUnit(getTier.getCapacity))
@@ -55,7 +55,7 @@ class FabricTankItemStorage(private val context: ContainerItemContext) extends S
 
   def getTier: Tier = context.getItemVariant.getItem.asInstanceOf[ItemBlockTank].blockTank.tier
 
-  def createNewItem(newTank: Tank[Fluid]): ItemVariant = {
+  def createNewItem(newTank: Tank[FluidLike]): ItemVariant = {
     val itemTag = this.context.getItemVariant.copyOrCreateNbt()
     val tileTag = if (itemTag.contains(BlockItem.BLOCK_ENTITY_TAG, Tag.TAG_COMPOUND)) itemTag.getCompound(BlockItem.BLOCK_ENTITY_TAG) else new CompoundTag()
     if (newTank.isEmpty) {

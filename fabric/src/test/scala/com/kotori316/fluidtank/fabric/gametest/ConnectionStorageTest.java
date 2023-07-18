@@ -5,6 +5,7 @@ import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fabric.FluidTank;
 import com.kotori316.fluidtank.fabric.tank.ConnectionStorage;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.PotionType;
 import com.kotori316.fluidtank.tank.Tier;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -15,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.material.Fluids;
 import org.junit.platform.commons.support.ReflectionSupport;
 import scala.Option;
@@ -325,6 +327,40 @@ public final class ConnectionStorageTest implements FabricGameTest {
         }
         assertEquals(0, drained);
         assertEquals(Option.apply(FluidAmountUtil.BUCKET_WATER()), connection.getContent());
+        helper.succeed();
+    }
+
+    void potionStorage(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        var storage = getStorage(helper, pos);
+        tile.getConnection().getHandler().fill(FluidAmountUtil.from(PotionType.NORMAL, Potions.INVISIBILITY, GenericUnit.ONE_BUCKET()), true);
+
+        assertTrue(storage.isResourceBlank());
+        assertEquals(4 * FluidConstants.BUCKET, storage.getCapacity());
+        assertEquals(0, storage.getAmount());
+        helper.succeed();
+    }
+
+    void fillPotionStorage(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        var storage = getStorage(helper, pos);
+        tile.getConnection().getHandler().fill(FluidAmountUtil.from(PotionType.NORMAL, Potions.INVISIBILITY, GenericUnit.ONE_BUCKET()), true);
+
+        var filled = storage.simulateInsert(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, null);
+        assertEquals(0, filled);
+        helper.succeed();
+    }
+
+    void drainPotionStorage(GameTestHelper helper) {
+        var pos = BlockPos.ZERO.above();
+        var tile = TankTest.placeTank(helper, pos, Tier.WOOD);
+        var storage = getStorage(helper, pos);
+        tile.getConnection().getHandler().fill(FluidAmountUtil.from(PotionType.NORMAL, Potions.INVISIBILITY, GenericUnit.ONE_BUCKET()), true);
+
+        var drained = storage.simulateExtract(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, null);
+        assertEquals(0, drained);
         helper.succeed();
     }
 }
