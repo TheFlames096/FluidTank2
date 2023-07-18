@@ -38,6 +38,7 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
 
   def setTank(tank: Tank[Fluid]): Unit = {
     this.tank = tank
+    this.setChanged()
   }
 
   def getTank: Tank[Fluid] = this.tank
