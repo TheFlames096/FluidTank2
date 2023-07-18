@@ -48,14 +48,10 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
 
   override def getAvailableStacks(out: KeyCounter): Unit = {
     this.tank.getConnection.getContent.foreach { c =>
-      out.add(asAeFluid(c), c.amount.asDisplay)
-    }
-  }
-
-  private def asAeFluid(fluid: FluidAmount): AEFluidKey = {
-    fluid.content match {
-      case VanillaFluid(f) => AEFluidKey.of(f, fluid.nbt.orNull)
-      case VanillaPotion(_) => AEFluidKey.of(Fluids.EMPTY)
+      c.content match {
+        case VanillaFluid(fluid) => out.add(AEFluidKey.of(fluid, c.nbt.orNull), c.amount.asFabric)
+        case VanillaPotion(_) =>
+      }
     }
   }
 
