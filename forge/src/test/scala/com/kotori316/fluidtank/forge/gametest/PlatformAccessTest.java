@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
 public class PlatformAccessTest {
-    private static final PlatformAccess ACCESS = ForgePlatformAccessTest.ACCESS;
+    private static final PlatformAccess ACCESS = new ForgePlatformAccessTest().ACCESS();
     private static final String BATCH_NAME = "platform_test";
 
     @GameTestGenerator

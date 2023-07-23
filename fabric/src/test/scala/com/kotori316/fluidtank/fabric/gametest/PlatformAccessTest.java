@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 public class PlatformAccessTest implements FabricGameTest {
-    private static final PlatformAccess ACCESS = FabricPlatformAccessTest.ACCESS;
+    private static final PlatformAccess ACCESS = new FabricPlatformAccessTest().ACCESS();
     private static final String BATCH_NAME = "platform_test";
 
     @GameTestGenerator
