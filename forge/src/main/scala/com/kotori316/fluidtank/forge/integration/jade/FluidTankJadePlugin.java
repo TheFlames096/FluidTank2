@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.forge.integration.jade;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.integration.tooltip.TooltipContent;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.TileTank;
 import snownee.jade.api.IWailaClientRegistration;
@@ -24,5 +25,7 @@ public class FluidTankJadePlugin implements IWailaPlugin {
     public void registerClient(IWailaClientRegistration registration) {
         IWailaPlugin.super.registerClient(registration);
         registration.registerBlockComponent(new FluidTankJadeProvider(), BlockTank.class);
+        registration.addConfig(TooltipContent.JADE_CONFIG_SHORT(), false);
+        registration.addConfig(TooltipContent.JADE_CONFIG_COMPACT(), false);
     }
 }

@@ -14,7 +14,8 @@ class FluidTankJadeProvider implements IServerDataProvider<BlockAccessor>, IBloc
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         if (accessor.getBlockEntity() instanceof TileTank tileTank) {
             var content = TooltipContent.getTooltipText(accessor.getServerData(), tileTank,
-                    false, false, Minecraft.getInstance().getLocale());
+                    config.get(TooltipContent.JADE_CONFIG_SHORT()), config.get(TooltipContent.JADE_CONFIG_COMPACT()),
+                    Minecraft.getInstance().getLocale());
             tooltip.addAll(CollectionConverters.asJava(content));
         }
     }
