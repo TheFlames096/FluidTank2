@@ -81,17 +81,15 @@ object TooltipContent {
         ))
       }
     } else {
-      val tierText = Seq(Component.translatable("fluidtank.waila.tier", tier.toString))
       if (tier == Tier.VOID) {
-        tierText
-      }
-      else if (hasCreative) {
-        tierText ++ Seq(
-          Component.translatable("fluidtank.waila.content", fluidName),
+        Seq.empty
+      } else if (hasCreative) {
+        Seq(
+          fluidName,
         )
       } else {
-        tierText ++ Seq(
-          Component.translatable("fluidtank.waila.content", fluidName),
+        Seq(
+          fluidName,
           Component.translatable("fluidtank.waila.amount", numberFormat(fluid.amount.asDisplay)),
           Component.translatable("fluidtank.waila.capacity", numberFormat(capacity)),
           Component.translatable("fluidtank.waila.comparator", comparator),
