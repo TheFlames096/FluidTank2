@@ -49,7 +49,7 @@ case class GenericAmount[ContentType](content: ContentType, amount: GenericUnit,
   final def hasOneBottle: Boolean = this.amount >= GenericUnit.ONE_BOTTLE
 
   override final def equals(obj: Any): Boolean = obj match {
-    case that: GenericAmount[_] =>
+    case that: GenericAmount[?] =>
       val c = this.access.classTag
       that.content match {
         case c(content) => this.content === content && this.nbt === that.nbt && this.amount.value === that.amount.value

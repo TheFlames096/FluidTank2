@@ -38,9 +38,9 @@ package object connection {
 
     override def getPos(t: StringTile): BlockPos = t.pos
 
-    override def isCreative(t: StringTile): Boolean = t.tank.isInstanceOf[CreativeTank[_]]
+    override def isCreative(t: StringTile): Boolean = t.tank.isInstanceOf[CreativeTank[?]]
 
-    override def isVoid(t: StringTile): Boolean = t.tank.isInstanceOf[VoidTank[_]]
+    override def isVoid(t: StringTile): Boolean = t.tank.isInstanceOf[VoidTank[?]]
 
     override def getContentRaw(t: StringTile): GenericAmount[String] = t.tank.content
 

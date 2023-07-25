@@ -34,9 +34,9 @@ object FluidConnection {
 
     override def getPos(t: TileTank): BlockPos = t.getBlockPos
 
-    override def isCreative(t: TileTank): Boolean = t.getTank.isInstanceOf[CreativeTank[_]]
+    override def isCreative(t: TileTank): Boolean = t.getTank.isInstanceOf[CreativeTank[?]]
 
-    override def isVoid(t: TileTank): Boolean = t.getTank.isInstanceOf[VoidTank[_]]
+    override def isVoid(t: TileTank): Boolean = t.getTank.isInstanceOf[VoidTank[?]]
 
     override def getContentRaw(t: TileTank): GenericAmount[FluidLike] = t.getTank.content
 

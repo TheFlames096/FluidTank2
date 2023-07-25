@@ -17,22 +17,22 @@ import java.util.concurrent.CompletableFuture
 import scala.jdk.javaapi.CollectionConverters
 
 class RecipeProvider(gen: DataGenerator) extends DataProvider {
-  override def run(output: CachedOutput): CompletableFuture[_] = {
+  override def run(output: CachedOutput): CompletableFuture[?] = {
     val outputWork = for {
       recipe <- getRecipes
       future <- Seq(saveRecipe(output, recipe), saveAdvancement(output, recipe))
     } yield future
 
-    CompletableFuture.allOf(outputWork: _*)
+    CompletableFuture.allOf(outputWork *)
   }
 
-  private def saveRecipe(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[_] = {
+  private def saveRecipe(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[?] = {
     val location = recipe.location
     val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/recipes/${location.getPath}.json")
     DataProvider.saveStable(output, recipe.build, out)
   }
 
-  private def saveAdvancement(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[_] = {
+  private def saveAdvancement(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[?] = {
     val location = recipe.location
     val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/advancements/recipes/tank/${location.getPath}.json")
     DataProvider.saveStable(output, recipe.advancement.build(location), out)

@@ -12,7 +12,7 @@ class Tank[A](val content: GenericAmount[A], val capacity: GenericUnit) {
   override final def hashCode(): Int = Objects.hash(content, capacity.value)
 
   override final def equals(obj: Any): Boolean = obj match {
-    case t: Tank[_] => this.content == t.content && this.capacity.value == t.capacity.value
+    case t: Tank[?] => this.content == t.content && this.capacity.value == t.capacity.value
     case _ => false
   }
 

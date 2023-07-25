@@ -10,7 +10,7 @@ import scala.math.Ordering.Implicits.infixOrderingOps
 abstract class TanksHandler[T, ListType[+_]](limitOneFluid: Boolean)(implicit monoidK: MonoidK[ListType], monad: Monad[ListType], f: Foldable[ListType], reversible: Reversible[ListType]) {
   protected var tanks: ListType[Tank[T]] = monoidK.empty
 
-  protected def hasCreative: Boolean = tanks.exists(_.isInstanceOf[CreativeTank[_]])
+  protected def hasCreative: Boolean = tanks.exists(_.isInstanceOf[CreativeTank[?]])
 
   /**
    * @return moved amount, meaning resource - left(not filled/drained)

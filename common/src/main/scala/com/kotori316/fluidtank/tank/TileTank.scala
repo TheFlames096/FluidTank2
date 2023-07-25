@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.Fluid
 import org.jetbrains.annotations.{NotNull, Nullable}
 
-class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s: BlockState)
+class TileTank(var tier: Tier, t: BlockEntityType[? <: TileTank], p: BlockPos, s: BlockState)
   extends BlockEntity(t, p, s) with Nameable {
 
   def this(p: BlockPos, s: BlockState) = {
@@ -109,7 +109,7 @@ class TileTank(var tier: Tier, t: BlockEntityType[_ <: TileTank], p: BlockPos, s
 
   def onTickLoading(): Unit = {
     // Do nothing if the connection is already created.
-    if (!this.connection.isDummy) return {
+    if (!this.connection.isDummy) {
       FluidTankCommon.LOGGER.debug(FluidTankCommon.MARKER_TANK,
         "Connection {} loaded in onLoading. At={}, connection={}",
         "will be",

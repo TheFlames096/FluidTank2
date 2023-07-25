@@ -25,11 +25,11 @@ object TankUtil {
     }
   }
 
-  private def getType(tank: Tank[_]): String = {
+  private def getType(tank: Tank[?]): String = {
     tank match {
-      case _: CreativeTank[_] => "CreativeTank"
-      case _: VoidTank[_] => "VoidTank"
-      case _: Tank[_] => "Tank"
+      case _: CreativeTank[?] => "CreativeTank"
+      case _: VoidTank[?] => "VoidTank"
+      case _: Tank[?] => "Tank"
       case null => throw new IllegalArgumentException("Unknown type of tank, %s".formatted(tank.getClass))
     }
   }
