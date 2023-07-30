@@ -65,6 +65,8 @@ loom {
     silentMojangMappingsLicense()
 }
 
+boolean ENABLE_SCALA2 = true
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered {
@@ -76,7 +78,7 @@ dependencies {
     }
 
     implementation(group: "org.scala-lang", name: "scala-library", version: project.scala2_version)
-    if (false && Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
+    if (ENABLE_SCALA2 && Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
         // In idea sync, use scala2 to enable syntax highlight
         implementation(group: "org.typelevel", name: "cats-core_2.13", version: project.cats_version)
     } else {
@@ -99,7 +101,7 @@ tasks.withType(JavaCompile.class).configureEach {
 }
 
 tasks.withType(ScalaCompile.class).configureEach {
-    if (false && Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
+    if (ENABLE_SCALA2 && Boolean.getBoolean("idea.sync.active") || Boolean.parseBoolean(System.getenv("FORCE_SCALA2"))) {
         scalaCompileOptions.additionalParameters = ["-X" + "source:3"]
     }
     options.encoding = "UTF-8"
