@@ -2,6 +2,8 @@ package com.kotori316.fluidtank.fabric;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
+import com.kotori316.fluidtank.config.PlatformConfigAccess;
+import com.kotori316.fluidtank.fabric.config.FabricPlatformConfigAccess;
 import com.kotori316.fluidtank.fabric.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
 import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
@@ -34,6 +36,7 @@ public final class FluidTank implements ModInitializer {
         FluidTankCommon.LOGGER.info("Initialize {}", FluidTankCommon.modId);
         PacketHandler.Server.initServer();
         PlatformAccess.setInstance(new FabricPlatformAccess());
+        PlatformConfigAccess.setInstance(new FabricPlatformConfigAccess());
         registerObjects();
         ConnectionStorage.register();
         AE2FluidTankIntegration.onAPIAvailable();
