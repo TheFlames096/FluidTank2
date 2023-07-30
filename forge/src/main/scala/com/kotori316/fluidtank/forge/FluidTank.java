@@ -2,6 +2,8 @@ package com.kotori316.fluidtank.forge;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
+import com.kotori316.fluidtank.config.PlatformConfigAccess;
+import com.kotori316.fluidtank.forge.config.ForgePlatformConfigAccess;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
@@ -25,7 +27,9 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -54,12 +58,20 @@ public final class FluidTank {
         BLOCK_ENTITY_REGISTER.register(modBus);
         RECIPE_REGISTER.register(modBus);
         PlatformAccess.setInstance(new ForgePlatformAccess());
+        setupConfig();
         modBus.register(this);
         modBus.register(proxy);
         PacketHandler.init();
         AE2FluidTankIntegration.onAPIAvailable();
         FluidTankTopPlugin.sendIMC();
         FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
+    }
+
+    private static void setupConfig() {
+        var config = new ForgePlatformConfigAccess();
+        var builder = config.setupConfig();
+        PlatformConfigAccess.setInstance(config);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
     }
 
     private static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, FluidTankCommon.modId);
@@ -69,25 +81,25 @@ public final class FluidTank {
     private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FluidTankCommon.modId);
 
     public static final Map<Tier, RegistryObject<BlockTankForge>> TANK_MAP = Stream.of(Tier.values())
-            .filter(Tier::isNormalTankTier)
-            .collect(Collectors.toMap(Function.identity(), t -> BLOCK_REGISTER.register(t.getBlockName(), () -> new BlockTankForge(t))));
+        .filter(Tier::isNormalTankTier)
+        .collect(Collectors.toMap(Function.identity(), t -> BLOCK_REGISTER.register(t.getBlockName(), () -> new BlockTankForge(t))));
     public static final RegistryObject<BlockCreativeTankForge> BLOCK_CREATIVE_TANK =
-            BLOCK_REGISTER.register(Tier.CREATIVE.getBlockName(), BlockCreativeTankForge::new);
+        BLOCK_REGISTER.register(Tier.CREATIVE.getBlockName(), BlockCreativeTankForge::new);
     public static final RegistryObject<BlockVoidTankForge> BLOCK_VOID_TANK =
-            BLOCK_REGISTER.register(Tier.VOID.getBlockName(), BlockVoidTankForge::new);
+        BLOCK_REGISTER.register(Tier.VOID.getBlockName(), BlockVoidTankForge::new);
     public static final Map<Tier, RegistryObject<ItemBlockTank>> TANK_ITEM_MAP =
-            Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> ITEM_REGISTER.register(e.getKey().getBlockName(), () -> e.getValue().get().itemBlock())));
+        Stream.concat(TANK_MAP.entrySet().stream(), Stream.of(Map.entry(Tier.CREATIVE, BLOCK_CREATIVE_TANK), Map.entry(Tier.VOID, BLOCK_VOID_TANK)))
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> ITEM_REGISTER.register(e.getKey().getBlockName(), () -> e.getValue().get().itemBlock())));
     public static final RegistryObject<BlockEntityType<TileTankForge>> TILE_TANK_TYPE =
-            BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-                    BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
-                            .build(DSL.emptyPartType()));
+        BLOCK_ENTITY_REGISTER.register(TileTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+            BlockEntityType.Builder.of(TileTankForge::new, TANK_MAP.values().stream().map(RegistryObject::get).toArray(BlockTank[]::new))
+                .build(DSL.emptyPartType()));
     public static final RegistryObject<BlockEntityType<TileCreativeTankForge>> TILE_CREATIVE_TANK_TYPE =
-            BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-                    BlockEntityType.Builder.of(TileCreativeTankForge::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
+        BLOCK_ENTITY_REGISTER.register(TileCreativeTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+            BlockEntityType.Builder.of(TileCreativeTankForge::new, BLOCK_CREATIVE_TANK.get()).build(DSL.emptyPartType()));
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
-            BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
-                    BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
+        BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
+            BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
     public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
@@ -101,8 +113,8 @@ public final class FluidTank {
         private static void init(RegisterEvent event) {
             if (event.getRegistryKey().equals(Registries.LOOT_FUNCTION_TYPE)) {
                 Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-                        new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
-                        TANK_LOOT_FUNCTION);
+                    new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
+                    TANK_LOOT_FUNCTION);
             }
         }
     }
@@ -125,7 +137,7 @@ public final class FluidTank {
         builder.displayItems((parameters, output) -> {
             // Tanks
             TANK_ITEM_MAP.values().stream().map(RegistryObject::get).sorted(Comparator.comparing(i -> i.blockTank().tier()))
-                    .forEach(output::accept);
+                .forEach(output::accept);
         });
     }
 }
