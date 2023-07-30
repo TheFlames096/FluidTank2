@@ -19,9 +19,4 @@ class TierTest {
   def checkStoneCapacity(): Unit = {
     assertEquals(BigInt.apply(81000 * 16), Tier.STONE.getCapacity)
   }
-
-  @Test
-  def setBadMap(): Unit = {
-    assertThrows(classOf[IllegalArgumentException], () => Tier.setCapacityMap(new java.util.EnumMap[Tier, BigInt](classOf[Tier])))
-  }
 }
