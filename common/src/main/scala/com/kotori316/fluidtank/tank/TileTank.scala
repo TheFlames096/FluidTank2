@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.Nameable
 import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityType}
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.material.Fluid
 import org.jetbrains.annotations.{NotNull, Nullable}
 
 class TileTank(var tier: Tier, t: BlockEntityType[? <: TileTank], p: BlockPos, s: BlockState)

@@ -11,6 +11,7 @@ The main parts of code are shared between Forge and Fabric.
 [![Java CI](https://github.com/Kotori316/FluidTank2/actions/workflows/gradle.yml/badge.svg)](https://github.com/Kotori316/FluidTank2/actions)
 
 [CurseForge Forge]: https://www.curseforge.com/minecraft/mc-mods/largefluidtank
+[CurseForge Fabric]: https://www.curseforge.com/minecraft/mc-mods/largefluidtank-fabric
 [Modrinth]: https://modrinth.com/mod/large-fluid-tank
 
 Source code LICENSE: MIT License  
@@ -21,10 +22,10 @@ Copyright (c) 2019-2023 Kotori316
 You need Scalable Cat's Force([CurseForge](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force), [Modrinth](https://modrinth.com/mod/scalable-cats-force)) to run this mod. Both Forge and Fabric version require this dependency.
 
 * CurseForge
-  * [Forge](https://www.curseforge.com/minecraft/mc-mods/largefluidtank)
-  * [Fabric](https://www.curseforge.com/minecraft/mc-mods/largefluidtank-fabric)
+  * [Forge][CurseForge Forge]
+  * [Fabric][CurseForge Fabric]
 * Modrinth
-  * [Forge and Fabric](https://modrinth.com/mod/large-fluid-tank)
+  * [Forge and Fabric][Modrinth]
 
 I don't allow users to redistribute this mod unless in modpacks or I give the permission.
 
