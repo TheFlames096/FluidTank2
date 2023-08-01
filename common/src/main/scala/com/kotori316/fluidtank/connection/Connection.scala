@@ -91,14 +91,19 @@ object Connection {
     val lowest = Iterator.iterate(pos)(_.below())
       .takeWhile(p => tankClass.isInstance(level.getBlockEntity(p)))
       .toList.lastOption.getOrElse {
-      FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_CONNECTION, f"No lowest tank at ${pos.show}, ${level.getBlockState(pos)}", new IllegalStateException("No lowest tank"))
-      pos
-    }
+        FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_CONNECTION, f"No lowest tank at ${pos.show}, ${level.getBlockState(pos)}", new IllegalStateException("No lowest tank"))
+        pos
+      }
     val tanks = Iterator.iterate(lowest)(_.above())
       .map(level.getBlockEntity)
       .takeWhile(tankClass.isInstance)
       .map(tankClass.cast)
       .toList
+    if (tanks.isEmpty) {
+      FluidTankCommon.LOGGER.error(FluidTankCommon.MARKER_CONNECTION,
+        s"Tried to create connection with no tanks at ${pos.show}, ${level.getBlockState(pos)}, class=$tankClass",
+        new IllegalStateException("No valid tanks"))
+    }
     createAndInit(tanks)
   }
 
