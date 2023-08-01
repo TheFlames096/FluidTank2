@@ -100,21 +100,24 @@ class TileTank(var tier: Tier, t: BlockEntityType[? <: TileTank], p: BlockPos, s
       case (None, None) => Seq(this)
     }
     if (downTank.exists(_.connection.isDummy) || upTank.exists(_.connection.isDummy)) {
+      // Something wrong. Reset the connection
       Connection.load(getLevel, getBlockPos, classOf[TileTank])
     } else {
+      // Just add new tank to connection
       Connection.createAndInit(newSeq)
     }
   }
 
   def onTickLoading(): Unit = {
     // Do nothing if the connection is already created.
-    if (!this.connection.isDummy) {
+    if (this.connection.isDummy) {
+      // Create connection if this tank has invalid one.
       FluidTankCommon.LOGGER.debug(FluidTankCommon.MARKER_TANK,
-        "Connection {} loaded in onLoading. At={}, connection={}",
+        "Connection {} loaded in onLoading. At={}, tank={}",
         "will be",
-        this.getBlockPos.show, this.connection)
+        this.getBlockPos.show, this.getTank)
+      Connection.load(getLevel, getBlockPos, classOf[TileTank])
     }
-    Connection.load(getLevel, getBlockPos, classOf[TileTank])
   }
 }
 
