@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -58,7 +59,7 @@ public final class FluidTank {
         BLOCK_ENTITY_REGISTER.register(modBus);
         RECIPE_REGISTER.register(modBus);
         PlatformAccess.setInstance(new ForgePlatformAccess());
-        setupConfig();
+        setupConfig(modBus);
         modBus.register(this);
         modBus.register(proxy);
         PacketHandler.init();
@@ -67,8 +68,8 @@ public final class FluidTank {
         FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
     }
 
-    private static void setupConfig() {
-        var config = new ForgePlatformConfigAccess();
+    private static void setupConfig(IEventBus modBus) {
+        var config = new ForgePlatformConfigAccess(modBus);
         var builder = config.setupConfig();
         PlatformConfigAccess.setInstance(config);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
