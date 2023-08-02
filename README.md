@@ -17,6 +17,8 @@ The main parts of code are shared between Forge and Fabric.
 Source code LICENSE: MIT License  
 Copyright (c) 2019-2023 Kotori316
 
+![](https://gist.github.com/Kotori316/8c426c7e1ea70856bf5f2545048c49a9/raw/aa04a21f3c5d2fec496dc73e3531b099ec33220c/2023-07-23_18.11.40.png)
+
 ## Downloads
 
 You need Scalable Cat's Force([CurseForge](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force), [Modrinth](https://modrinth.com/mod/scalable-cats-force)) to run this mod. Both Forge and Fabric version require this dependency.
