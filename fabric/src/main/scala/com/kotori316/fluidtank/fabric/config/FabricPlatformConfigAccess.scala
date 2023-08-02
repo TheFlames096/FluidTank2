@@ -11,9 +11,9 @@ class FabricPlatformConfigAccess extends PlatformConfigAccess {
     val config = FluidTankConfig.loadFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json")
     config match {
       case Validated.Valid(a) => cast[ConfigData](a)
-      case Validated.Invalid(e) =>
+      case Validated.Invalid((e, partial)) =>
         if (e.contains(FluidTankConfig.FileNotFound)) {
-          FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json")
+          FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json", partial)
           FluidTankCommon.LOGGER.warn("Created default config file.")
         }
         FluidTankCommon.LOGGER.warn("Get error in loading config, using default value. Errors: {}", e.mkString_(", "))

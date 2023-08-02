@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.config
 
 import cats.data.{NonEmptyChain, Validated, ValidatedNec}
-import cats.implicits.{catsSyntaxOption, catsSyntaxTry, catsSyntaxTuple3Semigroupal}
+import cats.implicits.*
 import cats.{Hash, Show}
 import com.google.gson.{GsonBuilder, JsonElement, JsonObject}
 import com.kotori316.fluidtank.tank.Tier
@@ -13,18 +13,25 @@ import scala.util.{Failure, Success, Try, Using}
 object FluidTankConfig {
   type E = LoadError
 
-  def loadFile(basePath: Path, fileName: String): ValidatedNec[E, ConfigData] = {
+  def loadFile(basePath: Path, fileName: String): Validated[(NonEmptyChain[E], JsonObject), ConfigData] = {
     val configPath = basePath.resolve(fileName)
     val json = getFileContent(configPath)
-    json.andThen(getConfigDataFromJson)
+    json match {
+      case Validated.Valid(a) => json.andThen(getConfigDataFromJson).leftMap(t => (t, a))
+      case i@Validated.Invalid(_) => i.leftMap(t => (t, new JsonObject))
+    }
   }
 
   def getConfigDataFromJson(j: JsonObject): ValidatedNec[E, ConfigData] = {
-    (getCapacity(j), getDouble(j, "renderLowerBound"), getDouble(j, "renderUpperBound"))
-      .mapN(ConfigData.apply)
+    (
+      getCapacity(j),
+      getDouble(j, "renderLowerBound"),
+      getDouble(j, "renderUpperBound"),
+      getValue[Boolean](j, "debug", _.getAsBoolean, Nil),
+    ).mapN(ConfigData.apply)
   }
 
-  def createFile(basePath: Path, fileName: String): Unit = {
+  def createFile(basePath: Path, fileName: String, partial: JsonObject): Unit = {
     val configPath = basePath.resolve(fileName)
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
     val config = ConfigData.DEFAULT

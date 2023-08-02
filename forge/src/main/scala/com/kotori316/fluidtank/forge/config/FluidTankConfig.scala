@@ -19,7 +19,7 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
   builder.push("tank")
   builder.comment("The capacity of each tanks", "Unit is fabric one, 1000 mB is 81000 unit.").push("capacity")
 
-  private final val capacities: Map[Tier, ForgeConfigSpec.ConfigValue[String]] = Tier.values().toSeq.map{ t =>
+  private final val capacities: Map[Tier, ForgeConfigSpec.ConfigValue[String]] = Tier.values().toSeq.map { t =>
     val defaultCapacity = Tier.getDefaultCapacityMap.get(t)
     t -> builder.comment(s"Capacity of $t", s"Default: ${defaultCapacity / 81} mB")
       .define[String](t.name().toLowerCase(Locale.ROOT), defaultCapacity.toString(),
@@ -30,6 +30,9 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
   }.toMap
 
   builder.pop()
+
+  val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode").define("debug", false)
+
   builder.pop()
 
   def createConfigData: ConfigData = {
@@ -37,6 +40,7 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
       capacityMap = this.capacities.map { case (tier, value) => tier -> BigInt(value.get()) },
       renderLowerBound = this.renderLowerBound.get(),
       renderUpperBound = this.renderUpperBound.get(),
+      debug = this.debug.get(),
     )
   }
 }

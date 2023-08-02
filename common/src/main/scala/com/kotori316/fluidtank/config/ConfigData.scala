@@ -9,6 +9,7 @@ case class ConfigData
   capacityMap: Map[Tier, BigInt],
   renderLowerBound: Double,
   renderUpperBound: Double,
+  debug: Boolean,
 )
 
 object ConfigData {
@@ -16,5 +17,6 @@ object ConfigData {
     capacityMap = CollectionConverters.asScala(Tier.getDefaultCapacityMap).toMap,
     renderLowerBound = 0.001d,
     renderUpperBound = 1d - 0.001d,
+    debug = false,
   )
 }
