@@ -1,8 +1,9 @@
 package com.kotori316.fluidtank.fabric.config
 
-import cats.data.Validated
+import cats.data.{Ior, NonEmptyChain}
 import cats.implicits.catsSyntaxFoldableOps0
 import com.kotori316.fluidtank.FluidTankCommon
+import com.kotori316.fluidtank.config.FluidTankConfig.{E, cast}
 import com.kotori316.fluidtank.config.{ConfigData, FluidTankConfig, PlatformConfigAccess}
 import net.fabricmc.loader.api.FabricLoader
 
@@ -10,24 +11,21 @@ class FabricPlatformConfigAccess extends PlatformConfigAccess {
   private final val configData: ConfigData = {
     val config = FluidTankConfig.loadFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json")
     config match {
-      case Validated.Valid(a) => cast[ConfigData](a)
-      case Validated.Invalid((e, partial)) =>
-        if (e.contains(FluidTankConfig.FileNotFound)) {
-          FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json", partial)
-          FluidTankCommon.LOGGER.warn("Created default config file.")
-        }
-        FluidTankCommon.LOGGER.warn("Get error in loading config, using default value. Errors: {}", e.mkString_(", "))
-        ConfigData.DEFAULT
+      case Ior.Right(a) => cast[ConfigData](a)
+      case Ior.Both(e, partial) => handleMigration(e, partial)
+      case Ior.Left(a: NonEmptyChain[E]) => handleMigration(a, ConfigData.DEFAULT)
     }
+  }
+
+  private def handleMigration(e: NonEmptyChain[E], partial: ConfigData): ConfigData = {
+    if (e.contains(FluidTankConfig.FileNotFound) || e.exists(_.isInstanceOf[FluidTankConfig.KeyNotFound])) {
+      FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json", partial)
+      FluidTankCommon.LOGGER.warn("Created default config file.")
+    }
+    FluidTankCommon.LOGGER.warn("Get error in loading config, using partial value. Errors: {}", e.mkString_(", "))
+    partial
   }
 
   override def getConfig: ConfigData = configData
 
-  /**
-   * Just to ignore syntax error in this class.
-   */
-  @inline
-  private final def cast[A](x: AnyRef): A = {
-    x.asInstanceOf[A]
-  }
 }

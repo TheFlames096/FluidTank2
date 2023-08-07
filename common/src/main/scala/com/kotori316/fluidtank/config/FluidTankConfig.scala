@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.config
 
-import cats.data.{NonEmptyChain, Validated, ValidatedNec}
+import cats.data.{Ior, IorNec, NonEmptyChain}
 import cats.implicits.*
 import cats.{Hash, Show}
 import com.google.gson.{GsonBuilder, JsonElement, JsonObject}
@@ -8,36 +8,38 @@ import com.kotori316.fluidtank.tank.Tier
 
 import java.nio.file.{Files, Path}
 import java.util.Locale
+import scala.jdk.javaapi.CollectionConverters
 import scala.util.{Failure, Success, Try, Using}
 
 object FluidTankConfig {
   type E = LoadError
 
-  def loadFile(basePath: Path, fileName: String): Validated[(NonEmptyChain[E], JsonObject), ConfigData] = {
+  def loadFile(basePath: Path, fileName: String): IorNec[E, ConfigData] = {
     val configPath = basePath.resolve(fileName)
     val json = getFileContent(configPath)
     json match {
-      case Validated.Valid(a) => json.andThen(getConfigDataFromJson).leftMap(t => (t, a))
-      case i@Validated.Invalid(_) => i.leftMap(t => (t, new JsonObject))
+      case Ior.Left(a: NonEmptyChain[E]) => Ior.both(a, ConfigData.DEFAULT)
+      case r@Ior.Right(_) => r.flatMap(getConfigDataFromJson)
+      case b@Ior.Both(_, _) => b.flatMap(getConfigDataFromJson) // should be unreachable
     }
   }
 
-  def getConfigDataFromJson(j: JsonObject): ValidatedNec[E, ConfigData] = {
+  def getConfigDataFromJson(j: JsonObject): IorNec[E, ConfigData] = {
     (
       getCapacity(j),
-      getDouble(j, "renderLowerBound"),
-      getDouble(j, "renderUpperBound"),
-      getValue[Boolean](j, "debug", _.getAsBoolean, Nil),
+      getDouble(j, "renderLowerBound", 0.001d),
+      getDouble(j, "renderUpperBound", 1d - 0.001d),
+      getValue[Boolean](j, "debug", _.getAsBoolean, false, Nil),
     ).mapN(ConfigData.apply)
   }
 
-  def createFile(basePath: Path, fileName: String, partial: JsonObject): Unit = {
+  def createFile(basePath: Path, fileName: String, config: ConfigData): Unit = {
     val configPath = basePath.resolve(fileName)
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
-    val config = ConfigData.DEFAULT
     val json = new JsonObject
     json.addProperty("renderLowerBound", config.renderLowerBound)
     json.addProperty("renderUpperBound", config.renderUpperBound)
+    json.addProperty("debug", config.debug)
 
     val capacities = new JsonObject
     config.capacityMap.foreach { case (tier, int) =>
@@ -50,44 +52,56 @@ object FluidTankConfig {
     }
   }
 
-  private def getFileContent(filePath: Path): ValidatedNec[E, JsonObject] = {
+  private def getFileContent(filePath: Path): IorNec[E, JsonObject] = {
     if (Files.exists(filePath)) {
       val gson = new GsonBuilder().create()
       val json = Using(Files.newBufferedReader(filePath)) { reader =>
         gson.fromJson(reader, classOf[JsonObject])
       }
       json match {
-        case Failure(exception) => Validated.invalidNec(Other("File loading", exception))
-        case Success(value) => Validated.validNec(value)
+        case Failure(exception) => Ior.leftNec(Other("File loading", exception))
+        case Success(value) => Ior.right(value)
       }
     } else {
-      Validated.invalidNec(FileNotFound)
+      Ior.leftNec(FileNotFound)
     }
   }
 
-  private def getValue[T](json: JsonObject, key: String, extractor: JsonElement => T, keyPrefix: Seq[String]): ValidatedNec[E, T] = {
+  private def getValue[T](json: JsonObject, key: String, extractor: JsonElement => T, defaultValue: T, keyPrefix: Seq[String]): IorNec[E, T] = {
     val prefix = if (keyPrefix.isEmpty) "" else keyPrefix.mkString("", ".", ".")
-    Validated.valid(json)
-      .andThen(j => Option(j.get(key)).toValidNec(KeyNotFound(prefix + key)))
-      .andThen(e => Try(extractor(e)).toValidated.leftMap(t => NonEmptyChain.one(Other(prefix + key, t))))
+
+    if (json.has(key)) {
+      val element = json.get(key)
+      Try(extractor(element)) match {
+        case Failure(exception) => Ior.bothNec(Other(prefix + key, exception), defaultValue)
+        case Success(value) => Ior.right(value)
+      }
+    } else {
+      Ior.bothNec(KeyNotFound(prefix + key), defaultValue)
+    }
   }
 
-  private def getDouble(json: JsonObject, key: String, keyPrefix: Seq[String] = Nil): ValidatedNec[E, Double] = {
-    getValue(json, key, _.getAsDouble, keyPrefix)
+  private def getDouble(json: JsonObject, key: String, defaultValue: Double, keyPrefix: Seq[String] = Nil): IorNec[E, Double] = {
+    getValue(json, key, _.getAsDouble, defaultValue, keyPrefix)
   }
 
-  private def getBigInt(json: JsonObject, key: String, keyPrefix: Seq[String] = Nil): ValidatedNec[E, BigInt] = {
-    getValue(json, key, e => BigInt(e.getAsString), keyPrefix)
+  private def getBigInt(json: JsonObject, key: String, defaultValue: BigInt, keyPrefix: Seq[String] = Nil): IorNec[E, BigInt] = {
+    getValue(json, key, e => BigInt(e.getAsString), defaultValue, keyPrefix)
   }
 
-  private def getCapacity(jsonObject: JsonObject): ValidatedNec[E, Map[Tier, BigInt]] = {
-    val capacityMap = getValue(jsonObject, "capacities", _.getAsJsonObject, Seq.empty)
+  private def getCapacity(jsonObject: JsonObject): IorNec[E, Map[Tier, BigInt]] = {
+    val defaultValues = CollectionConverters.asScala(Tier.getDefaultCapacityMap).toMap
+    val capacityMap = getValue(jsonObject, "capacities", _.getAsJsonObject, new JsonObject, Seq.empty)
 
-    capacityMap.andThen { j =>
-      Tier.values().toSeq
-        .map(t => getBigInt(j, t.name().toLowerCase(Locale.ROOT), Seq("capacities")).map(b => Seq(t -> b)))
-        .reduce((a, b) => a.product(b).map { case (a, b) => a ++ b })
-        .map(_.toMap)
+    capacityMap match {
+      case r@Ior.Right(_) => capacityMap.flatMap(j =>
+        Tier.values().toSeq
+          .map(t => getBigInt(j, t.name().toLowerCase(Locale.ROOT), defaultValues(t), Seq("capacities")).map(b => Seq(t -> b)))
+          .reduce((a, b) => a.product(b).map { case (a, b) => a ++ b })
+          .map(_.toMap)
+      )
+      case _ =>
+        capacityMap.map(_ => defaultValues)
     }
   }
 
@@ -113,4 +127,12 @@ object FluidTankConfig {
   case class KeyNotFound(key: String) extends LoadError
 
   case class Other(key: String, exception: Throwable) extends LoadError
+
+  /**
+   * Just to ignore syntax error in this class.
+   */
+  @inline
+  final def cast[A](x: AnyRef): A = {
+    x.asInstanceOf[A]
+  }
 }
