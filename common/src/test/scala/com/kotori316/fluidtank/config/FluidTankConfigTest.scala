@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.config
 
-import cats.data.{NonEmptyChain, Validated}
+import cats.data.NonEmptyChain
 import cats.kernel.Eq
 import com.google.gson.{GsonBuilder, JsonObject}
 import com.kotori316.fluidtank.tank.Tier
@@ -16,6 +16,7 @@ class FluidTankConfigTest {
       """{
         |  "renderLowerBound": 0.2,
         |  "renderUpperBound": 0.8,
+        |  "debug": false,
         |  "capacities": {
         |    "invalid": "162000",
         |    "wood": "162000",
@@ -37,9 +38,9 @@ class FluidTankConfigTest {
         |""".stripMargin
     val json = gson.fromJson(jsonString, classOf[JsonObject])
     val config = FluidTankConfig.getConfigDataFromJson(json)
-    Assertions.assertTrue(config.isValid)
+    Assertions.assertTrue(config.isRight)
 
-    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8)
+    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false)
     Assertions.assertEquals(expected, config.getOrElse(null))
   }
 
@@ -50,6 +51,7 @@ class FluidTankConfigTest {
       """{
         |  "renderLowerBound": "0.2",
         |  "renderUpperBound": 0.8,
+        |  "debug": "true",
         |  "capacities": {
         |    "invalid": "162000",
         |    "wood": 162000,
@@ -71,9 +73,9 @@ class FluidTankConfigTest {
         |""".stripMargin
     val json = gson.fromJson(jsonString, classOf[JsonObject])
     val config = FluidTankConfig.getConfigDataFromJson(json)
-    Assertions.assertTrue(config.isValid)
+    Assertions.assertTrue(config.isRight)
 
-    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8)
+    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = true)
     Assertions.assertEquals(expected, config.getOrElse(null))
   }
 
@@ -85,16 +87,17 @@ class FluidTankConfigTest {
       val jsonString =
         """{
           |  "renderLowerBound": 0.2,
-          |  "renderUpperBound": 0.8
+          |  "renderUpperBound": 0.8,
+          |  "debug": false
           |}
           |""".stripMargin
       val json = gson.fromJson(jsonString, classOf[JsonObject])
       val config = FluidTankConfig.getConfigDataFromJson(json)
-      Assertions.assertTrue(config.isInvalid)
+      Assertions.assertFalse(config.isRight)
 
       val expected = NonEmptyChain(FluidTankConfig.KeyNotFound("capacities"))
-      config match {
-        case Validated.Invalid(e) => Assertions.assertEquals(expected, e)
+      config.left match {
+        case Some(e) => Assertions.assertEquals(expected, e)
         case _ => Assertions.fail("Unreachable")
       }
     }
@@ -106,6 +109,7 @@ class FluidTankConfigTest {
         """{
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
+          |  "debug": false,
           |  "capacities": {
           |    "wood": "162000",
           |    "iron": "162000",
@@ -130,8 +134,8 @@ class FluidTankConfigTest {
         FluidTankConfig.KeyNotFound("capacities.star"),
         FluidTankConfig.KeyNotFound("capacities.bronze"),
       )
-      config match {
-        case Validated.Invalid(e) => Assertions.assertEquals(expected, e)
+      config.left match {
+        case Some(e) => Assertions.assertEquals(expected, e)
         case _ => Assertions.fail("Unreachable")
       }
     }
@@ -166,9 +170,10 @@ class FluidTankConfigTest {
       val expected = NonEmptyChain(
         FluidTankConfig.KeyNotFound("renderLowerBound"),
         FluidTankConfig.KeyNotFound("renderUpperBound"),
+        FluidTankConfig.KeyNotFound("debug"),
       )
-      config match {
-        case Validated.Invalid(e) => Assertions.assertEquals(expected, e)
+      config.left match {
+        case Some(e) => Assertions.assertEquals(expected, e)
         case _ => Assertions.fail("Unreachable")
       }
     }
@@ -197,6 +202,7 @@ class FluidTankConfigTest {
         """{
           |  "renderLowerBound": "test",
           |  "renderUpperBound": "test2",
+          |  "debug": true,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": "162000",
@@ -223,8 +229,8 @@ class FluidTankConfigTest {
         FluidTankConfig.Other("renderLowerBound", new NumberFormatException()),
         FluidTankConfig.Other("renderUpperBound", new NumberFormatException())
       )
-      config match {
-        case Validated.Invalid(e: NonEmptyChain[FluidTankConfig.LoadError]) =>
+      config.left match {
+        case Some(e) =>
           Assertions.assertTrue(expected.toChain === e.toChain, s"$expected, $e")
         case _ => Assertions.fail("Unreachable")
       }
@@ -237,6 +243,7 @@ class FluidTankConfigTest {
         """{
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
+          |  "debug": true,
           |  "capacities": {
           |    "invalid": "test",
           |    "wood": "1.6",
@@ -263,8 +270,8 @@ class FluidTankConfigTest {
         FluidTankConfig.Other("capacities.invalid", new NumberFormatException()),
         FluidTankConfig.Other("capacities.wood", new NumberFormatException())
       )
-      config match {
-        case Validated.Invalid(e: NonEmptyChain[FluidTankConfig.LoadError]) =>
+      config.left match {
+        case Some(e) =>
           Assertions.assertTrue(expected.toChain === e.toChain, s"$expected, $e")
         case _ => Assertions.fail("Unreachable")
       }
