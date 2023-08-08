@@ -5,6 +5,7 @@ import cats.implicits.*
 import cats.{Hash, Show}
 import com.google.gson.{GsonBuilder, JsonElement, JsonObject}
 import com.kotori316.fluidtank.tank.Tier
+import org.jetbrains.annotations.VisibleForTesting
 
 import java.nio.file.{Files, Path}
 import java.util.Locale
@@ -36,16 +37,7 @@ object FluidTankConfig {
   def createFile(basePath: Path, fileName: String, config: ConfigData): Unit = {
     val configPath = basePath.resolve(fileName)
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
-    val json = new JsonObject
-    json.addProperty("renderLowerBound", config.renderLowerBound)
-    json.addProperty("renderUpperBound", config.renderUpperBound)
-    json.addProperty("debug", config.debug)
-
-    val capacities = new JsonObject
-    config.capacityMap.foreach { case (tier, int) =>
-      capacities.addProperty(tier.name().toLowerCase(Locale.ROOT), int.toString())
-    }
-    json.add("capacities", capacities)
+    val json = config.createJson
 
     Using(Files.newBufferedWriter(configPath)) { w =>
       gson.toJson(json, w)
