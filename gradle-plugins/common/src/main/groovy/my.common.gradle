@@ -5,6 +5,7 @@ plugins {
     id("dev.architectury.loom")
     id("maven-publish")
     id("signing")
+    id("com.kotori316.plugin.cf")
 }
 
 archivesBaseName = project.archives_base_name
