@@ -11,16 +11,16 @@ import scala.util.Try
 class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
   builder.push("client")
   private final val renderLowerBound: ForgeConfigSpec.DoubleValue = builder.comment("The lower bound of tank renderer")
-    .defineInRange("renderLowerBound", 0.001d, 0d, 1d)
+    .defineInRange("renderLowerBound", ConfigData.DEFAULT.renderLowerBound, 0d, 1d)
   private final val renderUpperBound: ForgeConfigSpec.DoubleValue = builder.comment("The upper bound of tank renderer")
-    .defineInRange("renderUpperBound", 1d - 0.001d, 0d, 1d)
+    .defineInRange("renderUpperBound", ConfigData.DEFAULT.renderUpperBound, 0d, 1d)
   builder.pop()
 
   builder.push("tank")
   builder.comment("The capacity of each tanks", "Unit is fabric one, 1000 mB is 81000 unit.").push("capacity")
 
   private final val capacities: Map[Tier, ForgeConfigSpec.ConfigValue[String]] = Tier.values().toSeq.map { t =>
-    val defaultCapacity = Tier.getDefaultCapacityMap.get(t)
+    val defaultCapacity = ConfigData.DEFAULT.capacityMap(t)
     t -> builder.comment(s"Capacity of $t", s"Default: ${defaultCapacity / 81} mB")
       .define[String](t.name().toLowerCase(Locale.ROOT), defaultCapacity.toString(),
         FunctionConverters.asJavaPredicate[AnyRef] {
@@ -31,7 +31,7 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
 
   builder.pop()
 
-  val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode").define("debug", false)
+  val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode").define("debug", ConfigData.DEFAULT.debug)
 
   builder.pop()
 

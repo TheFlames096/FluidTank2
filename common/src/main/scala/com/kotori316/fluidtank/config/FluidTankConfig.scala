@@ -28,9 +28,9 @@ object FluidTankConfig {
   def getConfigDataFromJson(j: JsonObject): IorNec[E, ConfigData] = {
     (
       getCapacity(j),
-      getDouble(j, "renderLowerBound", 0.001d),
-      getDouble(j, "renderUpperBound", 1d - 0.001d),
-      getValue[Boolean](j, "debug", _.getAsBoolean, false, Nil),
+      getDouble(j, "renderLowerBound", ConfigData.DEFAULT.renderLowerBound),
+      getDouble(j, "renderUpperBound", ConfigData.DEFAULT.renderUpperBound),
+      getValue[Boolean](j, "debug", _.getAsBoolean, ConfigData.DEFAULT.debug, Nil),
     ).mapN(ConfigData.apply)
   }
 
@@ -82,7 +82,7 @@ object FluidTankConfig {
   }
 
   private def getCapacity(jsonObject: JsonObject): IorNec[E, Map[Tier, BigInt]] = {
-    val defaultValues = CollectionConverters.asScala(Tier.getDefaultCapacityMap).toMap
+    val defaultValues = ConfigData.DEFAULT.capacityMap
     val capacityMap = getValue(jsonObject, "capacities", _.getAsJsonObject, new JsonObject, Seq.empty)
 
     capacityMap match {
