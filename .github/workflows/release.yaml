@@ -65,7 +65,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          clean build publishToMavenLocal curseforge modrinth publish -x test
+          clean build publishToMavenLocal curseforge modrinth registerVersion publish -x test
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
@@ -75,6 +75,8 @@ jobs:
           CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
           RELEASE_DEBUG: false
+          VERSION_FUNCTION_ENDPOINT: ${{ secrets.GCP_VERSION_FUNCTION_ENDPOINT }}
+          SERVICE_ACCOUNT: ${{ secrets.GCP_FUNCTION_EXECUTION_ACCOUNT }}
       - name: Verify Build Files
         run: |
           for f in $(find ./ -name "*.asc") ; do
