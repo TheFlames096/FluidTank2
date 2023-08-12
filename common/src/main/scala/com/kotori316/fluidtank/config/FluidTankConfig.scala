@@ -5,11 +5,9 @@ import cats.implicits.*
 import cats.{Hash, Show}
 import com.google.gson.{GsonBuilder, JsonElement, JsonObject}
 import com.kotori316.fluidtank.tank.Tier
-import org.jetbrains.annotations.VisibleForTesting
 
 import java.nio.file.{Files, Path}
 import java.util.Locale
-import scala.jdk.javaapi.CollectionConverters
 import scala.util.{Failure, Success, Try, Using}
 
 object FluidTankConfig {
@@ -28,8 +26,10 @@ object FluidTankConfig {
   def getConfigDataFromJson(j: JsonObject): IorNec[E, ConfigData] = {
     (
       getCapacity(j),
-      getDouble(j, "renderLowerBound", ConfigData.DEFAULT.renderLowerBound),
-      getDouble(j, "renderUpperBound", ConfigData.DEFAULT.renderUpperBound),
+      getDouble(j, "renderLowerBound", ConfigData.DEFAULT.renderLowerBound)
+        .flatMap(rangeChecker("renderLowerBound", Option(0d), Option(1d))),
+      getDouble(j, "renderUpperBound", ConfigData.DEFAULT.renderUpperBound)
+        .flatMap(rangeChecker("renderUpperBound", Option(0d), Option(1d))),
       getValue[Boolean](j, "debug", _.getAsBoolean, ConfigData.DEFAULT.debug, Nil),
     ).mapN(ConfigData.apply)
   }
@@ -88,12 +88,24 @@ object FluidTankConfig {
     capacityMap match {
       case r@Ior.Right(_) => capacityMap.flatMap(j =>
         Tier.values().toSeq
-          .map(t => getBigInt(j, t.name().toLowerCase(Locale.ROOT), defaultValues(t), Seq("capacities")).map(b => Seq(t -> b)))
+          .map(t => getBigInt(j, t.name().toLowerCase(Locale.ROOT), defaultValues(t), Seq("capacities"))
+            .flatMap(rangeChecker(t.name().toLowerCase(Locale.ROOT), min = Option(BigInt(0))))
+            .map(b => Seq(t -> b)))
           .reduce((a, b) => a.product(b).map { case (a, b) => a ++ b })
           .map(_.toMap)
       )
       case _ =>
         capacityMap.map(_ => defaultValues)
+    }
+  }
+
+  def rangeChecker[A: Ordering](key: String, min: Option[A] = None, max: Option[A] = None): A => IorNec[E, A] = v => {
+    import Ordering.Implicits.*
+    (min.exists(t => v < t), max.exists(t => t < v)) match {
+      case (true, false) => Ior.bothNec(InvalidValue(key, s"Too small(min=${min.get})"), min.get)
+      case (false, true) => Ior.bothNec(InvalidValue(key, s"Too big(max=${max.get})"), max.get)
+      case (true, true) => Ior.leftNec(Other(s"Condition was wrong. min=$min, max=$max", new IllegalArgumentException()))
+      case (false, false) => Ior.right(v)
     }
   }
 
@@ -117,6 +129,8 @@ object FluidTankConfig {
   }
 
   case class KeyNotFound(key: String) extends LoadError
+
+  case class InvalidValue(key: String, message: String) extends LoadError
 
   case class Other(key: String, exception: Throwable) extends LoadError
 

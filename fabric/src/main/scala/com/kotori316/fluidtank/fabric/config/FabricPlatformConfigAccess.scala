@@ -18,7 +18,9 @@ class FabricPlatformConfigAccess extends PlatformConfigAccess {
   }
 
   private def handleMigration(e: NonEmptyChain[E], partial: ConfigData): ConfigData = {
-    if (e.contains(FluidTankConfig.FileNotFound) || e.exists(_.isInstanceOf[FluidTankConfig.KeyNotFound])) {
+    if (e.contains(FluidTankConfig.FileNotFound)
+      || e.exists(_.isInstanceOf[FluidTankConfig.KeyNotFound]
+      || e.exists(_.isInstanceOf[FluidTankConfig.InvalidValue]))) {
       FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json", partial)
       FluidTankCommon.LOGGER.warn("Created default config file.")
     }

@@ -5,6 +5,8 @@ import cats.kernel.Eq
 import com.google.gson.{GsonBuilder, JsonObject}
 import com.kotori316.fluidtank.tank.Tier
 import org.junit.jupiter.api.{Assertions, Nested, Test}
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 import java.nio.file.Files
 
@@ -40,7 +42,7 @@ class FluidTankConfigTest {
         |""".stripMargin
     val json = gson.fromJson(jsonString, classOf[JsonObject])
     val config = FluidTankConfig.getConfigDataFromJson(json)
-    Assertions.assertTrue(config.isRight)
+    Assertions.assertTrue(config.isRight, s"Result: $config")
 
     val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false)
     Assertions.assertEquals(expected, config.getOrElse(null))
@@ -75,7 +77,7 @@ class FluidTankConfigTest {
         |""".stripMargin
     val json = gson.fromJson(jsonString, classOf[JsonObject])
     val config = FluidTankConfig.getConfigDataFromJson(json)
-    Assertions.assertTrue(config.isRight)
+    Assertions.assertTrue(config.isRight, s"Result: $config")
 
     val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = true)
     Assertions.assertEquals(expected, config.getOrElse(null))
@@ -395,6 +397,53 @@ class FluidTankConfigTest {
       val migrated = FluidTankConfig.loadFile(tempDir, "loadFromNotExistFile.json")
       Assertions.assertTrue(migrated.isRight)
       Assertions.assertEquals(migrated.right, Option(ConfigData.DEFAULT))
+    }
+  }
+
+  @Nested
+  class RangeCheckerTest {
+    @Test
+    def rangeCheckerTest1(): Unit = {
+      val checker = FluidTankConfig.rangeChecker("key", Option(0))
+      val result1 = checker(20)
+      Assertions.assertTrue(result1.isRight)
+      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
+    }
+
+    @Test
+    def rangeCheckerTest2(): Unit = {
+      val checker = FluidTankConfig.rangeChecker("key", Option(0))
+      val result1 = checker(-1)
+      Assertions.assertTrue(result1.isBoth)
+      Assertions.assertEquals(0, result1.getOrElse(Assertions.fail()))
+      val message = result1.swap.getOrElse(Assertions.fail())
+      Assertions.assertEquals(NonEmptyChain(FluidTankConfig.InvalidValue("key", "Too small(min=0)")), message)
+    }
+
+    @Test
+    def rangeCheckerTest3(): Unit = {
+      val checker = FluidTankConfig.rangeChecker("key", max = Option(100))
+      val result1 = checker(20)
+      Assertions.assertTrue(result1.isRight)
+      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
+    }
+
+    @Test
+    def rangeCheckerTest4(): Unit = {
+      val checker = FluidTankConfig.rangeChecker("key", max = Option(100))
+      val result1 = checker(200)
+      Assertions.assertTrue(result1.isBoth)
+      Assertions.assertEquals(100, result1.getOrElse(Assertions.fail()))
+      val message = result1.swap.getOrElse(Assertions.fail())
+      Assertions.assertEquals(NonEmptyChain(FluidTankConfig.InvalidValue("key", "Too big(max=100)")), message)
+    }
+
+    @Test
+    def rangeCheckerTest5(): Unit = {
+      val checker = FluidTankConfig.rangeChecker("key", min = Option(0), max = Option(100))
+      val result1 = checker(20)
+      Assertions.assertTrue(result1.isRight)
+      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
     }
   }
 }
