@@ -1,5 +1,7 @@
 import com.kotori316.plugin.cf.CallVersionFunctionTask
 
+import java.util.stream.Collectors
+
 plugins {
     id("my.common")
     id("architectury-plugin").version("3.4-SNAPSHOT")
@@ -138,9 +140,19 @@ String createChangelog(boolean useLongFormat) {
     }
 }
 
+String noHeaderChangelog() {
+    String fromFile = rootProject.file(project.changelog_file).text
+    String headVersion = fromFile.split("---", 2)[0]
+            .lines().filter { s -> !s.startsWith("## ") }.collect(Collectors.joining(System.lineSeparator()))
+            .strip()
+    return headVersion;
+}
+
 tasks.register("checkChangelog") {
     doLast {
         println(createChangelog(true))
+        println("-" * 20 + " noHeader " + "-" * 20)
+        println(noHeaderChangelog())
     }
 }
 
@@ -254,7 +266,7 @@ tasks.withType(AbstractPublishToMaven).configureEach {
     }
 }
 
-tasks.register("registerVersion", CallVersionFunctionTask.class){
+tasks.register("registerVersion", CallVersionFunctionTask.class) {
     functionEndpoint = readVersionFunctionEndpoint(project)
     gameVersion = project.findProperty("minecraft_version")
     platform = "fabric"
