@@ -29,6 +29,10 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: javaToolchains
+      - name: Check build environments
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment
       - name: Check changelog
         uses: gradle/gradle-build-action@v2
         with:
