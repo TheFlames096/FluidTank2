@@ -322,6 +322,92 @@ class FluidTankConfigTest {
   }
 
   @Nested
+  class InvalidRangeTest {
+    @Test
+    def renderLowerBound(): Unit = {
+
+      // language=json
+      val jsonString =
+        """{
+          |  "renderLowerBound": -0.1,
+          |  "renderUpperBound": 0.9,
+          |  "debug": true,
+          |  "capacities": {
+          |    "invalid": "162000",
+          |    "wood": "162000",
+          |    "stone": "162000",
+          |    "iron": "162000",
+          |    "gold": "162000",
+          |    "diamond": "162000",
+          |    "emerald": "162000",
+          |    "star": "162000",
+          |    "creative": "162000",
+          |    "void": "162000",
+          |    "copper": "162000",
+          |    "tin": "162000",
+          |    "bronze": "162000",
+          |    "lead": "162000",
+          |    "silver": "162000"
+          |  }
+          |}
+          |""".stripMargin
+      val json = gson.fromJson(jsonString, classOf[JsonObject])
+      val config = FluidTankConfig.getConfigDataFromJson(json)
+
+      val expected: NonEmptyChain[FluidTankConfig.LoadError] = NonEmptyChain(
+        FluidTankConfig.InvalidValue("renderLowerBound", "Too small(min=0.0)")
+      )
+      config.left match {
+        case Some(e) => Assertions.assertEquals(expected, e)
+        case _ => Assertions.fail(s"Unreachable, ${config.toString}")
+      }
+      config.right match {
+        case Some(c) => Assertions.assertEquals(0, c.renderLowerBound)
+        case _ => Assertions.fail(s"Unreachable, ${config.toString}")
+      }
+    }
+
+    @Test
+    def capacity(): Unit = {
+      // language=json
+      val jsonString =
+        """{
+          |  "renderLowerBound": 0.1,
+          |  "renderUpperBound": 0.9,
+          |  "debug": true,
+          |  "capacities": {
+          |    "invalid": "162000",
+          |    "wood": -1,
+          |    "stone": "162000",
+          |    "iron": "162000",
+          |    "gold": "162000",
+          |    "diamond": "162000",
+          |    "emerald": "162000",
+          |    "star": "162000",
+          |    "creative": "162000",
+          |    "void": "162000",
+          |    "copper": "162000",
+          |    "tin": "162000",
+          |    "bronze": "162000",
+          |    "lead": "162000",
+          |    "silver": "162000"
+          |  }
+          |}
+          |""".stripMargin
+      val json = gson.fromJson(jsonString, classOf[JsonObject])
+      val config = FluidTankConfig.getConfigDataFromJson(json)
+
+      val expected: NonEmptyChain[FluidTankConfig.LoadError] = NonEmptyChain(
+        FluidTankConfig.InvalidValue("capacities.wood", "Too small(min=0)")
+      )
+      config.left match {
+        case Some(e) => Assertions.assertEquals(expected, e)
+        case _ => Assertions.fail(s"Unreachable, ${config.toString}")
+      }
+    }
+  }
+
+  @Nested
   class SaveTest {
     @Test
     def defaultConfig(): Unit = {
@@ -402,12 +488,13 @@ class FluidTankConfigTest {
 
   @Nested
   class RangeCheckerTest {
-    @Test
-    def rangeCheckerTest1(): Unit = {
+    @ParameterizedTest
+    @ValueSource(ints = Array(20, 0, 1))
+    def rangeCheckerTest1(value: Int): Unit = {
       val checker = FluidTankConfig.rangeChecker("key", Option(0))
-      val result1 = checker(20)
+      val result1 = checker(value)
       Assertions.assertTrue(result1.isRight)
-      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
+      Assertions.assertEquals(value, result1.getOrElse(Assertions.fail()))
     }
 
     @Test
@@ -420,12 +507,13 @@ class FluidTankConfigTest {
       Assertions.assertEquals(NonEmptyChain(FluidTankConfig.InvalidValue("key", "Too small(min=0)")), message)
     }
 
-    @Test
-    def rangeCheckerTest3(): Unit = {
+    @ParameterizedTest
+    @ValueSource(ints = Array(20, 0, 100))
+    def rangeCheckerTest3(value: Int): Unit = {
       val checker = FluidTankConfig.rangeChecker("key", max = Option(100))
-      val result1 = checker(20)
+      val result1 = checker(value)
       Assertions.assertTrue(result1.isRight)
-      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
+      Assertions.assertEquals(value, result1.getOrElse(Assertions.fail()))
     }
 
     @Test
@@ -438,12 +526,13 @@ class FluidTankConfigTest {
       Assertions.assertEquals(NonEmptyChain(FluidTankConfig.InvalidValue("key", "Too big(max=100)")), message)
     }
 
-    @Test
-    def rangeCheckerTest5(): Unit = {
+    @ParameterizedTest
+    @ValueSource(ints = Array(20, 0, 100))
+    def rangeCheckerTest5(value: Int): Unit = {
       val checker = FluidTankConfig.rangeChecker("key", min = Option(0), max = Option(100))
-      val result1 = checker(20)
+      val result1 = checker(value)
       Assertions.assertTrue(result1.isRight)
-      Assertions.assertEquals(20, result1.getOrElse(Assertions.fail()))
+      Assertions.assertEquals(value, result1.getOrElse(Assertions.fail()))
     }
   }
 }

@@ -89,7 +89,7 @@ object FluidTankConfig {
       case r@Ior.Right(_) => capacityMap.flatMap(j =>
         Tier.values().toSeq
           .map(t => getBigInt(j, t.name().toLowerCase(Locale.ROOT), defaultValues(t), Seq("capacities"))
-            .flatMap(rangeChecker(t.name().toLowerCase(Locale.ROOT), min = Option(BigInt(0))))
+            .flatMap(rangeChecker("capacities." + t.name().toLowerCase(Locale.ROOT), min = Option(BigInt(0))))
             .map(b => Seq(t -> b)))
           .reduce((a, b) => a.product(b).map { case (a, b) => a ++ b })
           .map(_.toMap)
