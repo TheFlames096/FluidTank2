@@ -14,7 +14,7 @@ import com.kotori316.fluidtank.fabric.render.RenderTank;
 public final class FluidTankClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        FluidTankCommon.LOGGER.info("Client Initialize {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Client Initialize {}", FluidTankCommon.modId);
         PacketHandler.Client.initClient();
 
         var renderType = RenderType.cutoutMipped();
@@ -27,6 +27,6 @@ public final class FluidTankClient implements ClientModInitializer {
 
         BlockEntityRenderers.register(FluidTank.TILE_TANK_TYPE, RenderTank::new);
         BlockEntityRenderers.register(FluidTank.TILE_CREATIVE_TANK_TYPE, RenderTank::new);
-        FluidTankCommon.LOGGER.info("Client Initialize finished {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Client Initialize finished {}", FluidTankCommon.modId);
     }
 }

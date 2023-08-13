@@ -12,7 +12,7 @@ import snownee.jade.api.WailaPlugin;
 @WailaPlugin(FluidTankCommon.modId)
 public class FluidTankJadePlugin implements IWailaPlugin {
     public FluidTankJadePlugin() {
-        FluidTankCommon.LOGGER.info("Registering {}", getClass().getSimpleName());
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Registering {}", getClass().getSimpleName());
     }
 
     @Override

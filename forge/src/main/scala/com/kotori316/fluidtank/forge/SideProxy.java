@@ -34,10 +34,10 @@ public abstract class SideProxy {
 
         @SubscribeEvent
         public void registerTESR(FMLClientSetupEvent event) {
-            FluidTankCommon.LOGGER.info("Client Initialize {}", FluidTankCommon.modId);
+            FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Client Initialize {}", FluidTankCommon.modId);
             BlockEntityRenderers.register(FluidTank.TILE_TANK_TYPE.get(), RenderTank::new);
             BlockEntityRenderers.register(FluidTank.TILE_CREATIVE_TANK_TYPE.get(), RenderTank::new);
-            FluidTankCommon.LOGGER.info("Client Initialize finished {}", FluidTankCommon.modId);
+            FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Client Initialize finished {}", FluidTankCommon.modId);
         }
 
         @Override

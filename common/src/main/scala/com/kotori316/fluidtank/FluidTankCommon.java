@@ -11,6 +11,7 @@ import org.slf4j.MarkerFactory;
 public final class FluidTankCommon {
     public static final String modId = "fluidtank";
     public static final Logger LOGGER = LoggerFactory.getLogger(FluidTankCommon.class);
+    public static final Marker INITIALIZATION = MarkerFactory.getMarker("Initialization");
     public static final Marker MARKER_CONNECTION = MarkerFactory.getMarker("Connection");
     public static final Marker MARKER_TANK = MarkerFactory.getMarker("Tank");
     public static final Marker MARKER_FLUID_LIKE = MarkerFactory.getMarker("FluidLike");

@@ -20,7 +20,7 @@ public class FluidTankTopPlugin {
         private static void internalSendIMC() {
             boolean registered = InterModComms.sendTo(FluidTankCommon.modId, FluidTankTopPlugin.TOP_ID, "getTheOneProbe", Sender::new);
             if (registered) {
-                FluidTankCommon.LOGGER.info("Registered TheOneProbe Plugin");
+                FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Registered TheOneProbe Plugin");
             }
         }
 

@@ -50,7 +50,7 @@ public final class FluidTank {
     public static final SideProxy proxy = SideProxy.get();
 
     public FluidTank() {
-        FluidTankCommon.LOGGER.info("Initialize {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize {}", FluidTankCommon.modId);
         ForgeMod.enableMilkFluid();
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         BLOCK_REGISTER.register(modBus);
@@ -65,7 +65,7 @@ public final class FluidTank {
         PacketHandler.init();
         AE2FluidTankIntegration.onAPIAvailable();
         FluidTankTopPlugin.sendIMC();
-        FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
     }
 
     private static void setupConfig(IEventBus modBus) {

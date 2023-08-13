@@ -33,14 +33,14 @@ import java.util.stream.Stream;
 public final class FluidTank implements ModInitializer {
     @Override
     public void onInitialize() {
-        FluidTankCommon.LOGGER.info("Initialize {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize {}", FluidTankCommon.modId);
         PacketHandler.Server.initServer();
         PlatformAccess.setInstance(new FabricPlatformAccess());
         PlatformConfigAccess.setInstance(new FabricPlatformConfigAccess());
         registerObjects();
         ConnectionStorage.register();
         AE2FluidTankIntegration.onAPIAvailable();
-        FluidTankCommon.LOGGER.info("Initialize finished {}", FluidTankCommon.modId);
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
     }
 
     public static final Map<Tier, BlockTankFabric> TANK_MAP = Stream.of(Tier.values())
