@@ -271,4 +271,5 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     gameVersion = project.findProperty("minecraft_version")
     platform = "fabric"
     modName = project.findProperty("maven_base_name")
+    changelog = noHeaderChangelog()
 }
