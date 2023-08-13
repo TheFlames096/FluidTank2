@@ -1,6 +1,8 @@
 package com.kotori316.fluidtank;
 
 import com.google.common.collect.Iterables;
+import com.kotori316.fluidtank.config.ConfigData;
+import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -18,6 +20,7 @@ public class BeforeMC {
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
         unfreezeRegistry();
+        PlatformConfigAccess.setInstance(ConfigData::DEFAULT);
     }
 
     private static void unfreezeRegistry() {

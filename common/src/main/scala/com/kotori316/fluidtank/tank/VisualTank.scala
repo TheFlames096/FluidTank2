@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.tank
 
 import cats.implicits.catsSyntaxEq
+import com.kotori316.fluidtank.config.PlatformConfigAccess
 import com.kotori316.fluidtank.contents.GenericUnit
 import com.kotori316.fluidtank.render.Box
 import net.minecraft.util.Mth
@@ -8,8 +9,8 @@ import net.minecraft.util.Mth
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 class VisualTank {
-  private lazy val lowerBound: Double = 0.001d // Config.content.renderLowerBound.get().doubleValue()
-  private lazy val upperBound: Double = 1 - 0.001d // Config.content.renderUpperBound.get().doubleValue()
+  private lazy val lowerBound: Double = PlatformConfigAccess.getInstance().getConfig.renderLowerBound
+  private lazy val upperBound: Double = PlatformConfigAccess.getInstance().getConfig.renderUpperBound
   var box: Box = _
 
   /**

@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge.gametest
 
+import com.kotori316.fluidtank.config.PlatformConfigAccess
 import com.kotori316.fluidtank.contents.GenericUnit
 import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, PotionType}
 import com.kotori316.fluidtank.forge.ForgePlatformAccessTest
@@ -10,7 +11,7 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.alchemy.{Potion, PotionUtils, Potions}
 import net.minecraft.world.item.{ItemStack, Items}
 import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
-import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.*
 import org.junit.platform.commons.support.ReflectionSupport
 
 import java.lang.reflect.Modifier
@@ -38,6 +39,12 @@ class PlatformAccessTest {
       }
 
     CollectionConverters.asJava(withHelper)
+  }
+
+  def configAccess(helper: GameTestHelper): Unit = {
+    assertNotNull(PlatformConfigAccess.getInstance())
+    assertDoesNotThrow(() => PlatformConfigAccess.getInstance().getConfig)
+    helper.succeed()
   }
 
   def fillBucketWater(helper: GameTestHelper): Unit = {

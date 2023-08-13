@@ -1,13 +1,14 @@
 package com.kotori316.fluidtank.tank;
 
 import com.google.common.base.CaseFormat;
+import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import com.kotori316.fluidtank.contents.GenericUnit;
+import org.jetbrains.annotations.NotNull;
 import scala.math.BigInt;
 
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public enum Tier {
     INVALID(0, ""),
@@ -27,7 +28,6 @@ public enum Tier {
     SILVER(3),
     ;
 
-    private static EnumMap<Tier, BigInt> capacityMap;
     private final int rank;
     private final String blockName;
     private final String name;
@@ -45,10 +45,10 @@ public enum Tier {
     }
 
     public BigInt getCapacity() {
-        if (!capacityMap.containsKey(this)) {
+        var capacityMap = PlatformConfigAccess.getInstance().getConfig().capacityMap();
+        return capacityMap.get(this).getOrElse(() -> {
             throw new IllegalStateException("No capacity for %s".formatted(this));
-        }
-        return capacityMap.get(this);
+        });
     }
 
     public int getRank() {
@@ -68,35 +68,28 @@ public enum Tier {
         return this.name;
     }
 
-    public static void setCapacityMap(EnumMap<Tier, BigInt> capacityMap) {
-        if (!Stream.of(values()).allMatch(capacityMap::containsKey)) {
-            throw new IllegalArgumentException("Not all key is defined in capacity map. " + capacityMap);
-        }
-        Tier.capacityMap = capacityMap;
-    }
-
     static BigInt fromForge(long forgeAmount) {
         return GenericUnit.asBigIntFromForge(forgeAmount);
     }
 
-    static {
-        // Default
-        capacityMap = new EnumMap<>(Map.ofEntries(
-                Map.entry(INVALID, fromForge(0)),
-                Map.entry(WOOD, fromForge(4_000)),
-                Map.entry(STONE, fromForge(16_000)),
-                Map.entry(IRON, fromForge(256_000)),
-                Map.entry(GOLD, fromForge(4_096_000)),
-                Map.entry(DIAMOND, fromForge(16_384_000)),
-                Map.entry(EMERALD, fromForge(65_536_000)),
-                Map.entry(STAR, fromForge(1_048_576_000)),
-                Map.entry(CREATIVE, GenericUnit.CREATIVE_TANK()),
-                Map.entry(VOID, fromForge(0)),
-                Map.entry(COPPER, fromForge(40_000)),
-                Map.entry(TIN, fromForge(48_000)),
-                Map.entry(BRONZE, fromForge(256_000)),
-                Map.entry(LEAD, fromForge(192_000)),
-                Map.entry(SILVER, fromForge(1_024_000))
+    @NotNull
+    public static EnumMap<Tier, BigInt> getDefaultCapacityMap() {
+        return new EnumMap<>(Map.ofEntries(
+            Map.entry(INVALID, fromForge(0)),
+            Map.entry(WOOD, fromForge(4_000)),
+            Map.entry(STONE, fromForge(16_000)),
+            Map.entry(IRON, fromForge(256_000)),
+            Map.entry(GOLD, fromForge(4_096_000)),
+            Map.entry(DIAMOND, fromForge(16_384_000)),
+            Map.entry(EMERALD, fromForge(65_536_000)),
+            Map.entry(STAR, fromForge(1_048_576_000)),
+            Map.entry(CREATIVE, GenericUnit.CREATIVE_TANK()),
+            Map.entry(VOID, fromForge(0)),
+            Map.entry(COPPER, fromForge(40_000)),
+            Map.entry(TIN, fromForge(48_000)),
+            Map.entry(BRONZE, fromForge(256_000)),
+            Map.entry(LEAD, fromForge(192_000)),
+            Map.entry(SILVER, fromForge(1_024_000))
         ));
     }
 }
