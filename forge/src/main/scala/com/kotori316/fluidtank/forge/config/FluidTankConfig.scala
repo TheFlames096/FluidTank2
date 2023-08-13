@@ -21,7 +21,7 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
 
   private final val capacities: Map[Tier, ForgeConfigSpec.ConfigValue[String]] = Tier.values().toSeq.map { t =>
     val defaultCapacity = ConfigData.DEFAULT.capacityMap(t)
-    t -> builder.comment(s"Capacity of $t", s"Default: ${defaultCapacity / 81} mB")
+    t -> builder.comment(s"Capacity of $t", s"Default: ${defaultCapacity / 81} mB(= $defaultCapacity unit)")
       .define[String](t.name().toLowerCase(Locale.ROOT), defaultCapacity.toString(),
         FunctionConverters.asJavaPredicate[AnyRef] {
           case s: String => Try(BigInt(s)).isSuccess

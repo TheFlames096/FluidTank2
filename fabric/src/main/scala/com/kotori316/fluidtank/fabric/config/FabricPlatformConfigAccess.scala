@@ -22,7 +22,7 @@ class FabricPlatformConfigAccess extends PlatformConfigAccess {
       || e.exists(_.isInstanceOf[FluidTankConfig.KeyNotFound]
       || e.exists(_.isInstanceOf[FluidTankConfig.InvalidValue]))) {
       FluidTankConfig.createFile(FabricLoader.getInstance().getConfigDir, "fluidtank-common.json", partial)
-      FluidTankCommon.LOGGER.warn("Created default config file.")
+      FluidTankCommon.LOGGER.warn("Created valid config file.")
     }
     FluidTankCommon.LOGGER.warn("Get error in loading config, using partial value. Errors: {}", e.mkString_(", "))
     partial
