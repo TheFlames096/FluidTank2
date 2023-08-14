@@ -9,7 +9,8 @@ import net.minecraft.world.item.Item
 import net.minecraftforge.registries.ForgeRegistries
 
 case class AdvancementSerializeHelper(criterionList: List[(String, CriterionTriggerInstance)] = Nil,
-                                      conditions: List[PlatformedCondition] = Nil) {
+                                      conditions: List[PlatformedCondition] = Nil,
+                                      isRecipe: Boolean = true) {
 
   def addCriterion(name: String, criterion: CriterionTriggerInstance): AdvancementSerializeHelper =
     copy(criterionList = (name, criterion) :: criterionList)
@@ -42,7 +43,7 @@ case class AdvancementSerializeHelper(criterionList: List[(String, CriterionTrig
     copy(conditions = condition :: conditions)
 
   def build(location: ResourceLocation): JsonObject = {
-    val builder = Advancement.Builder.advancement()
+    val builder = if (this.isRecipe) Advancement.Builder.recipeAdvancement() else Advancement.Builder.advancement()
     builder.parent(new ResourceLocation("recipes/root"))
       .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(location))
       .rewards(AdvancementRewards.Builder.recipe(location))

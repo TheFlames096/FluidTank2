@@ -32,5 +32,6 @@
     "recipes": [
       "fluidtank:tank_void"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

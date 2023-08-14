@@ -21,5 +21,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "fluidtank:blocks/tank_star"
 }

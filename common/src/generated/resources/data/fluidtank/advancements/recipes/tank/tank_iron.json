@@ -56,5 +56,6 @@
     "recipes": [
       "fluidtank:tank_iron"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -56,5 +56,6 @@
     "recipes": [
       "fluidtank:tank_emerald"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

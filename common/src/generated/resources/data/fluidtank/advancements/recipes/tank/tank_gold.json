@@ -56,5 +56,6 @@
     "recipes": [
       "fluidtank:tank_gold"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

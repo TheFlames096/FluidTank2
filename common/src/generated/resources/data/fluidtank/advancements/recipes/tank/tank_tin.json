@@ -56,5 +56,6 @@
     "recipes": [
       "fluidtank:tank_tin"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }
