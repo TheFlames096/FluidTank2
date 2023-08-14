@@ -1,0 +1,7 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+license = "All rights reserved"
+
+[[mods]]
+modId = "fluidtank_data"
+version = "1.0"

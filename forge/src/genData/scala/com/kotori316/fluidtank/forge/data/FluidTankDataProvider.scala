@@ -12,7 +12,7 @@ import org.slf4j.MarkerFactory
 import java.util.Collections
 import scala.jdk.javaapi.CollectionConverters
 
-@Mod.EventBusSubscriber(modid = FluidTankCommon.modId, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = "fluidtank_data", bus = Mod.EventBusSubscriber.Bus.MOD)
 object FluidTankDataProvider {
   final val MARKER = MarkerFactory.getMarker("FluidTankDataProvider")
 

@@ -1,7 +1,7 @@
 package com.kotori316.fluidtank.forge.data
 
 import com.kotori316.fluidtank.FluidTankCommon
-import com.kotori316.fluidtank.forge.FluidTank
+import com.kotori316.fluidtank.forge.{FluidTank, data}
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge
 import com.kotori316.fluidtank.tank.Tier
 import net.minecraft.data.recipes.{RecipeCategory, ShapedRecipeBuilder}
@@ -62,7 +62,7 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
     val normalTanks = Tier.values().filter(_.isNormalTankTier).filterNot(_ == Tier.WOOD)
       .map { t =>
         val subItem = getSubItem(t)
-        RecipeSerializeHelper(new TierRecipeForge.TierFinishedRecipe(new ResourceLocation(FluidTankCommon.modId, t.getBlockName), t, subItem.ingredient))
+        data.RecipeSerializeHelper(new TierRecipeForge.TierFinishedRecipe(new ResourceLocation(FluidTankCommon.modId, t.getBlockName), t, subItem.ingredient))
           .addTagCondition(subItem)
           .addItemCriterion(subItem)
       }
