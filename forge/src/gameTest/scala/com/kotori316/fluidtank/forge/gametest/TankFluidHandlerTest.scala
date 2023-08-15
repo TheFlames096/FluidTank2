@@ -4,21 +4,17 @@ import cats.implicits.catsSyntaxSemigroup
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.contents.GenericUnit
 import com.kotori316.fluidtank.fluids.{FluidAmountUtil, PotionType}
-import com.kotori316.fluidtank.forge.BeforeMC.assertEqualHelper
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter.*
+import com.kotori316.fluidtank.forge.gametest.GetGameTestMethods.assertEqualHelper
 import com.kotori316.fluidtank.forge.tank.TileTankForge
 import com.kotori316.fluidtank.tank.Tier
-import com.kotori316.testutil.GameTestUtil
 import net.minecraft.core.BlockPos
-import net.minecraft.gametest.framework.{GameTest, GameTestGenerator, GameTestHelper, TestFunction}
+import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
 import net.minecraft.world.item.alchemy.Potions
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction
 import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
 import org.junit.jupiter.api.Assertions.{assertDoesNotThrow, assertEquals, assertNotNull, assertTrue}
-import org.junit.platform.commons.support.ReflectionSupport
-
-import scala.jdk.javaapi.CollectionConverters
 
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
@@ -27,29 +23,7 @@ class TankFluidHandlerTest {
 
   @GameTestGenerator
   def generator(): java.util.List[TestFunction] = {
-    val noArgs = getClass.getDeclaredMethods.toSeq
-      .filter(m => m.getReturnType == Void.TYPE)
-      .filter(m => !m.isAnnotationPresent(classOf[GameTest]))
-      .filter(m => m.getParameterCount == 0)
-      .map { m =>
-        val test: Runnable = () => ReflectionSupport.invokeMethod(m, this)
-        GameTestUtil.create(FluidTankCommon.modId, BATCH, getClass.getSimpleName + "_" + m.getName,
-          test
-        )
-      }
-
-    val withHelper = getClass.getDeclaredMethods.toSeq
-      .filter(m => m.getReturnType == Void.TYPE)
-      .filter(m => !m.isAnnotationPresent(classOf[GameTest]))
-      .filter(m => m.getParameterTypes.toSeq == Seq(classOf[GameTestHelper]))
-      .map { m =>
-        val test: java.util.function.Consumer[GameTestHelper] = g => ReflectionSupport.invokeMethod(m, this, g)
-        GameTestUtil.create(FluidTankCommon.modId, BATCH, getClass.getSimpleName + "_" + m.getName,
-          test
-        )
-      }
-
-    CollectionConverters.asJava(noArgs ++ withHelper)
+    GetGameTestMethods.getTests(getClass, this, BATCH)
   }
 
   def testGetCapability(helper: GameTestHelper): Unit = {

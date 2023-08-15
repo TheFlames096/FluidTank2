@@ -20,20 +20,20 @@ architectury {
 }
 
 sourceSets {
-    test {
-        if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
-            // TODO better solution
-            output.resourcesDir = sourceSets.main.output.resourcesDir
-            // Compiled Java classes should use this directory
-            scala.destinationDirectory.set(sourceSets.main.scala.destinationDirectory)
-        }
-    }
     create("genData") {
         scala { SourceDirectorySet set ->
             set.srcDir("src/genData/scala")
         }
         resources { SourceDirectorySet set ->
             set.srcDir("src/genData/resources")
+        }
+    }
+    create("gameTest") {
+        scala { SourceDirectorySet set ->
+            set.srcDir("src/gameTest/scala")
+        }
+        resources { SourceDirectorySet set ->
+            set.srcDir("src/gameTest/resources")
         }
     }
 }
@@ -48,6 +48,14 @@ loom {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
+            mods {
+                create("main") {
+                    sourceSet("main")
+                }
+                create("gameTest") {
+                    sourceSet("gameTest")
+                }
+            }
         }
         server {
             configName = "Server"
@@ -61,7 +69,14 @@ loom {
             property("fabric.dli.env", "gameTestServer")
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "game-test"
-            source("test")
+            mods {
+                create("main") {
+                    sourceSet("main")
+                }
+                create("gameTest") {
+                    sourceSet("gameTest")
+                }
+            }
         }
         data {
             configName = "Data"
@@ -97,6 +112,8 @@ configurations {
 
     genDataCompileClasspath.extendsFrom(compileClasspath)
     genDataRuntimeClasspath.extendsFrom(runtimeClasspath)
+    gameTestCompileClasspath.extendsFrom(testCompileClasspath)
+    gameTestRuntimeClasspath.extendsFrom(testRuntimeClasspath)
 }
 
 repositories {
@@ -133,6 +150,7 @@ dependencies {
     forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
 
     "genDataImplementation"(sourceSets.main.output)
+    "gameTestImplementation"(sourceSets.main.output)
 }
 
 processResources {
@@ -147,19 +165,19 @@ tasks.named("processGenDataResources", ProcessResources) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.named("processGameTestResources", ProcessResources) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 afterEvaluate {
     tasks.named("runData") {
         it.dependsOn("genDataClasses")
     }
-}
-
-if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
-    tasks.named("compileTestScala", ScalaCompile).configure {
-        it.dependsOn("processTestResources")
+    tasks.named("runClient") {
+        it.dependsOn("gameTestClasses")
     }
-    tasks.named("runClient").configure {
-        it.dependsOn("compileTestScala")
-        it.dependsOn("processTestResources")
+    tasks.named("runGameTest") {
+        it.dependsOn("gameTestClasses")
     }
 }
 

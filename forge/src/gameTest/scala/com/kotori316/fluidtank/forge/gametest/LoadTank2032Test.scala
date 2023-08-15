@@ -6,14 +6,10 @@ import com.kotori316.fluidtank.fluids.FluidAmountUtil
 import com.kotori316.fluidtank.forge.FluidTank
 import com.kotori316.fluidtank.forge.tank.TileTankForge
 import com.kotori316.fluidtank.tank.Tier
-import com.kotori316.testutil.GameTestUtil
 import net.minecraft.core.BlockPos
-import net.minecraft.gametest.framework.{GameTest, GameTestGenerator, GameTestHelper, TestFunction}
+import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
 import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
 import org.junit.jupiter.api.Assertions.*
-import org.junit.platform.commons.support.ReflectionSupport
-
-import scala.jdk.javaapi.CollectionConverters
 
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
@@ -22,19 +18,7 @@ class LoadTank2032Test {
 
   @GameTestGenerator
   def generator(): java.util.List[TestFunction] = {
-    val withHelper = getClass.getDeclaredMethods.toSeq
-      .filter(m => m.getReturnType == Void.TYPE)
-      .filter(m => !m.isAnnotationPresent(classOf[GameTest]))
-      .filter(m => m.getParameterTypes.toSeq == Seq(classOf[GameTestHelper]))
-      .map { m =>
-        val test: java.util.function.Consumer[GameTestHelper] = g => ReflectionSupport.invokeMethod(m, this, g)
-        GameTestUtil.createWithStructure(FluidTankCommon.modId, BATCH, getClass.getSimpleName + "_" + m.getName,
-          "load_20_3_tanks",
-          test
-        )
-      }
-
-    CollectionConverters.asJava(withHelper)
+    GetGameTestMethods.getTests(getClass, this, BATCH, "load_20_3_tanks")
   }
 
   def assumptionWood(helper: GameTestHelper): Unit = {

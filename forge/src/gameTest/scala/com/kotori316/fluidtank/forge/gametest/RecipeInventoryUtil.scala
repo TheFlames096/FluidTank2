@@ -1,4 +1,4 @@
-package com.kotori316.fluidtank.forge.recipe
+package com.kotori316.fluidtank.forge.gametest
 
 import com.kotori316.fluidtank.fluids.FluidAmount
 import com.kotori316.fluidtank.forge.FluidTank

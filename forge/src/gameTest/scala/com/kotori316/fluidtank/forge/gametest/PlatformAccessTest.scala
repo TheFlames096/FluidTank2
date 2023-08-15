@@ -2,43 +2,28 @@ package com.kotori316.fluidtank.forge.gametest
 
 import com.kotori316.fluidtank.config.PlatformConfigAccess
 import com.kotori316.fluidtank.contents.GenericUnit
-import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, PotionType}
-import com.kotori316.fluidtank.forge.ForgePlatformAccessTest
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, PlatformFluidAccess, PotionType}
 import com.kotori316.fluidtank.{FluidTankCommon, PlatformAccess}
 import com.kotori316.testutil.GameTestUtil
-import net.minecraft.gametest.framework.{GameTest, GameTestGenerator, GameTestHelper, TestFunction}
+import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.alchemy.{Potion, PotionUtils, Potions}
 import net.minecraft.world.item.{ItemStack, Items}
 import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
 import org.junit.jupiter.api.Assertions.*
-import org.junit.platform.commons.support.ReflectionSupport
 
-import java.lang.reflect.Modifier
 import java.util.Locale
 import scala.jdk.javaapi.CollectionConverters
 
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
 class PlatformAccessTest {
-  private final val ACCESS: PlatformAccess = new ForgePlatformAccessTest().ACCESS
+  private final val ACCESS: PlatformAccess = PlatformFluidAccess.getInstance().asInstanceOf[PlatformAccess]
   private final val BATCH_NAME = "platform_test"
 
   @GameTestGenerator
   def generator(): java.util.List[TestFunction] = {
-    val withHelper = getClass.getDeclaredMethods.toSeq
-      .filter(m => m.getReturnType == Void.TYPE)
-      .filter(m => !m.isAnnotationPresent(classOf[GameTest]))
-      .filter(m => m.getParameterTypes.toSeq == Seq(classOf[GameTestHelper]))
-      .filter(m => (m.getModifiers & (Modifier.PRIVATE | Modifier.STATIC)) == 0)
-      .map { m =>
-        val test: java.util.function.Consumer[GameTestHelper] = g => ReflectionSupport.invokeMethod(m, this, g)
-        GameTestUtil.create(FluidTankCommon.modId, BATCH_NAME, getClass.getSimpleName + "_" + m.getName,
-          test
-        )
-      }
-
-    CollectionConverters.asJava(withHelper)
+    GetGameTestMethods.getTests(getClass, this, BATCH_NAME)
   }
 
   def configAccess(helper: GameTestHelper): Unit = {
