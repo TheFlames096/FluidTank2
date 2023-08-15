@@ -40,7 +40,7 @@ sourceSets {
 
 loom {
     forge {
-
+        useForgeLoggerConfig = true
     }
 
     runs {
