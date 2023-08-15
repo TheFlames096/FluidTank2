@@ -178,7 +178,7 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set("dev-shadow")
+    archiveClassifier.set("dev")
 }
 
 remapJar {
@@ -188,7 +188,7 @@ remapJar {
 }
 
 jar {
-    archiveClassifier.set("dev")
+    archiveClassifier.set("dev-only-platform")
 }
 
 sourcesJar {
@@ -278,7 +278,7 @@ curseforge {
         mainArtifact(tasks.remapJar) {
             displayName = "${project.version}-forge"
         }
-        addArtifact(tasks.jar)
+        addArtifact(tasks.shadowJar)
         addArtifact(tasks.sourcesJar)
         relations {
             requiredDependency "scalable-cats-force"
@@ -298,7 +298,7 @@ modrinth {
     versionName = "${project.version}-forge"
     uploadFile = tasks.remapJar
     getAdditionalFiles().set([
-            tasks.jar,
+            tasks.shadowJar,
             tasks.sourcesJar,
     ])
     getGameVersions().set([project.minecraft_version])
@@ -334,7 +334,7 @@ tasks.register("jksSignJar") {
 
 signing {
     sign(publishing.publications)
-    sign(tasks.jar, tasks.remapJar, tasks.sourcesJar)
+    sign(tasks.shadowJar, tasks.remapJar, tasks.sourcesJar)
 }
 
 boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
