@@ -26,11 +26,11 @@ jobs:
         run: ./gradlew test
       - name: Prepare GameTest
         run: |
-          (./gradlew downloadMCMeta downloadAssets) || \
-            (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || \
-            (sleep 5 && ./gradlew downloadMCMeta downloadAssets) || true
+          (./gradlew configureLaunch downloadAssets) || \
+            (sleep 5 && ./gradlew configureLaunch downloadAssets) || \
+            (sleep 5 && ./gradlew configureLaunch downloadAssets) || true
       - name: GameTest
-        run: ./gradlew clean runGameTest
+        run: ./gradlew runGameTest
         env:
           RUN_GAME_TEST: true
       - uses: google-github-actions/auth@v1
@@ -65,7 +65,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          clean build publishToMavenLocal curseforge modrinth registerVersion publish -x test
+          clean assemble publishToMavenLocal curseforge modrinth registerVersion publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
