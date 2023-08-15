@@ -161,14 +161,6 @@ processResources {
     }
 }
 
-tasks.named("processGenDataResources", ProcessResources) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.named("processGameTestResources", ProcessResources) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 afterEvaluate {
     tasks.named("runData") {
         it.dependsOn("genDataClasses")

@@ -115,10 +115,14 @@ java {
     }
 }
 
-processResources {
+tasks.withType(ProcessResources.class).configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar.class).configureEach {
+    exclude(".cache/")
 }
