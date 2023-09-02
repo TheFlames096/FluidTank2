@@ -360,3 +360,7 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     modName = project.findProperty("maven_base_name")
     changelog = noHeaderChangelog()
 }
+
+afterEvaluate {
+    rootProject.tasks.named("githubRelease").configure { it.dependsOn(":forge:assemble") }
+}
