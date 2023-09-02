@@ -17,10 +17,10 @@ githubRelease {
     releaseName = "v${project.findProperty("mod_version")} for ${project.findProperty("minecraft_version")}"
     body = createChangelog()
     releaseAssets = files(
-            fileTree("${project(":forge").buildDir}/libs") {
+            fileTree("${findProject(":forge")?.buildDir}/libs") {
                 include("*.jar")
             },
-            fileTree("${project(":fabric").buildDir}/libs") {
+            fileTree("${findProject(":fabric")?.buildDir}/libs") {
                 include("*.jar")
             }
     )
