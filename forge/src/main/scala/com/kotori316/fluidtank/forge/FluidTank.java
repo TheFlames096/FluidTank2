@@ -2,7 +2,10 @@ package com.kotori316.fluidtank.forge;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
+import com.kotori316.fluidtank.cat.BlockChestAsTank;
+import com.kotori316.fluidtank.cat.ItemChestAsTank;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
+import com.kotori316.fluidtank.forge.cat.EntityChestAsTank;
 import com.kotori316.fluidtank.forge.config.ForgePlatformConfigAccess;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
@@ -17,6 +20,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -108,6 +112,11 @@ public final class FluidTank {
         createTab(b);
         return b.build();
     });
+    public static final RegistryObject<BlockChestAsTank> BLOCK_CAT = BLOCK_REGISTER.register(BlockChestAsTank.NAME(), BlockChestAsTank::new);
+    public static final RegistryObject<BlockItem> ITEM_CAT = ITEM_REGISTER.register(BlockChestAsTank.NAME(), () -> new ItemChestAsTank(BLOCK_CAT.get()));
+    public static final RegistryObject<BlockEntityType<EntityChestAsTank>> TILE_CAT =
+        BLOCK_ENTITY_REGISTER.register(BlockChestAsTank.NAME(), () ->
+            BlockEntityType.Builder.of(EntityChestAsTank::new, BLOCK_CAT.get()).build(DSL.emptyPartType()));
 
     public static final class LazyHolder {
 
@@ -139,6 +148,8 @@ public final class FluidTank {
             // Tanks
             TANK_ITEM_MAP.values().stream().map(RegistryObject::get).sorted(Comparator.comparing(i -> i.blockTank().tier()))
                 .forEach(output::accept);
+            // Chest As Tank
+            output.accept(ITEM_CAT.get());
         });
     }
 }
