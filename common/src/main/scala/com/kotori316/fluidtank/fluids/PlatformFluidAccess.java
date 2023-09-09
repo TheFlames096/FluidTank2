@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.fluids;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
+import com.kotori316.fluidtank.potions.PotionFluidHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -12,16 +13,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scala.Option;
-import scala.jdk.javaapi.OptionConverters;
 
 public interface PlatformFluidAccess {
     @NotNull
@@ -40,17 +36,16 @@ public interface PlatformFluidAccess {
 
     @NotNull
     default GenericAmount<FluidLike> getFluidContained(ItemStack stack) {
+        var potionHandler = PotionFluidHandler.apply(stack);
+        if (potionHandler.isValidHandler()) {
+            return potionHandler.getContent();
+        }
         if (stack.getItem() instanceof BucketItem bucketItem) {
             var fluid = getBucketContent(bucketItem);
             if (Fluids.EMPTY.equals(fluid)) {
                 return FluidAmountUtil.EMPTY();
             }
             return FluidAmountUtil.from(fluid, GenericUnit.ONE_BUCKET());
-        } else if (stack.getItem() instanceof PotionItem potionItem) {
-            var potionFluid = FluidLike.of(PotionType.fromItemUnsafe(potionItem));
-            return FluidAmountUtil.from(potionFluid, GenericUnit.ONE_BOTTLE(), Option.apply(stack.getTag()));
-        } else if (stack.is(Items.GLASS_BOTTLE)) {
-            return FluidAmountUtil.EMPTY();
         }
         return FluidAmountUtil.EMPTY();
     }
@@ -115,12 +110,16 @@ public interface PlatformFluidAccess {
             return shouldMove;
         }
 
+        public TransferStack setShouldMove(boolean shouldMove) {
+            return new TransferStack(this.moved, this.toReplace, shouldMove);
+        }
+
         @Override
         public String toString() {
             return "TransferStack[" +
-                    "moved=" + moved + ", " +
-                    "toReplace=" + toReplace + ", " +
-                    "shouldMove=" + shouldMove + ']';
+                "moved=" + moved + ", " +
+                "toReplace=" + toReplace + ", " +
+                "shouldMove=" + shouldMove + ']';
         }
     }
 }
@@ -151,8 +150,7 @@ class PlatformFluidAccessHolder {
         @Override
         public boolean isFluidContainer(ItemStack stack) {
             return stack.getItem() instanceof BucketItem ||
-                    stack.getItem() instanceof PotionItem ||
-                    stack.is(Items.GLASS_BOTTLE);
+                PotionFluidHandler.apply(stack).isValidHandler();
         }
 
         @Override
@@ -171,15 +169,8 @@ class PlatformFluidAccessHolder {
                 }
                 return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
             } else if (toFill.content() instanceof VanillaPotion vanillaPotion) {
-                if (fluidContainer.is(Items.GLASS_BOTTLE) && toFill.hasOneBottle()) {
-                    var filledItem = PotionUtils.setPotion(
-                            new ItemStack(vanillaPotion.potionType().getItem()),
-                            OptionConverters.toJava(toFill.nbt()).map(PotionUtils::getPotion).orElse(Potions.EMPTY)
-                    );
-                    var filledAmount = toFill.setAmount(GenericUnit.ONE_BOTTLE());
-                    return new TransferStack(filledAmount, filledItem);
-                }
-                return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
+                var handler = PotionFluidHandler.apply(fluidContainer);
+                return handler.fill(toFill, vanillaPotion);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -196,14 +187,9 @@ class PlatformFluidAccessHolder {
                 var drainedItem = Items.BUCKET.getDefaultInstance();
                 var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BUCKET());
                 return new TransferStack(drainedAmount, drainedItem);
-            } else if (toDrain.content() instanceof VanillaPotion) {
-                if (!toDrain.hasOneBottle() || !toDrain.contentEqual(content)) {
-                    // Nothing drained
-                    return new TransferStack(FluidAmountUtil.EMPTY(), fluidContainer, false);
-                }
-                var drainedItem = Items.GLASS_BOTTLE.getDefaultInstance();
-                var drainedAmount = toDrain.setAmount(GenericUnit.ONE_BOTTLE());
-                return new TransferStack(drainedAmount, drainedItem);
+            } else if (toDrain.content() instanceof VanillaPotion v) {
+                var handler = PotionFluidHandler.apply(fluidContainer);
+                return handler.drain(toDrain, v);
             } else {
                 throw new AssertionError();
             }

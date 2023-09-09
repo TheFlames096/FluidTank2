@@ -30,6 +30,8 @@ trait PotionFluidHandler {
    * @return the holding potion
    */
   def getContent: GenericAmount[FluidLike]
+
+  def isValidHandler: Boolean = true
 }
 
 object PotionFluidHandler {
@@ -56,6 +58,8 @@ object PotionFluidHandler {
       transferFailed(stack)
 
     override def getContent: GenericAmount[FluidLike] = FluidAmountUtil.EMPTY
+
+    override def isValidHandler: Boolean = false
   }
 
   private class VanillaEmptyBottle(stack: ItemStack) extends PotionFluidHandler {
