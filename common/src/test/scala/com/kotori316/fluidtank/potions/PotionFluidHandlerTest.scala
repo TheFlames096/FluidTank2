@@ -34,6 +34,11 @@ class PotionFluidHandlerTest extends BeforeMC {
     assertEquals(FluidAmountUtil.EMPTY, handler.getContent)
   }
 
+  @Test
+  def dummy(): Unit = {
+    assertFalse(PotionFluidHandler.handlerProvider.isEmpty)
+  }
+
   @Nested
   class FillTest {
     val toFill: FluidAmount = FluidAmountUtil.from(PotionType.NORMAL, Potions.INVISIBILITY, GenericUnit.ONE_BOTTLE)

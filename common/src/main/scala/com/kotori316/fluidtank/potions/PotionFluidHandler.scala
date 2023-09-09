@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.potions
 
 import com.kotori316.fluidtank.contents.{GenericAmount, GenericUnit}
 import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, PlatformFluidAccess, PotionType, VanillaPotion}
+import com.kotori316.fluidtank.reservoir.{ItemReservoir, ReservoirPotionFluidHandler}
 import net.minecraft.world.item.{ItemStack, Items, PotionItem}
 
 trait PotionFluidHandler {
@@ -36,12 +37,17 @@ trait PotionFluidHandler {
 
 object PotionFluidHandler {
 
-  def apply(stack: ItemStack): PotionFluidHandler = {
-    stack.getItem match {
-      case Items.GLASS_BOTTLE => new VanillaEmptyBottle(stack)
-      case _: PotionItem => new VanillaPotionBottle(stack)
-      case _ => new NotContainer(stack)
+  final val handlerProvider: scala.collection.mutable.Seq[PartialFunction[ItemStack, PotionFluidHandler]] = scala.collection.mutable.Seq(
+    s => s.getItem match {
+      case Items.GLASS_BOTTLE => new VanillaEmptyBottle(s)
+      case _: PotionItem => new VanillaPotionBottle(s)
+      case itemReservoir: ItemReservoir => new ReservoirPotionFluidHandler(itemReservoir, s)
     }
+  )
+
+  def apply(stack: ItemStack): PotionFluidHandler = {
+    handlerProvider.reduce(_ orElse _)
+      .applyOrElse(stack, s => new NotContainer(s))
   }
 
   private def transferStack(moved: FluidAmount, stack: ItemStack): PlatformFluidAccess.TransferStack =
