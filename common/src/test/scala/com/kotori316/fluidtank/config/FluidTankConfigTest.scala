@@ -21,6 +21,7 @@ class FluidTankConfigTest {
         |  "renderLowerBound": 0.2,
         |  "renderUpperBound": 0.8,
         |  "debug": false,
+        |  "changeItemInCreative": true,
         |  "capacities": {
         |    "invalid": "162000",
         |    "wood": "162000",
@@ -44,7 +45,7 @@ class FluidTankConfigTest {
     val config = FluidTankConfig.getConfigDataFromJson(json)
     Assertions.assertTrue(config.isRight, s"Result: $config")
 
-    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false)
+    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false, changeItemInCreative = true)
     Assertions.assertEquals(expected, config.getOrElse(null))
   }
 
@@ -56,6 +57,7 @@ class FluidTankConfigTest {
         |  "renderLowerBound": "0.2",
         |  "renderUpperBound": 0.8,
         |  "debug": "true",
+        |  "changeItemInCreative": "false",
         |  "capacities": {
         |    "invalid": "162000",
         |    "wood": 162000,
@@ -79,7 +81,8 @@ class FluidTankConfigTest {
     val config = FluidTankConfig.getConfigDataFromJson(json)
     Assertions.assertTrue(config.isRight, s"Result: $config")
 
-    val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = true)
+    val expected = ConfigData.DEFAULT.copy(
+      Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = true)
     Assertions.assertEquals(expected, config.getOrElse(null))
   }
 
@@ -92,7 +95,8 @@ class FluidTankConfigTest {
         """{
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
-          |  "debug": false
+          |  "debug": false,
+          |  "changeItemInCreative": false
           |}
           |""".stripMargin
       val json = gson.fromJson(jsonString, classOf[JsonObject])
@@ -114,6 +118,7 @@ class FluidTankConfigTest {
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
           |  "debug": false,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "wood": "162000",
           |    "iron": "162000",
@@ -149,6 +154,7 @@ class FluidTankConfigTest {
       // language=json
       val jsonString =
         """{
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": "162000",
@@ -207,6 +213,7 @@ class FluidTankConfigTest {
           |  "renderLowerBound": "test",
           |  "renderUpperBound": "test2",
           |  "debug": true,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": "162000",
@@ -271,7 +278,8 @@ class FluidTankConfigTest {
       val config = FluidTankConfig.getConfigDataFromJson(json)
 
       // For boolean, getAsBoolean returns `false` for non boolean values.
-      val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.1, 0.9, debug = false)
+      val expected = ConfigData.DEFAULT.copy(
+        Tier.values().map(t => t -> BigInt(162000)).toMap, 0.1, 0.9, debug = false)
       config.right match {
         case Some(e) =>
           Assertions.assertEquals(expected, e)
@@ -287,6 +295,7 @@ class FluidTankConfigTest {
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
           |  "debug": true,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "test",
           |    "wood": "1.6",
@@ -332,6 +341,7 @@ class FluidTankConfigTest {
           |  "renderLowerBound": -0.1,
           |  "renderUpperBound": 0.9,
           |  "debug": true,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": "162000",
@@ -375,6 +385,7 @@ class FluidTankConfigTest {
           |  "renderLowerBound": 0.1,
           |  "renderUpperBound": 0.9,
           |  "debug": true,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": -1,
@@ -424,6 +435,7 @@ class FluidTankConfigTest {
         """{
           |  "renderLowerBound": 0.2,
           |  "renderUpperBound": 0.8,
+          |  "changeItemInCreative": false,
           |  "capacities": {
           |    "invalid": "162000",
           |    "wood": "162000",
@@ -452,7 +464,8 @@ class FluidTankConfigTest {
         FluidTankConfig.KeyNotFound("debug"),
       )
       Assertions.assertEquals(config.left, Option(errorExpected))
-      val expected = ConfigData(Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false)
+      val expected = ConfigData.DEFAULT.copy(
+        Tier.values().map(t => t -> BigInt(162000)).toMap, 0.2, 0.8, debug = false)
       Assertions.assertEquals(config.right, Option(expected))
 
       FluidTankConfig.createFile(tempDir, "migrationDebug.json", config.right.get)

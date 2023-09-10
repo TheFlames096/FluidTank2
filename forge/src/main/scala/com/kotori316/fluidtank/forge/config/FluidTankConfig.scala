@@ -32,6 +32,8 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
   builder.pop()
 
   val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode").define("debug", ConfigData.DEFAULT.debug)
+  val changeItemInCreative: ForgeConfigSpec.BooleanValue = builder.comment("True to allow to modify items in player attracting")
+    .define("changeItemInCreative", ConfigData.DEFAULT.changeItemInCreative)
 
   builder.pop()
 
@@ -41,6 +43,7 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
       renderLowerBound = this.renderLowerBound.get(),
       renderUpperBound = this.renderUpperBound.get(),
       debug = this.debug.get(),
+      changeItemInCreative = this.changeItemInCreative.get()
     )
   }
 }

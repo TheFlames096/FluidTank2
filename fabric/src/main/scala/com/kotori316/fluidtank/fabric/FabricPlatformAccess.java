@@ -5,10 +5,7 @@ import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fabric.cat.ChestAsTankStorage;
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.fluids.FluidLike;
-import com.kotori316.fluidtank.fluids.VanillaFluid;
-import com.kotori316.fluidtank.fluids.VanillaPotion;
+import com.kotori316.fluidtank.fluids.*;
 import com.kotori316.fluidtank.potions.PotionFluidHandler;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.Tier;
@@ -98,7 +95,7 @@ final class FabricPlatformAccess implements PlatformAccess {
         if (toFill.content() instanceof VanillaPotion vanillaPotion) {
             var potionHandler = PotionFluidHandler.apply(stack);
             var result = potionHandler.fill(toFill, vanillaPotion);
-            return moveItem(stack, player.isCreative(), execute, result, context);
+            return moveItem(stack, player, execute, result, context);
         }
 
         var storage = FluidStorage.ITEM.find(stack, context);
@@ -110,7 +107,7 @@ final class FabricPlatformAccess implements PlatformAccess {
         try (Transaction transaction = Transaction.openOuter()) {
             filled = storage.insert(FabricConverter.toVariant(toFill, Fluids.EMPTY), FabricConverter.fabricAmount(toFill), transaction);
             // Items in creative player should not be changed.
-            if (execute && !player.isCreative()) transaction.commit();
+            if (execute && TransferFluid.shouldMoveItem(player)) transaction.commit();
         }
         // FluidTankCommon.LOGGER.warn("Fill context {} {} execute={}", context.getItemVariant(), context.getAmount(), execute);
         return new TransferStack(toFill.setAmount(GenericUnit.fromFabric(filled)), context.getItemVariant().toStack((int) context.getAmount()), false);
@@ -122,7 +119,7 @@ final class FabricPlatformAccess implements PlatformAccess {
         if (toDrain.content() instanceof VanillaPotion v) {
             var potionHandler = PotionFluidHandler.apply(stack);
             var result = potionHandler.drain(toDrain, v);
-            return moveItem(stack, player.isCreative(), execute, result, context);
+            return moveItem(stack, player, execute, result, context);
         }
 
         var storage = FluidStorage.ITEM.find(stack, context);
@@ -133,19 +130,19 @@ final class FabricPlatformAccess implements PlatformAccess {
         try (Transaction transaction = Transaction.openOuter()) {
             drained = storage.extract(FabricConverter.toVariant(toDrain, Fluids.EMPTY), FabricConverter.fabricAmount(toDrain), transaction);
             // Items in creative player should not be changed.
-            if (execute && !player.isCreative()) transaction.commit();
+            if (execute && TransferFluid.shouldMoveItem(player)) transaction.commit();
         }
         // FluidTankCommon.LOGGER.warn("Drain context {} {} execute={}", context.getItemVariant(), context.getAmount(), execute);
         return new TransferStack(toDrain.setAmount(GenericUnit.fromFabric(drained)), context.getItemVariant().toStack((int) context.getAmount()), false);
     }
 
     @NotNull
-    private static TransferStack moveItem(ItemStack stack, boolean isCreative, boolean execute, TransferStack result, ContainerItemContext context) {
+    private static TransferStack moveItem(ItemStack stack, Player player, boolean execute, TransferStack result, ContainerItemContext context) {
         if (result.moved().nonEmpty()) {
             try (Transaction transaction = Transaction.openOuter()) {
                 var exchanged = context.exchange(ItemVariant.of(result.toReplace()), 1, transaction);
                 if (exchanged == 1) {
-                    if (execute && !isCreative) {
+                    if (execute && TransferFluid.shouldMoveItem(player)) {
                         transaction.commit();
                     }
                     return result.setShouldMove(false);
