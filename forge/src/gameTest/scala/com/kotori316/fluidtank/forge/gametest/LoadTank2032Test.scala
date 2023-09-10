@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions.*
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
 class LoadTank2032Test {
-  private final val BATCH = "defaultBatch"
+  private final val BATCH = "loadTank2032"
 
   @GameTestGenerator
   def generator(): java.util.List[TestFunction] = {

@@ -5,6 +5,7 @@ import com.kotori316.testutil.GameTestUtil;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -65,5 +66,10 @@ public class GetGameTestMethods {
 
     public static void assertEqualHelper(Object expected, Object actual) {
         Assertions.assertEquals(expected, actual, "Expected: %s, Actual: %s".formatted(expected, actual));
+    }
+
+    public static void assertEqualStack(ItemStack expected, ItemStack actual) {
+        Assertions.assertTrue(ItemStack.matches(expected, actual),
+            "Expected: %s(%s), Actual: %s(%s)".formatted(expected, expected.getTag(), actual, actual.getTag()));
     }
 }
