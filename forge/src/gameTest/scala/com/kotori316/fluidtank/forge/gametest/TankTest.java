@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.forge.gametest;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.fluids.PotionType;
 import com.kotori316.fluidtank.forge.FluidTank;
 import com.kotori316.fluidtank.tank.BlockTank;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import scala.Option;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +33,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.kotori316.fluidtank.forge.gametest.GetGameTestMethods.assertEqualHelper;
+import static com.kotori316.fluidtank.forge.gametest.GetGameTestMethods.assertEqualStack;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
@@ -388,6 +391,41 @@ final class TankTest {
 
         assertEqualHelper(content, tile.getTank().content());
         assertEqualHelper(Items.BUCKET, player.getItemInHand(InteractionHand.MAIN_HAND).getItem());
+        helper.succeed();
+    }
+
+    void fillMultiEffectPotion(GameTestHelper helper) {
+        var basePos = BlockPos.ZERO.above();
+        var tile = placeTank(helper, basePos, Tier.WOOD);
+        var potionStack = PotionUtils.setCustomEffects(
+            PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.NIGHT_VISION),
+            Potions.REGENERATION.getEffects()
+        );
+        var player = helper.makeMockSurvivalPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, potionStack.copy());
+        helper.useBlock(basePos, player);
+
+        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BOTTLE(), Option.apply(potionStack.getTag()));
+        assertEquals(content, tile.getTank().content());
+        assertEqualHelper(Items.GLASS_BOTTLE, player.getItemInHand(InteractionHand.MAIN_HAND).getItem());
+        helper.succeed();
+    }
+
+    void drainMultiEffectPotion(GameTestHelper helper) {
+        var basePos = BlockPos.ZERO.above();
+        var tile = placeTank(helper, basePos, Tier.WOOD);
+        var potionStack = PotionUtils.setCustomEffects(
+            PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.NIGHT_VISION),
+            Potions.REGENERATION.getEffects()
+        );
+        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BUCKET(), Option.apply(potionStack.getTag()));
+        tile.getConnection().getHandler().fill(content, true);
+
+        var player = helper.makeMockSurvivalPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+        helper.useBlock(basePos, player);
+
+        assertEqualStack(potionStack, player.getItemInHand(InteractionHand.MAIN_HAND));
         helper.succeed();
     }
 }

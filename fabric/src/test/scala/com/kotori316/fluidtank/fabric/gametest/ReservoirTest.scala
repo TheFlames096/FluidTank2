@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import scala.jdk.javaapi.CollectionConverters
 
 //noinspection ScalaUnusedSymbol,DuplicatedCode
-class ReservoirTest extends FabricGameTest{
+class ReservoirTest extends FabricGameTest {
   private final val BATCH = "defaultBatch"
   private final val WOOD_RESERVOIR = FluidTank.RESERVOIR_MAP.get(Tier.WOOD)
 
