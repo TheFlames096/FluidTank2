@@ -2,14 +2,16 @@ package com.kotori316.fluidtank.reservoir
 
 import cats.implicits.catsSyntaxGroup
 import com.kotori316.fluidtank.contents.{GenericUnit, Tank, TankUtil}
-import com.kotori316.fluidtank.fluids.{FluidAmountUtil, FluidLike, PlatformFluidAccess, PotionType, VanillaPotion, fluidAccess}
+import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, PlatformFluidAccess, PotionType, VanillaFluid, VanillaPotion, fluidAccess}
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.alchemy.PotionUtils
 import net.minecraft.world.item.{Item, ItemStack, ItemUtils, Rarity, TooltipFlag, UseAnim}
-import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BucketPickup
+import net.minecraft.world.level.{ClipContext, Level}
+import net.minecraft.world.phys.{BlockHitResult, HitResult}
 import net.minecraft.world.{InteractionHand, InteractionResultHolder}
 
 import java.util
@@ -33,8 +35,17 @@ class ItemReservoir(val tier: Tier) extends Item(new Item.Properties().stacksTo(
   }
 
   override def use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder[ItemStack] = {
-    getTank(player.getItemInHand(usedHand)).content.content match {
+    val stack = player.getItemInHand(usedHand)
+    val content = getTank(stack).content
+    content.content match {
       case v: VanillaPotion if v.potionType == PotionType.NORMAL => ItemUtils.startUsingInstantly(level, player, usedHand);
+      case _: VanillaFluid =>
+        val hitResult = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY)
+        if (hitResult.getType != HitResult.Type.BLOCK) {
+          InteractionResultHolder.pass(stack)
+        } else {
+          fillOrDrainFluidInLevel(hitResult, stack, level, player, content, usedHand)
+        }
       case _ => super.use(level, player, usedHand)
     }
   }
@@ -91,6 +102,31 @@ class ItemReservoir(val tier: Tier) extends Item(new Item.Properties().stacksTo(
       stack.removeTagKey(TileTank.KEY_TANK)
     } else {
       stack.addTagElement(TileTank.KEY_TANK, TankUtil.save(tank))
+    }
+  }
+
+  private def fillOrDrainFluidInLevel(hitResult: BlockHitResult, stack: ItemStack, level: Level, player: Player, content: FluidAmount, hand: InteractionHand): InteractionResultHolder[ItemStack] = {
+    val hitPos = hitResult.getBlockPos
+    val hitFace = hitResult.getDirection
+    if (level.mayInteract(player, hitPos) && player.mayUseItemAt(hitPos.relative(hitFace), hitFace, stack)) {
+      val blockState = level.getBlockState(hitPos)
+      val simulateFluid = FluidAmountUtil.from(level.getFluidState(hitPos).getType, GenericUnit.ONE_BUCKET)
+      blockState.getBlock match {
+        case pickUp: BucketPickup if content.isEmpty || content.contentEqual(simulateFluid) =>
+          val simulation = PlatformFluidAccess.getInstance().fillItem(simulateFluid, stack, player, hand, false)
+          if (simulation.moved().nonEmpty) {
+            val picked = pickUp.pickupBlock(level, hitPos, blockState)
+            val actualFluid = PlatformFluidAccess.getInstance().getFluidContained(picked)
+            val result = PlatformFluidAccess.getInstance().fillItem(actualFluid, stack, player, hand, true)
+            InteractionResultHolder.sidedSuccess(result.toReplace, level.isClientSide)
+          } else {
+            InteractionResultHolder.pass(stack)
+          }
+        case _ =>
+          InteractionResultHolder.pass(stack)
+      }
+    } else {
+      InteractionResultHolder.fail(stack)
     }
   }
 }

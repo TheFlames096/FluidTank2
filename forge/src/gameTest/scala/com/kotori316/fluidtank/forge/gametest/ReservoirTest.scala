@@ -14,6 +14,8 @@ import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, Test
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.Potions
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 
@@ -155,4 +157,55 @@ class ReservoirTest {
         g.succeed()
       })
   )
+
+  def drainFromWorld1(helper: GameTestHelper): Unit = {
+    val basePos: BlockPos = BlockPos.ZERO.above
+    helper.setBlock(basePos, Blocks.LAVA)
+    val stack = createReservoirStack(FluidAmountUtil.EMPTY)
+    val player = helper.makeMockSurvivalPlayer()
+    player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(basePos.above())))
+    player.setXRot(90f)
+    player.setItemInHand(InteractionHand.MAIN_HAND, stack)
+
+    val holder = stack.use(helper.getLevel, player, InteractionHand.MAIN_HAND)
+    val tank = WOOD_RESERVOIR.getTank(holder.getObject)
+    assertEquals(FluidAmountUtil.BUCKET_LAVA, tank.content)
+    helper.assertBlockNotPresent(Blocks.LAVA, basePos)
+
+    helper.succeed()
+  }
+
+  def drainFromWorld2(helper: GameTestHelper): Unit = {
+    val basePos: BlockPos = BlockPos.ZERO.above
+    helper.setBlock(basePos, Blocks.LAVA)
+    val stack = createReservoirStack(FluidAmountUtil.BUCKET_LAVA)
+    val player = helper.makeMockSurvivalPlayer()
+    player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(basePos.above())))
+    player.setXRot(90f)
+    player.setItemInHand(InteractionHand.MAIN_HAND, stack)
+
+    val holder = stack.use(helper.getLevel, player, InteractionHand.MAIN_HAND)
+    val tank = WOOD_RESERVOIR.getTank(holder.getObject)
+    assertEquals(FluidAmountUtil.BUCKET_LAVA.setAmount(GenericUnit.fromForge(2000)), tank.content)
+    helper.assertBlockNotPresent(Blocks.LAVA, basePos)
+
+    helper.succeed()
+  }
+
+  def drainFromWorld3(helper: GameTestHelper): Unit = {
+    val basePos: BlockPos = BlockPos.ZERO.above
+    helper.setBlock(basePos, Blocks.LAVA)
+    val stack = createReservoirStack(FluidAmountUtil.BUCKET_WATER)
+    val player = helper.makeMockSurvivalPlayer()
+    player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(basePos.above())))
+    player.setXRot(90f)
+    player.setItemInHand(InteractionHand.MAIN_HAND, stack)
+
+    val holder = stack.use(helper.getLevel, player, InteractionHand.MAIN_HAND)
+    val tank = WOOD_RESERVOIR.getTank(holder.getObject)
+    assertEquals(FluidAmountUtil.BUCKET_WATER, tank.content)
+    helper.assertBlockPresent(Blocks.LAVA, basePos)
+
+    helper.succeed()
+  }
 }
