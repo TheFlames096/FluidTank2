@@ -31,4 +31,6 @@ final class ReservoirPotionFluidHandler(itemReservoir: ItemReservoir, stack: Ite
   }
 
   override def getContent: GenericAmount[FluidLike] = getTank.content
+
+  override def isValidHandler: Boolean = getContent.content.isInstanceOf[VanillaPotion]
 }
