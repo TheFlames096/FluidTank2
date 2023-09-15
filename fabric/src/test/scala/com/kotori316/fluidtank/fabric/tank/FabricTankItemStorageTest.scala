@@ -6,10 +6,10 @@ import com.kotori316.fluidtank.fluids.{FluidAmountUtil, fluidAccess}
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext
 import net.fabricmc.fabric.api.transfer.v1.fluid.{FluidConstants, FluidVariant}
-import net.minecraft.world.item.{BlockItem, ItemStack}
+import net.minecraft.world.item.{BlockItem, ItemStack, Items}
 import net.minecraft.world.level.material.Fluids
-import org.junit.jupiter.api.Assertions.{assertAll, assertEquals, assertNotNull, assertTrue}
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.{assertAll, assertEquals, assertNotNull, assertNull, assertTrue}
+import org.junit.jupiter.api.{Nested, Test}
 
 @SuppressWarnings(Array("UnstableApiUsage"))
 //noinspection UnstableApiUsage
@@ -36,7 +36,8 @@ final class FabricTankItemStorageTest extends BeforeMC {
     assertAll(
       () => assertEquals(FluidConstants.BUCKET, storage.getAmount),
       () => assertEquals(FluidVariant.of(Fluids.WATER), storage.getResource),
-      () => assertEquals(4 * FluidConstants.BUCKET, storage.getCapacity)
+      () => assertEquals(4 * FluidConstants.BUCKET, storage.getCapacity),
+      () => assertEquals(tank, storage.getTank),
     )
   }
 }

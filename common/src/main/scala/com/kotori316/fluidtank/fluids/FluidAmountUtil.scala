@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.alchemy.{Potion, PotionUtils}
 import net.minecraft.world.item.{ItemStack, Items}
 import net.minecraft.world.level.material.{Fluid, Fluids}
+import org.jetbrains.annotations.VisibleForTesting
 
 object FluidAmountUtil {
 
@@ -22,6 +23,7 @@ object FluidAmountUtil {
     GenericAmount(fluidLike, genericUnit, nbt)
   }
 
+  @VisibleForTesting
   def from(potionType: PotionType, potion: Potion, genericUnit: GenericUnit): FluidAmount = {
     val tag = PotionUtils.setPotion(new ItemStack(Items.POTION), potion).getTag
     from(FluidLike.of(potionType), genericUnit, Option(tag))

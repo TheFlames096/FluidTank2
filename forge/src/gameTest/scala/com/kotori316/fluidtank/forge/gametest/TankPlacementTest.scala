@@ -21,7 +21,7 @@ final class TankPlacementTest {
     CollectionConverters.asJava(for {
       t <- Tier.values().filterNot(_ == Tier.INVALID).toSeq
       f <- Seq(Blocks.LAVA, Blocks.WATER)
-      name = s"${BATCH_NAME}_${t}_$f".toLowerCase(Locale.ROOT)
+      name = s"${BATCH_NAME}_${t}_${f.getName.getString}".toLowerCase(Locale.ROOT)
     } yield GameTestUtil.createWithStructure(FluidTankCommon.modId, BATCH_NAME,
       name, "check_water", g => notRemovedByFluid(g, t, f)))
   }

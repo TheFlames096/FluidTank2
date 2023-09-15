@@ -4,6 +4,7 @@ import com.kotori316.fluidtank.config.ConfigData;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
+import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -24,4 +25,10 @@ public abstract class BeforeMC {
     public static void assertEqualHelper(Object expected, Object actual) {
         Assertions.assertEquals(expected, actual, "Expected: %s, Actual: %s".formatted(expected, actual));
     }
+
+    public static void assertEqualStack(ItemStack expected, ItemStack actual) {
+        Assertions.assertTrue(ItemStack.matches(expected, actual),
+            "Expected: %s(%s), Actual: %s(%s)".formatted(expected, expected.getTag(), actual, actual.getTag()));
+    }
+
 }

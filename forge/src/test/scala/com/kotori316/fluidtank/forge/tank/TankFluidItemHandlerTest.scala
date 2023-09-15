@@ -76,7 +76,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def fillToFilled1(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
 
       val f1 = handler.fill(FluidAmountUtil.BUCKET_LAVA.toStack, IFluidHandler.FluidAction.SIMULATE)
       assertEquals(0, f1)
@@ -87,7 +87,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def fillToFilled2(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
 
       val f1 = handler.fill(new FluidStack(Fluids.WATER, 500), IFluidHandler.FluidAction.SIMULATE)
       assertEquals(500, f1)
@@ -96,7 +96,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def fillToFilled3(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(3800)), GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(3800)), GenericUnit.fromForge(4000)))
 
       val f1 = handler.fill(new FluidStack(Fluids.WATER, 500), IFluidHandler.FluidAction.SIMULATE)
       assertEquals(200, f1)
@@ -114,7 +114,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def drain1(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
 
       val d1 = handler.drain(new FluidStack(Fluids.WATER, 500), IFluidHandler.FluidAction.SIMULATE)
       assertTrue(d1.isFluidStackIdentical(new FluidStack(Fluids.WATER, 500)))
@@ -135,7 +135,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def drain2(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
       val d2 = handler.drain(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE)
       assertTrue(d2.isFluidStackIdentical(new FluidStack(Fluids.WATER, 1000)))
 
@@ -146,7 +146,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def drain3(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
       val d2 = handler.drain(new FluidStack(Fluids.WATER, 1500), IFluidHandler.FluidAction.EXECUTE)
       assertTrue(d2.isFluidStackIdentical(new FluidStack(Fluids.WATER, 1000)))
 
@@ -157,7 +157,7 @@ class TankFluidItemHandlerTest extends BeforeMC {
     @Test
     def drainFail(): Unit = {
       val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
-      handler.updateTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
 
       val t1 = handler.drain(new FluidStack(Fluids.LAVA, 1500), IFluidHandler.FluidAction.SIMULATE)
       assertTrue(t1.isEmpty)

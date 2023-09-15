@@ -1,16 +1,14 @@
 package com.kotori316.fluidtank.forge.data
 
 import com.kotori316.fluidtank.FluidTankCommon
-import com.kotori316.fluidtank.forge.{FluidTank, data}
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge
+import com.kotori316.fluidtank.forge.{FluidTank, data}
 import com.kotori316.fluidtank.tank.Tier
-import net.minecraft.data.recipes.{RecipeCategory, ShapedRecipeBuilder}
+import net.minecraft.data.recipes.{RecipeCategory, ShapedRecipeBuilder, ShapelessRecipeBuilder}
 import net.minecraft.data.{CachedOutput, DataGenerator, DataProvider}
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.tags.{ItemTags, TagKey}
-import net.minecraft.world.item.crafting.Ingredient
-import net.minecraft.world.item.{Item, Items}
-import net.minecraft.world.level.ItemLike
+import net.minecraft.tags.ItemTags
+import net.minecraft.world.item.Items
 import net.minecraftforge.common.Tags
 
 import java.util.concurrent.CompletableFuture
@@ -42,21 +40,21 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
     val woodTankBlock = FluidTank.TANK_MAP.get(Tier.WOOD).get()
     val glassSubItem = RecipeIngredientHelper.bothTag(Tags.Items.GLASS, "c:glass_blocks")
     val woodTank = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, woodTankBlock)
-      .define('x', glassSubItem.ingredient)
-      .define('p', ItemTags.LOGS)
-      .pattern("x x")
-      .pattern("xpx")
-      .pattern("xxx"))
+        .define('x', glassSubItem.ingredient)
+        .define('p', ItemTags.LOGS)
+        .pattern("x x")
+        .pattern("xpx")
+        .pattern("xxx"))
       .addTagCondition(glassSubItem)
       .addItemCriterion(Items.WATER_BUCKET)
       .addItemCriterion(glassSubItem)
     val obsidianSubItem = getSubItem(Tier.VOID)
     val voidTank = RecipeSerializeHelper.by(
-      ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_VOID_TANK.get())
-        .define('o', obsidianSubItem.ingredient).define('t', woodTankBlock)
-        .pattern("ooo")
-        .pattern("oto")
-        .pattern("ooo"))
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_VOID_TANK.get())
+          .define('o', obsidianSubItem.ingredient).define('t', woodTankBlock)
+          .pattern("ooo")
+          .pattern("oto")
+          .pattern("ooo"))
       .addTagCondition(obsidianSubItem)
       .addItemCriterion(woodTankBlock.asItem())
     val normalTanks = Tier.values().filter(_.isNormalTankTier).filterNot(_ == Tier.WOOD)
@@ -66,17 +64,18 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
           .addTagCondition(subItem)
           .addItemCriterion(subItem)
       }
+    val reservoirs = CollectionConverters.asScala(FluidTank.RESERVOIR_MAP)
+      .map { case (tier, v) =>
+        val value = v.get()
+        val tank = FluidTank.TANK_MAP.get(tier).get()
+        RecipeSerializeHelper.by(ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, value)
+            .requires(tank)
+            .requires(Items.BUCKET)
+            .requires(Items.BUCKET))
+          .addItemCriterion(tank.asItem())
+      }
 
-    Seq(woodTank, voidTank) ++ normalTanks
-  }
-
-  def getComposedTag(forgeTag: TagKey[Item], fabricLocation: String): Ingredient = {
-    val fabricTag = ItemTags.create(new ResourceLocation(fabricLocation))
-    Ingredient.merge(CollectionConverters.asJava(Seq(Ingredient.of(forgeTag), Ingredient.of(fabricTag))))
-  }
-
-  def getComposed(forgeTag: TagKey[Item], fabricItem: ItemLike): Ingredient = {
-    Ingredient.merge(CollectionConverters.asJava(Seq(Ingredient.of(forgeTag), Ingredient.of(fabricItem))))
+    Seq(woodTank, voidTank) ++ normalTanks ++ reservoirs
   }
 
   private def getSubItem(tier: Tier): RecipeIngredientHelper = {

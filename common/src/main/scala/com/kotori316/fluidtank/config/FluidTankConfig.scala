@@ -31,6 +31,7 @@ object FluidTankConfig {
       getDouble(j, "renderUpperBound", ConfigData.DEFAULT.renderUpperBound)
         .flatMap(rangeChecker("renderUpperBound", Option(0d), Option(1d))),
       getValue[Boolean](j, "debug", _.getAsBoolean, ConfigData.DEFAULT.debug, Nil),
+      getValue[Boolean](j, "changeItemInCreative", _.getAsBoolean, ConfigData.DEFAULT.changeItemInCreative, Nil),
     ).mapN(ConfigData.apply)
   }
 

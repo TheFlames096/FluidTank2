@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.fluids
 
+import com.kotori316.fluidtank.config.PlatformConfigAccess
 import net.minecraft.core.BlockPos
 import net.minecraft.sounds.{SoundEvent, SoundSource}
 import net.minecraft.world.InteractionHand
@@ -48,7 +49,7 @@ object TransferFluid {
   }
 
   def setItem(player: Player, hand: InteractionHand, result: Result, blockPos: BlockPos): Unit = {
-    if (result.shouldMove && !player.isCreative) {
+    if (result.shouldMove && shouldMoveItem(player)) {
       // set item
       if (player.getItemInHand(hand).getCount == 1) {
         // replace
@@ -63,5 +64,9 @@ object TransferFluid {
     }
     // Sound, the player in parameter means "except", so passing null
     result.sound.foreach(s => player.level.playSound(null, blockPos, s, SoundSource.BLOCKS, 1f, 1f))
+  }
+
+  def shouldMoveItem(player: Player): Boolean = {
+    PlatformConfigAccess.getInstance().getConfig.changeItemInCreative || !(player.isCreative || player.getAbilities.instabuild)
   }
 }

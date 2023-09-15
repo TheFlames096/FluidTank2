@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions.*
 import java.util.Locale
 import scala.jdk.javaapi.CollectionConverters
 
+//noinspection ScalaUnusedSymbol
 @GameTestHolder(FluidTankCommon.modId)
 @PrefixGameTestTemplate(value = false)
 class PlatformAccessTest {
@@ -183,7 +184,7 @@ class PlatformAccessTest {
 
     val toFill = potionFluid(potionType, potion).setAmount(GenericUnit.fromFabric(26999))
     val transferred = ACCESS.fillItem(toFill, stack, player, InteractionHand.MAIN_HAND, true)
-    assertTrue(transferred.shouldMove, "Forge module didn't move items")
+    assertFalse(transferred.shouldMove, "Transfer failed, so nothing to move")
     assertTrue(transferred.moved.isEmpty)
     val expected = new ItemStack(Items.GLASS_BOTTLE)
     assertTrue(ItemStack.isSameItemSameTags(expected, transferred.toReplace), "transferred, Ex: %s, Ac: %s".formatted(expected.getTag, transferred.toReplace.getTag))

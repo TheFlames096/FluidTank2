@@ -12,6 +12,7 @@ import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
 import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
+import com.kotori316.fluidtank.forge.reservoir.ItemReservoirForge;
 import com.kotori316.fluidtank.forge.tank.*;
 import com.kotori316.fluidtank.tank.*;
 import com.mojang.datafixers.DSL;
@@ -117,6 +118,8 @@ public final class FluidTank {
     public static final RegistryObject<BlockEntityType<EntityChestAsTank>> TILE_CAT =
         BLOCK_ENTITY_REGISTER.register(BlockChestAsTank.NAME(), () ->
             BlockEntityType.Builder.of(EntityChestAsTank::new, BLOCK_CAT.get()).build(DSL.emptyPartType()));
+    public static final Map<Tier, RegistryObject<ItemReservoirForge>> RESERVOIR_MAP = Stream.of(Tier.WOOD, Tier.STONE, Tier.IRON)
+        .collect(Collectors.toMap(Function.identity(), t -> ITEM_REGISTER.register("reservoir_" + t.name().toLowerCase(Locale.ROOT), () -> new ItemReservoirForge(t))));
 
     public static final class LazyHolder {
 
@@ -150,6 +153,9 @@ public final class FluidTank {
                 .forEach(output::accept);
             // Chest As Tank
             output.accept(ITEM_CAT.get());
+            // Reservoir
+            RESERVOIR_MAP.values().stream().map(RegistryObject::get).sorted(Comparator.comparing(ItemReservoirForge::tier))
+                .forEach(output::accept);
         });
     }
 }
