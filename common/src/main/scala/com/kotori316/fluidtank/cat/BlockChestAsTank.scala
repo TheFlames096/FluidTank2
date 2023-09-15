@@ -41,9 +41,9 @@ class BlockChestAsTank extends Block(BlockBehaviour.Properties.of()
       if (!level.isClientSide) {
         val fluids = PlatformChestAsTankAccess.getInstance().getCATFluids(level, pos)
         if (fluids.isEmpty) {
-          player.displayClientMessage(Component.literal("No fluids in the inventory"), false)
+          player.displayClientMessage(Component.translatable("chat.fluidtank.cat_empty"), false)
         } else {
-          player.displayClientMessage(Component.literal(s"Fluids in inventory at (${pos.getX}, ${pos.getY}, ${pos.getZ})"), false)
+          player.displayClientMessage(Component.translatable("chat.fluidtank.cat_fluid"), false)
         }
         for (f <- CollectionConverters.asScala(fluids)) {
           val message = Component.literal("[")
