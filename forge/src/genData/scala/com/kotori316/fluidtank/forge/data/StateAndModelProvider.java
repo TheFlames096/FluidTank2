@@ -42,6 +42,7 @@ final class StateAndModelProvider extends BlockStateProvider {
         // pipeBase();
         // pipe(ModObjects.blockFluidPipe(), "fluid_pipe");
         // pipe(ModObjects.blockItemPipe(), "item_pipe");
+        reservoirBase();
         FluidTank.RESERVOIR_MAP.values().stream().map(RegistryObject::get).forEach(this::reservoir);
     }
 
@@ -250,7 +251,23 @@ final class StateAndModelProvider extends BlockStateProvider {
             .texture("texture", frameTexture);
     }*/
 
+    void reservoirBase() {
+        itemModels().getBuilder("item/item_reservoir")
+            .parent(new ModelFile.UncheckedModelFile("builtin/entity"))
+            .guiLight(BlockModel.GuiLight.FRONT)
+            .transforms()
+            .transform(ItemDisplayContext.FIXED).scale(1f).translation(0, 0, 0).rotation(0, 180, 0).end()
+            .transform(ItemDisplayContext.GROUND).scale(0.5f).translation(0, 0, 0).rotation(0, 180, 0).end()
+            .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND).scale(0.85f).translation(0f, 4.0f, 0.5f).rotation(0, 0, 0).end()
+            .transform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND).scale(0.85f).translation(0f, 4.0f, 0.5f).rotation(0, 0, 0).end()
+            .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND).scale(0.68f).translation(1.13f, 3.2f, -1.13f).rotation(0, -90, 0).end()
+            .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND).scale(0.68f).translation(1.13f, 3.2f, -1.13f).rotation(0, 90, 0).end()
+            .end()
+        ;
+    }
+
     void reservoir(ItemReservoir reservoirItem) {
-        itemModels().basicItem(reservoirItem);
+        var key = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(reservoirItem));
+        itemModels().withExistingParent(key.getPath(), modLoc("item/item_reservoir"));
     }
 }

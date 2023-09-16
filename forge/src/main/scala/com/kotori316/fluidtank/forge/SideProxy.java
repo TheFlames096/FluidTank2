@@ -2,11 +2,15 @@ package com.kotori316.fluidtank.forge;
 
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.forge.render.RenderTank;
+import com.kotori316.fluidtank.render.RenderReservoirItem;
+import com.kotori316.fluidtank.render.ReservoirModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -44,6 +48,16 @@ public abstract class SideProxy {
         public Optional<Level> getLevel(NetworkEvent.Context context) {
             var serverWorld = Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
             return serverWorld.or(() -> LogicalSidedProvider.CLIENTWORLD.get(context.getDirection().getReceptionSide()));
+        }
+
+        @SubscribeEvent
+        public void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(ReservoirModel.LOCATION, ReservoirModel::createDefinition);
+        }
+
+        @SubscribeEvent
+        public void registerReloadListener(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener(RenderReservoirItem.INSTANCE());
         }
     }
 
