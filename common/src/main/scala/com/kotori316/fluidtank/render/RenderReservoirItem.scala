@@ -35,6 +35,10 @@ class RenderReservoirItem extends BlockEntityWithoutLevelRenderer(Minecraft.getI
 }
 
 object RenderReservoirItem {
+  /**
+   * Just for Forge.
+   * Use platform-specific class in Fabric
+   */
   val INSTANCE = new RenderReservoirItem
 
   private final val textureNameMap: Map[Tier, ResourceLocation] = Tier.values().map(t =>
