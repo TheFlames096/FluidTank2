@@ -1,8 +1,8 @@
 package com.kotori316.fluidtank.forge;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.forge.render.RenderReservoirItemForge;
 import com.kotori316.fluidtank.forge.render.RenderTank;
-import com.kotori316.fluidtank.render.RenderReservoirItem;
 import com.kotori316.fluidtank.render.ReservoirModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,7 +57,7 @@ public abstract class SideProxy {
 
         @SubscribeEvent
         public void registerReloadListener(RegisterClientReloadListenersEvent event) {
-            event.registerReloadListener(RenderReservoirItem.INSTANCE());
+            event.registerReloadListener(RenderReservoirItemForge.INSTANCE);
         }
     }
 

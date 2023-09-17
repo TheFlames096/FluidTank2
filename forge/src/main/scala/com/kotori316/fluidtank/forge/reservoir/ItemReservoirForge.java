@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.forge.reservoir;
 
-import com.kotori316.fluidtank.render.RenderReservoirItem;
+import com.kotori316.fluidtank.forge.render.RenderReservoirItemForge;
 import com.kotori316.fluidtank.reservoir.ItemReservoir;
 import com.kotori316.fluidtank.tank.Tier;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -23,7 +23,7 @@ public final class ItemReservoirForge extends ItemReservoir {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return RenderReservoirItem.INSTANCE();
+                return RenderReservoirItemForge.INSTANCE;
             }
         });
     }
