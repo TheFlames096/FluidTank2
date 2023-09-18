@@ -68,6 +68,10 @@ public enum Tier {
         return this.name;
     }
 
+    public static Tier valueOfIgnoreCase(String name) {
+        return Tier.valueOf(name.toUpperCase(Locale.ROOT));
+    }
+
     static BigInt fromForge(long forgeAmount) {
         return GenericUnit.asBigIntFromForge(forgeAmount);
     }

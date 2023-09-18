@@ -28,7 +28,7 @@ public interface PlatformItemAccess {
     }
 
     static String convertIngredientToString(Ingredient ingredient) {
-        return "[%s]".formatted(ingredient.toJson());
+        return "[%s]".formatted(ingredient.toJson(true));
     }
 
 }
