@@ -32,7 +32,8 @@ jobs:
       - name: Check build environments
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment
+          # arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment
+          arguments: :buildEnvironment :fabric:buildEnvironment
       - name: Check changelog
         uses: gradle/gradle-build-action@v2
         with:
@@ -40,7 +41,7 @@ jobs:
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :fabric:remapJar :forge:remapJar
+          arguments: remapJar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -78,7 +79,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ forge, fabric ]
+        # platform: [ forge, fabric ]
+        platform: [ fabric ]
     env:
       FORGE_ONLY: ${{ matrix.platform == 'forge' }}
       FABRIC_ONLY: ${{ matrix.platform == 'fabric' }}
@@ -107,6 +109,7 @@ jobs:
 
   forge-data-gen:
     runs-on: ubuntu-latest
+    if: false
     env:
       FORGE_ONLY: true
     steps:
