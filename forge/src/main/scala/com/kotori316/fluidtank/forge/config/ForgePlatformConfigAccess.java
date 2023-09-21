@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge.config;
 
+import com.google.gson.GsonBuilder;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.config.ConfigData;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
@@ -33,8 +34,10 @@ public class ForgePlatformConfigAccess implements PlatformConfigAccess {
         if (cached != null) {
             // ignore changes in initial setup
             FluidTankCommon.LOGGER.debug("Reload FluidTank config {}",
-                    event.getConfig().getFileName());
-            cached = tankConfig.createConfigData();
+                event.getConfig().getFileName());
         }
+        cached = tankConfig.createConfigData();
+        var configString = new GsonBuilder().disableHtmlEscaping().create().toJson(cached.createJson());
+        FluidTankCommon.LOGGER.debug("Config: {}", configString);
     }
 }
