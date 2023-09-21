@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.fluids
 
 import cats.data.Chain
 import cats.implicits.catsSyntaxFoldableOps0
+import com.kotori316.fluidtank.DebugLogging
 import com.kotori316.fluidtank.contents.{ChainTanksHandler, FluidTransferLog, Tank}
 import com.kotori316.fluidtank.tank.TileTank
 
