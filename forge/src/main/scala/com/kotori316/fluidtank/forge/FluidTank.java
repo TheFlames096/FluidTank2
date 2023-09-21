@@ -74,7 +74,8 @@ public final class FluidTank {
     }
 
     private static void setupConfig(IEventBus modBus) {
-        var config = new ForgePlatformConfigAccess(modBus);
+        var config = new ForgePlatformConfigAccess();
+        modBus.register(config);
         var builder = config.setupConfig();
         PlatformConfigAccess.setInstance(config);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
