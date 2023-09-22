@@ -5,8 +5,8 @@ import com.google.gson.{GsonBuilder, JsonObject}
 import com.kotori316.fluidtank.config.PlatformConfigAccess
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.MinecraftServer
-import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
+import org.apache.logging.log4j.{Level, Logger}
 
 import java.security.SecureClassLoader
 import scala.jdk.CollectionConverters.CollectionHasAsScala
@@ -14,23 +14,19 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 object DebugLogging {
   val ENABLED: Boolean = PlatformConfigAccess.getInstance().getConfig.debug
 
-  /**
-   * Nullable, check ENABLED before accessing this field.
-   */
   val LOGGER: Logger = {
     class DummyClassLoader extends SecureClassLoader
 
-    if (ENABLED) {
-      val context = Configurator.initialize("fluidtank-config", new DummyClassLoader,
-        classOf[FluidTankCommon].getResource("/fluidtank-log4j2.xml").toURI)
-      context.getLogger("FluidTankDebug")
-    } else {
-      null
+    val context = Configurator.initialize("fluidtank-config", new DummyClassLoader,
+      classOf[FluidTankCommon].getResource("/fluidtank-log4j2.xml").toURI)
+    val l = context.getLogger("FluidTankDebug")
+    if (!ENABLED) {
+      l.setLevel(Level.INFO)
     }
+    l
   }
 
   def initialLog(server: MinecraftServer): Unit = {
-    if (!ENABLED) return
     // Config
     LOGGER.info("Config {}", new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
       .toJson(PlatformConfigAccess.getInstance().getConfig.createJson))
