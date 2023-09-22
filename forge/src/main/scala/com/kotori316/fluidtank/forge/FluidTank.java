@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge;
 
+import com.kotori316.fluidtank.DebugLogging;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
 import com.kotori316.fluidtank.cat.BlockChestAsTank;
@@ -30,7 +31,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -70,11 +73,13 @@ public final class FluidTank {
         PacketHandler.init();
         AE2FluidTankIntegration.onAPIAvailable();
         FluidTankTopPlugin.sendIMC();
+        MinecraftForge.EVENT_BUS.addListener(FluidTank::onServerStart);
         FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
     }
 
     private static void setupConfig(IEventBus modBus) {
-        var config = new ForgePlatformConfigAccess(modBus);
+        var config = new ForgePlatformConfigAccess();
+        modBus.register(config);
         var builder = config.setupConfig();
         PlatformConfigAccess.setInstance(config);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, builder.build());
@@ -157,5 +162,9 @@ public final class FluidTank {
             RESERVOIR_MAP.values().stream().map(RegistryObject::get).sorted(Comparator.comparing(ItemReservoirForge::tier))
                 .forEach(output::accept);
         });
+    }
+
+    static void onServerStart(ServerStartedEvent event) {
+        DebugLogging.initialLog(event.getServer());
     }
 }

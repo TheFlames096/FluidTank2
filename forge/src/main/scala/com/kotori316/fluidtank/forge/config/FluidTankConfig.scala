@@ -11,8 +11,10 @@ import scala.util.Try
 class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
   builder.push("client")
   private final val renderLowerBound: ForgeConfigSpec.DoubleValue = builder.comment("The lower bound of tank renderer")
+    .comment(s"Default: ${ConfigData.DEFAULT.renderLowerBound}")
     .defineInRange("renderLowerBound", ConfigData.DEFAULT.renderLowerBound, 0d, 1d)
   private final val renderUpperBound: ForgeConfigSpec.DoubleValue = builder.comment("The upper bound of tank renderer")
+    .comment(s"Default: ${ConfigData.DEFAULT.renderUpperBound}")
     .defineInRange("renderUpperBound", ConfigData.DEFAULT.renderUpperBound, 0d, 1d)
   builder.pop()
 
@@ -31,8 +33,11 @@ class FluidTankConfig(builder: ForgeConfigSpec.Builder) {
 
   builder.pop()
 
-  val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode").define("debug", ConfigData.DEFAULT.debug)
-  val changeItemInCreative: ForgeConfigSpec.BooleanValue = builder.comment("True to allow to modify items in player attracting")
+  private final val debug: ForgeConfigSpec.BooleanValue = builder.comment("Debug mode")
+    .comment(s"Default: ${ConfigData.DEFAULT.debug}")
+    .define("debug", ConfigData.DEFAULT.debug)
+  private final val changeItemInCreative: ForgeConfigSpec.BooleanValue = builder.comment("True to allow to modify items in player attracting")
+    .comment(s"Default: ${ConfigData.DEFAULT.changeItemInCreative}")
     .define("changeItemInCreative", ConfigData.DEFAULT.changeItemInCreative)
 
   builder.pop()

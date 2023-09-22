@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.fabric;
 
+import com.kotori316.fluidtank.DebugLogging;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.PlatformAccess;
 import com.kotori316.fluidtank.cat.BlockChestAsTank;
@@ -17,11 +18,13 @@ import com.kotori316.fluidtank.reservoir.ItemReservoir;
 import com.kotori316.fluidtank.tank.*;
 import com.mojang.datafixers.DSL;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -48,6 +51,7 @@ public final class FluidTank implements ModInitializer {
         ChestAsTankStorage.register();
         ReservoirFluidStorage.register();
         AE2FluidTankIntegration.onAPIAvailable();
+        ServerLifecycleEvents.SERVER_STARTED.register(FluidTank::onServerStart);
         FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
     }
 
@@ -99,5 +103,9 @@ public final class FluidTank implements ModInitializer {
             RESERVOIR_MAP.values().stream().sorted(Comparator.comparing(ItemReservoir::tier))
                 .forEach(output::accept);
         });
+    }
+
+    static void onServerStart(MinecraftServer server) {
+        DebugLogging.initialLog(server);
     }
 }

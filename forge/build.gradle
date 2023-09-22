@@ -1,4 +1,5 @@
 import com.kotori316.plugin.cf.CallVersionFunctionTask
+import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
 
 import java.util.stream.Collectors
 
@@ -359,6 +360,14 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     platform = "forge"
     modName = project.findProperty("maven_base_name")
     changelog = noHeaderChangelog()
+}
+
+tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
+    gameVersion = project.findProperty("minecraft_version")
+    platform = "forge"
+    modName = project.findProperty("maven_base_name")
+    version = project.version
+    failIfExists = !RELEASE_DEBUG
 }
 
 afterEvaluate {

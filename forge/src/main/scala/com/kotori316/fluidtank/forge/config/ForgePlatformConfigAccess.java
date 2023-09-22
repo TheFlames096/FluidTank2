@@ -4,7 +4,6 @@ import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.config.ConfigData;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
@@ -12,8 +11,7 @@ public class ForgePlatformConfigAccess implements PlatformConfigAccess {
     private FluidTankConfig tankConfig;
     private ConfigData cached;
 
-    public ForgePlatformConfigAccess(IEventBus modEventBus) {
-        modEventBus.register(this);
+    public ForgePlatformConfigAccess() {
     }
 
     public ForgeConfigSpec.Builder setupConfig() {
@@ -35,8 +33,8 @@ public class ForgePlatformConfigAccess implements PlatformConfigAccess {
         if (cached != null) {
             // ignore changes in initial setup
             FluidTankCommon.LOGGER.debug("Reload FluidTank config {}",
-                    event.getConfig().getFileName());
-            cached = tankConfig.createConfigData();
+                event.getConfig().getFileName());
         }
+        cached = tankConfig.createConfigData();
     }
 }

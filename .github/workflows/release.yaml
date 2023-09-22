@@ -20,6 +20,10 @@ jobs:
       - run: chmod +x ./gradlew
       - name: Enable daemon
         run: sed -i -e 's/org.gradle.daemon=false/org.gradle.daemon=true/' gradle.properties
+      - name: Check Release Version
+        run: ./gradlew checkReleaseVersion
+        env:
+          RELEASE_DEBUG: false
       - name: Compile
         run: ./gradlew testClasses
       - name: JUnit

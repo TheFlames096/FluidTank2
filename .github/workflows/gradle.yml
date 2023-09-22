@@ -38,6 +38,10 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: checkChangelog
+      - name: Check Release Version
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: checkReleaseVersion
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
