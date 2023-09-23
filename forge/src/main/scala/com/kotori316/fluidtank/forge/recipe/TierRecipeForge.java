@@ -3,6 +3,7 @@ package com.kotori316.fluidtank.forge.recipe;
 import com.google.gson.JsonObject;
 import com.kotori316.fluidtank.recipe.TierRecipe;
 import com.kotori316.fluidtank.tank.Tier;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -15,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<CraftingContainer> {
     public static final RecipeSerializer<TierRecipe> SERIALIZER = new Serializer();
 
-    public TierRecipeForge(ResourceLocation id, Tier tier, Ingredient tankItem, Ingredient subItem) {
-        super(id, tier, tankItem, subItem);
+    public TierRecipeForge( Tier tier, Ingredient tankItem, Ingredient subItem) {
+        super( tier, tankItem, subItem);
     }
 
     @Override
@@ -36,14 +37,14 @@ public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<C
 
     public static class Serializer extends SerializerBase {
         @Override
-        protected TierRecipe createInstance(ResourceLocation id, Tier tier, Ingredient tankItem, Ingredient subItem) {
-            return new TierRecipeForge(id, tier, tankItem, subItem);
+        protected TierRecipe createInstance( Tier tier, Ingredient tankItem, Ingredient subItem) {
+            return new TierRecipeForge( tier, tankItem, subItem);
         }
 
-        @Override
+        /*@Override
         public TierRecipe fromJson(ResourceLocation recipeLoc, JsonObject recipeJson, ICondition.IContext context) {
             return super.fromJson(recipeLoc, recipeJson, context);
-        }
+        }*/
     }
 
     public static class TierFinishedRecipe implements FinishedRecipe {
@@ -60,29 +61,23 @@ public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<C
         @Override
         public void serializeRecipeData(JsonObject object) {
             object.addProperty(KEY_TIER, tier.name());
-            object.add(KEY_SUB_ITEM, subIngredient.toJson());
+            object.add(KEY_SUB_ITEM, subIngredient.toJson(false));
         }
 
         @Override
-        public ResourceLocation getId() {
+        public ResourceLocation id() {
             return recipeId;
         }
 
         @Override
-        public RecipeSerializer<?> getType() {
+        public RecipeSerializer<?> type() {
             return SERIALIZER;
         }
 
         @Nullable
         @Override
-        public JsonObject serializeAdvancement() {
+        public AdvancementHolder advancement() {
             return null;
-        }
-
-        @Nullable
-        @Override
-        public ResourceLocation getAdvancementId() {
-            return new ResourceLocation("");
         }
     }
 }

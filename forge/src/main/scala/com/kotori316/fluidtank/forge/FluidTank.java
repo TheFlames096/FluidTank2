@@ -11,7 +11,6 @@ import com.kotori316.fluidtank.forge.config.ForgePlatformConfigAccess;
 import com.kotori316.fluidtank.forge.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.forge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.forge.message.PacketHandler;
-import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge;
 import com.kotori316.fluidtank.forge.reservoir.ItemReservoirForge;
 import com.kotori316.fluidtank.forge.tank.*;
@@ -32,7 +31,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -111,7 +109,7 @@ public final class FluidTank {
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
-    public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(new TankLootFunction.TankLootSerializer());
+    public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(TankLootFunction.CODEC);
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
         var b = CreativeModeTab.builder();
@@ -145,7 +143,7 @@ public final class FluidTank {
     public void callRegister(RegisterEvent event) {
         LazyHolder.init(event);
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
-            CraftingHelper.register(new ResourceLocation(FluidTankCommon.modId, "ignore_unknown_tag_ingredient"), IgnoreUnknownTagIngredient.SERIALIZER);
+            // CraftingHelper.register(new ResourceLocation(FluidTankCommon.modId, "ignore_unknown_tag_ingredient"), IgnoreUnknownTagIngredient.SERIALIZER);
         }
     }
 

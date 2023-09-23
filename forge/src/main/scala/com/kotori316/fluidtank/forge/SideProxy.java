@@ -12,16 +12,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.util.LogicalSidedProvider;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Optional;
 
 public abstract class SideProxy {
 
-    public abstract Optional<Level> getLevel(NetworkEvent.Context context);
+    public abstract Optional<Level> getLevel(CustomPayloadEvent.Context context);
 
     public static SideProxy get() {
         return switch (FMLEnvironment.dist) {
@@ -45,7 +45,7 @@ public abstract class SideProxy {
         }
 
         @Override
-        public Optional<Level> getLevel(NetworkEvent.Context context) {
+        public Optional<Level> getLevel(CustomPayloadEvent.Context context) {
             var serverWorld = Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
             return serverWorld.or(() -> LogicalSidedProvider.CLIENTWORLD.get(context.getDirection().getReceptionSide()));
         }
@@ -67,7 +67,7 @@ public abstract class SideProxy {
         }
 
         @Override
-        public Optional<Level> getLevel(NetworkEvent.Context context) {
+        public Optional<Level> getLevel(CustomPayloadEvent.Context context) {
             return Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
         }
     }
