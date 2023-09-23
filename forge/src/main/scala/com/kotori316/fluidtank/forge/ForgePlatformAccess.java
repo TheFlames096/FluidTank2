@@ -9,10 +9,12 @@ import com.kotori316.fluidtank.fluids.VanillaFluid;
 import com.kotori316.fluidtank.fluids.VanillaPotion;
 import com.kotori316.fluidtank.forge.cat.EntityChestAsTank;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
+import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.potions.PotionFluidHandler;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -20,6 +22,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -149,6 +152,12 @@ final class ForgePlatformAccess implements PlatformAccess {
     @Override
     public @NotNull ItemStack getCraftingRemainingItem(ItemStack stack) {
         return stack.getCraftingRemainingItem();
+    }
+
+    @Override
+    public Codec<Ingredient> ingredientCodec() {
+        // FIXME change after forge implements custom codec for ingredients
+        return IgnoreUnknownTagIngredient.SERIALIZER;
     }
 
     @Override

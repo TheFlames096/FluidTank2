@@ -10,6 +10,7 @@ import com.kotori316.fluidtank.potions.PotionFluidHandler;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
+import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -25,6 +26,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -196,6 +198,12 @@ final class FabricPlatformAccess implements PlatformAccess {
     @Override
     public @NotNull ItemStack getCraftingRemainingItem(ItemStack stack) {
         return stack.getRecipeRemainder();
+    }
+
+    @Override
+    public Codec<Ingredient> ingredientCodec() {
+        // OK, fabric mixins the creation method to insert own codec
+        return Ingredient.CODEC;
     }
 
     @Override
