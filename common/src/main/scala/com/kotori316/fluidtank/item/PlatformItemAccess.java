@@ -1,5 +1,8 @@
 package com.kotori316.fluidtank.item;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +22,8 @@ public interface PlatformItemAccess {
     @NotNull
     ItemStack getCraftingRemainingItem(ItemStack stack);
 
+    Codec<Ingredient> ingredientCodec();
+
     static void setTileTag(@NotNull ItemStack stack, @Nullable CompoundTag tileTag) {
         if (tileTag == null || tileTag.isEmpty()) {
             stack.removeTagKey(BlockItem.BLOCK_ENTITY_TAG);
@@ -28,9 +33,13 @@ public interface PlatformItemAccess {
     }
 
     static String convertIngredientToString(Ingredient ingredient) {
-        return "[%s]".formatted(ingredient.toJson());
+        return "[%s]".formatted(getInstance().ingredientToJson(ingredient));
     }
 
+    default JsonElement ingredientToJson(Ingredient ingredient) {
+        return ingredientCodec().encodeStart(JsonOps.INSTANCE, ingredient)
+            .get().orThrow();
+    }
 }
 
 class PlatformItemAccessHolder {
@@ -45,6 +54,11 @@ class PlatformItemAccessHolder {
             var remaining = stack.getItem().getCraftingRemainingItem();
             if (remaining == null) return ItemStack.EMPTY;
             else return remaining.getDefaultInstance();
+        }
+
+        @Override
+        public Codec<Ingredient> ingredientCodec() {
+            return Ingredient.CODEC;
         }
     }
 }

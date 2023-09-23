@@ -5,30 +5,30 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.AbstractIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.common.crafting.VanillaIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
-    public static final IIngredientSerializer<IgnoreUnknownTagIngredient> SERIALIZER = new Serializer();
+// TODO use in tier recipe after forge implement custom ingredients
+public final class IgnoreUnknownTagIngredient extends Ingredient {
+    public static final Codec<Ingredient> SERIALIZER = new Serializer();
 
     private final List<? extends Value> values;
 
@@ -43,37 +43,6 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
 
     public static IgnoreUnknownTagIngredient of(TagKey<Item> tag) {
         return new IgnoreUnknownTagIngredient(List.of(new TagValue(tag)));
-    }
-
-    @Override
-    public boolean isSimple() {
-        return true;
-    }
-
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return SERIALIZER;
-    }
-
-    @Override
-    public JsonElement toJson() {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", Objects.requireNonNull(CraftingHelper.getID(SERIALIZER)).toString());
-        if (this.values.size() == 1) {
-            var value = this.values.get(0).serialize();
-            value.entrySet().forEach(e -> json.add(e.getKey(), e.getValue()));
-            return json;
-        }
-        var values = this.values.stream().map(Value::serialize)
-                .reduce(new JsonArray(), (a, object) -> {
-                    a.add(object);
-                    return a;
-                }, (a1, a2) -> {
-                    a1.addAll(a2);
-                    return a1;
-                });
-        json.add("values", values);
-        return json;
     }
 
     @SuppressWarnings("ClassCanBeRecord")
@@ -94,41 +63,33 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
             return manager.getTag(this.tag).stream().map(ItemStack::new).toList();
         }
 
-        @Override
-        public JsonObject serialize() {
-            JsonObject json = new JsonObject();
-            json.addProperty("tag", this.tag.location().toString());
-            return json;
-        }
     }
 
-    private static class Serializer implements IIngredientSerializer<IgnoreUnknownTagIngredient> {
+    private static class Serializer implements Codec<Ingredient> {
 
-        @Override
-        public IgnoreUnknownTagIngredient parse(FriendlyByteBuf buffer) {
-            return new IgnoreUnknownTagIngredient(Stream.generate(() -> new Ingredient.ItemValue(buffer.readItem())).limit(buffer.readVarInt()).toList());
-        }
-
-        @Override
         public IgnoreUnknownTagIngredient parse(JsonObject json) {
-            List<Value> valueList;
             if (json.has("item") || json.has("tag")) {
-                valueList = List.of(getValue(json));
+                List<Value> valueList = List.of(getValue(json));
+                return new IgnoreUnknownTagIngredient(valueList);
             } else if (json.has("values")) {
-                valueList = StreamSupport.stream(json.getAsJsonArray("values").spliterator(), false)
-                        .map(JsonElement::getAsJsonObject)
-                        .map(Serializer::getValue)
-                        .toList();
+                return parse(json.getAsJsonArray("values"));
             } else {
                 throw new JsonParseException("An IgnoreUnknownTagIngredient entry needs either a tag, an item or an array");
             }
+        }
+
+        public IgnoreUnknownTagIngredient parse(JsonArray json) {
+            List<Value> valueList = StreamSupport.stream(json.spliterator(), false)
+                .map(JsonElement::getAsJsonObject)
+                .map(Serializer::getValue)
+                .toList();
             return new IgnoreUnknownTagIngredient(valueList);
         }
 
         private static Value getValue(JsonObject json) {
             if (json.has("item")) {
-                Item item = ShapedRecipe.itemFromJson(json);
-                return new ItemValue(new ItemStack(item));
+                ItemStack stack = CraftingHelper.getItemStack(json, true, true);
+                return new ItemValue(stack);
             } else if (json.has("tag")) {
                 ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
                 TagKey<Item> tagkey = TagKey.create(Registries.ITEM, resourcelocation);
@@ -139,8 +100,51 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         }
 
         @Override
-        public void write(FriendlyByteBuf arg, IgnoreUnknownTagIngredient arg2) {
-            VanillaIngredientSerializer.INSTANCE.write(arg, arg2);
+        public <T> DataResult<Pair<Ingredient, T>> decode(DynamicOps<T> ops, T input) {
+            var json = ops.convertTo(JsonOps.INSTANCE, input);
+            if (json.isJsonObject()) {
+                return DataResult.success(Pair.of(parse(json.getAsJsonObject()), ops.empty()));
+            } else if (json.isJsonArray()) {
+                return DataResult.success(Pair.of(parse(json.getAsJsonArray()), ops.empty()));
+            } else {
+                return DataResult.error(() -> "%s is not map. It can't be loaded as a recipe".formatted(input));
+            }
+        }
+
+        @Override
+        public <T> DataResult<T> encode(Ingredient ingredient, DynamicOps<T> ops, T prefix) {
+
+            try {
+                // Run in dev environment only
+                var field = Ingredient.class.getDeclaredField("values");
+                field.setAccessible(true);
+                var values = (Ingredient.Value[]) field.get(ingredient);
+
+                if (values.length == 1) {
+                    return encodeValue(values[0], ops, prefix);
+                } else {
+                    var list = ops.listBuilder();
+                    Stream.of(values).map(v -> encodeValue(v, ops, ops.empty()))
+                        .forEach(list::add);
+                    return list.build(prefix);
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static <T> DataResult<T> encodeValue(Value value, DynamicOps<T> ops, T prefix) {
+            var builder = ops.mapBuilder()
+                .add("type", ops.createString(FluidTankCommon.modId + ":ignore_unknown_tag_ingredient"));
+            if (value instanceof Ingredient.ItemValue || value instanceof Ingredient.TagValue) {
+                return builder.build(Value.CODEC.encode(value, ops, prefix));
+            } else if (value instanceof IgnoreUnknownTagIngredient.TagValue tagValue) {
+                return builder
+                    .add("tag", ops.createString(tagValue.tag.location().toString()))
+                    .build(prefix);
+            } else {
+                return DataResult.error(() -> "Unexpected value type " + value);
+            }
         }
     }
 }

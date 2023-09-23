@@ -124,10 +124,10 @@ private class BoxX(startX: Double,
     val count = Mth.floor(length / sizeX)
     val minU = sprite.getU0
     val minV = sprite.getV0
-    val maXV = sprite.getV(sizeX / maxSize * 16)
-    val maYU = sprite.getU(sizeY / maxSize * 16)
-    val maZU = sprite.getU(sizeZ / maxSize * 16)
-    val maZV = sprite.getV(sizeZ / maxSize * 16)
+    val maXV = sprite.getV((sizeX / maxSize).toFloat)
+    val maYU = sprite.getU((sizeY / maxSize).toFloat)
+    val maZU = sprite.getU((sizeZ / maxSize).toFloat)
+    val maZV = sprite.getV((sizeZ / maxSize).toFloat)
     if (firstSide) {
       //West
       buffer.pos(startX, y + offY, z - offZ, matrix).color(red, green, blue, alpha).tex(minU, minV).lightmap(lv.l1, lv.l2).endVertex()
@@ -184,10 +184,10 @@ private class BoxY(startY: Double,
     val minU = sprite.getU0
     val minV = sprite.getV0
 
-    val maYU = sprite.getU(sizeY / maxSize * 16)
-    val maXV = sprite.getV(sizeX / maxSize * 16)
-    val maZU = sprite.getU(sizeZ / maxSize * 16)
-    val maZV = sprite.getV(sizeZ / maxSize * 16)
+    val maYU = sprite.getU((sizeY / maxSize).toFloat)
+    val maXV = sprite.getV((sizeX / maxSize).toFloat)
+    val maZU = sprite.getU((sizeZ / maxSize).toFloat)
+    val maZV = sprite.getV((sizeZ / maxSize).toFloat)
     if (firstSide) {
       //Bottom
       buffer.pos(x + offX, startY, z - offZ, matrix).color(red, green, blue, alpha).tex(minU, minV).lightmap(lv.l1, lv.l2).endVertex()
@@ -243,10 +243,10 @@ private class BoxZ(startZ: Double,
     val count = Mth.floor(length / sizeZ)
     val minU = sprite.getU0
     val minV = sprite.getV0
-    val maXU = sprite.getU(sizeX / maxSize * 16)
-    val maXV = sprite.getV(sizeX / maxSize * 16)
-    val maYU = sprite.getU(sizeY / maxSize * 16)
-    val maZV = sprite.getV(sizeZ / maxSize * 16)
+    val maXU = sprite.getU((sizeX / maxSize).toFloat)
+    val maXV = sprite.getV((sizeX / maxSize).toFloat)
+    val maYU = sprite.getU((sizeY / maxSize).toFloat)
+    val maZV = sprite.getV((sizeZ / maxSize).toFloat)
     if (firstSide) {
       //North
       buffer.pos(x + offX, y + offY, startZ, matrix).color(red, green, blue, alpha).tex(minU, minV).lightmap(lv.l1, lv.l2).endVertex()

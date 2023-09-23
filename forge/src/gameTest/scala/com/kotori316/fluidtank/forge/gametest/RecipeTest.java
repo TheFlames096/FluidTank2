@@ -20,13 +20,16 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
+import org.junit.platform.commons.function.Try;
+import org.junit.platform.commons.support.ReflectionSupport;
 import scala.jdk.javaapi.CollectionConverters;
 
 import java.io.IOException;
@@ -54,7 +57,7 @@ final class RecipeTest {
 
     @NotNull
     private static TierRecipeForge getRecipe() {
-        return new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test1"), Tier.STONE,
+        return new TierRecipeForge(Tier.STONE,
             Ingredient.of(FluidTank.TANK_MAP.get(Tier.WOOD).get()), Ingredient.of(Tags.Items.STONE)
         );
     }
@@ -176,35 +179,32 @@ final class RecipeTest {
 
     void serializeJson(Tier tier) {
         var subItem = Ingredient.of(Items.APPLE);
-        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
+        var id = new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT));
+        var recipe = new TierRecipeForge(
             tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
 
-        var fromSerializer = new JsonObject();
-        ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).toJson(fromSerializer, recipe);
-        var finishedRecipe = new TierRecipeForge.TierFinishedRecipe(recipe.getId(), tier, subItem);
+        var fromSerializer = ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).toJson(recipe);
+        var finishedRecipe = new TierRecipeForge.TierFinishedRecipe(id, tier, subItem);
         var fromFinishedRecipe = new JsonObject();
         finishedRecipe.serializeRecipeData(fromFinishedRecipe);
         assertEquals(fromSerializer, fromFinishedRecipe);
 
-        var deserialized = TierRecipeForge.SERIALIZER.fromJson(recipe.getId(), fromSerializer, ICondition.IContext.EMPTY);
+        var deserialized = ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).fromJson(fromSerializer);
         assertNotNull(deserialized);
         assertAll(
-            () -> assertEquals(recipe.getId(), deserialized.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
         );
     }
 
     void serializePacket(Tier tier) {
         var subItem = Ingredient.of(Items.APPLE);
-        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
-            tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
+        var recipe = new TierRecipeForge(tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
 
         var buffer = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
         TierRecipeForge.SERIALIZER.toNetwork(buffer, recipe);
-        var deserialized = TierRecipeForge.SERIALIZER.fromNetwork(recipe.getId(), buffer);
+        var deserialized = TierRecipeForge.SERIALIZER.fromNetwork(buffer);
         assertNotNull(deserialized);
         assertAll(
-            () -> assertEquals(recipe.getId(), deserialized.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
         );
     }
@@ -220,12 +220,11 @@ final class RecipeTest {
               }
             }
             """.formatted(TierRecipeForge.Serializer.LOCATION.toString());
-        var read = RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString), ICondition.IContext.EMPTY);
-        var recipe = new TierRecipeForge(new ResourceLocation(FluidTankCommon.modId, "test_serialize"),
+        var read = managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString));
+        var recipe = new TierRecipeForge(
             Tier.STONE, TierRecipeForge.Serializer.getIngredientTankForTier(Tier.STONE), Ingredient.of(Items.DIAMOND));
 
         assertAll(
-            () -> assertEquals(recipe.getId(), read.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), read.getResultItem(RegistryAccess.EMPTY)))
         );
     }
@@ -243,9 +242,18 @@ final class RecipeTest {
     static void loadFromFile(Path path) {
         try {
             var json = GsonHelper.parse(Files.newBufferedReader(path));
-            assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json, ICondition.IContext.EMPTY));
+            assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static Recipe<?> managerFromJson(ResourceLocation location, JsonObject jsonObject) {
+        return Try.call(() -> RecipeManager.class.getDeclaredMethod("fromJson", ResourceLocation.class, JsonObject.class))
+            .andThenTry(m -> ReflectionSupport.invokeMethod(m, null, location, jsonObject))
+            .andThenTry(RecipeHolder.class::cast)
+            .andThenTry(RecipeHolder::value)
+            .andThenTry(Recipe.class::cast)
+            .getOrThrow(RuntimeException::new);
     }
 }

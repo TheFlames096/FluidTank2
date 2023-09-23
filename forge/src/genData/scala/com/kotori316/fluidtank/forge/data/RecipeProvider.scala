@@ -40,7 +40,7 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
     val woodTankBlock = FluidTank.TANK_MAP.get(Tier.WOOD).get()
     val glassSubItem = RecipeIngredientHelper.bothTag(Tags.Items.GLASS, "c:glass_blocks")
     val woodTank = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, woodTankBlock)
-        .define('x', glassSubItem.ingredient)
+        .define('x', Items.GLASS) // FIXME custom ingredient
         .define('p', ItemTags.LOGS)
         .pattern("x x")
         .pattern("xpx")
@@ -51,7 +51,8 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
     val obsidianSubItem = getSubItem(Tier.VOID)
     val voidTank = RecipeSerializeHelper.by(
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_VOID_TANK.get())
-          .define('o', obsidianSubItem.ingredient).define('t', woodTankBlock)
+          .define('o', Items.OBSIDIAN) // FIXME custom ingredient
+          .define('t', woodTankBlock)
           .pattern("ooo")
           .pattern("oto")
           .pattern("ooo"))

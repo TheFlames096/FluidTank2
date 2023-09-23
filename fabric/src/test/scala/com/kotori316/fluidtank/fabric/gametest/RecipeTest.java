@@ -1,5 +1,36 @@
 package com.kotori316.fluidtank.fabric.gametest;
 
+import com.google.gson.JsonObject;
+import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.contents.GenericAmount;
+import com.kotori316.fluidtank.contents.GenericUnit;
+import com.kotori316.fluidtank.fabric.FluidTank;
+import com.kotori316.fluidtank.fabric.recipe.RecipeInventoryUtil;
+import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
+import com.kotori316.fluidtank.fluids.FluidLike;
+import com.kotori316.fluidtank.tank.Tier;
+import io.netty.buffer.ByteBufAllocator;
+import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
+import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.NotNull;
+import org.junit.platform.commons.function.Try;
+import org.junit.platform.commons.support.ReflectionSupport;
+import scala.jdk.javaapi.CollectionConverters;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Modifier;
@@ -13,42 +44,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.google.gson.JsonObject;
-import com.kotori316.fluidtank.fluids.FluidLike;
-import io.netty.buffer.ByteBufAllocator;
-import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.gametest.framework.GameTestGenerator;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.TestFunction;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.level.material.Fluid;
-import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.NotNull;
-import org.junit.platform.commons.support.ReflectionSupport;
-import scala.jdk.javaapi.CollectionConverters;
-
-import com.kotori316.fluidtank.FluidTankCommon;
-import com.kotori316.fluidtank.contents.GenericAmount;
-import com.kotori316.fluidtank.contents.GenericUnit;
-import com.kotori316.fluidtank.fabric.FluidTank;
-import com.kotori316.fluidtank.fabric.recipe.RecipeInventoryUtil;
-import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
-import com.kotori316.fluidtank.fluids.FluidAmountUtil;
-import com.kotori316.fluidtank.tank.Tier;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 public final class RecipeTest implements FabricGameTest {
@@ -75,7 +71,7 @@ public final class RecipeTest implements FabricGameTest {
 
     @NotNull
     private static TierRecipeFabric getRecipe() {
-        return new TierRecipeFabric(new ResourceLocation(FluidTankCommon.modId, "test1"), Tier.STONE,
+        return new TierRecipeFabric(Tier.STONE,
             Ingredient.of(FluidTank.TANK_MAP.get(Tier.WOOD)), Ingredient.of(Items.STONE)
         );
     }
@@ -197,31 +193,28 @@ public final class RecipeTest implements FabricGameTest {
 
     void serializeJson(Tier tier) {
         var subItem = Ingredient.of(Items.APPLE);
-        var recipe = new TierRecipeFabric(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
+        var recipe = new TierRecipeFabric(
             tier, TierRecipeFabric.Serializer.getIngredientTankForTier(tier), subItem);
 
-        var fromSerializer = new JsonObject();
-        ((TierRecipeFabric.Serializer) TierRecipeFabric.SERIALIZER).toJson(fromSerializer, recipe);
+        var fromSerializer = TierRecipeFabric.SERIALIZER.toJson( recipe);
 
-        var deserialized = TierRecipeFabric.SERIALIZER.fromJson(recipe.getId(), fromSerializer);
+        var deserialized = TierRecipeFabric.SERIALIZER.fromJson(fromSerializer);
         assertNotNull(deserialized);
         assertAll(
-            () -> assertEquals(recipe.getId(), deserialized.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
         );
     }
 
     void serializePacket(Tier tier) {
         var subItem = Ingredient.of(Items.APPLE);
-        var recipe = new TierRecipeFabric(new ResourceLocation(FluidTankCommon.modId, "test_" + tier.name().toLowerCase(Locale.ROOT)),
+        var recipe = new TierRecipeFabric(
             tier, TierRecipeFabric.Serializer.getIngredientTankForTier(tier), subItem);
 
         var buffer = new FriendlyByteBuf(ByteBufAllocator.DEFAULT.buffer());
         TierRecipeFabric.SERIALIZER.toNetwork(buffer, recipe);
-        var deserialized = TierRecipeFabric.SERIALIZER.fromNetwork(recipe.getId(), buffer);
+        var deserialized = TierRecipeFabric.SERIALIZER.fromNetwork(buffer);
         assertNotNull(deserialized);
         assertAll(
-            () -> assertEquals(recipe.getId(), deserialized.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), deserialized.getResultItem(RegistryAccess.EMPTY)))
         );
     }
@@ -237,12 +230,11 @@ public final class RecipeTest implements FabricGameTest {
               }
             }
             """.formatted(TierRecipeFabric.Serializer.LOCATION.toString());
-        var read = RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString));
-        var recipe = new TierRecipeFabric(new ResourceLocation(FluidTankCommon.modId, "test_serialize"),
+        var read = managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString));
+        var recipe = new TierRecipeFabric(
             Tier.STONE, TierRecipeFabric.Serializer.getIngredientTankForTier(Tier.STONE), Ingredient.of(Items.DIAMOND));
 
         assertAll(
-            () -> assertEquals(recipe.getId(), read.getId()),
             () -> assertTrue(ItemStack.matches(recipe.getResultItem(RegistryAccess.EMPTY), read.getResultItem(RegistryAccess.EMPTY)))
         );
     }
@@ -260,9 +252,18 @@ public final class RecipeTest implements FabricGameTest {
     void loadFromFile(Path path) {
         try {
             var json = GsonHelper.parse(Files.newBufferedReader(path));
-            assertDoesNotThrow(() -> RecipeManager.fromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));
+            assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private static Recipe<?> managerFromJson(ResourceLocation location, JsonObject jsonObject) {
+        return Try.call(() -> RecipeManager.class.getDeclaredMethod("fromJson", ResourceLocation.class, JsonObject.class))
+            .andThenTry(m -> ReflectionSupport.invokeMethod(m, null, location, jsonObject))
+            .andThenTry(RecipeHolder.class::cast)
+            .andThenTry(RecipeHolder::value)
+            .andThenTry(Recipe.class::cast)
+            .getOrThrow(RuntimeException::new);
     }
 }

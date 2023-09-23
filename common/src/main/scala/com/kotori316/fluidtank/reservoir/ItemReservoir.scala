@@ -115,7 +115,7 @@ class ItemReservoir(val tier: Tier) extends Item(new Item.Properties().stacksTo(
         case pickUp: BucketPickup if content.isEmpty || content.contentEqual(simulateFluid) =>
           val simulation = PlatformFluidAccess.getInstance().fillItem(simulateFluid, stack, player, hand, false)
           if (simulation.moved().nonEmpty) {
-            val picked = pickUp.pickupBlock(level, hitPos, blockState)
+            val picked = pickUp.pickupBlock(null, level, hitPos, blockState)
             val actualFluid = PlatformFluidAccess.getInstance().getFluidContained(picked)
             val result = PlatformFluidAccess.getInstance().fillItem(actualFluid, stack, player, hand, true)
             InteractionResultHolder.sidedSuccess(result.toReplace, level.isClientSide)
