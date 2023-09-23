@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[48,)"
 issueTrackerURL = "https://github.com/Kotori316/FluidTank2/issues"
 license = "All rights reserved"
 
@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Fluid Tank"
 displayURL = "https://github.com/Kotori316/FluidTank2"
 modUrl = "https://github.com/Kotori316/FluidTank2"
-updateJSONURL = "https://version.kotori316.com/get-version/1.20.1/forge/fluidtank"
+updateJSONURL = "https://version.kotori316.com/get-version/1.20.2/forge/fluidtank"
 credits = "Kotori316"
 authors = "Kotori316"
 description = '''
@@ -20,13 +20,13 @@ logoFile = "assets/fluidtank/textures/icon.png"
 [[dependencies.fluidtank]]
 modId = "forge"
 mandatory = true
-versionRange = "[46,)"
+versionRange = "[48,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.fluidtank]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20,)"
+versionRange = "[1.20.2,)"
 ordering = "NONE"
 side = "BOTH"
