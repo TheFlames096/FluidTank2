@@ -22,11 +22,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 // TODO use in tier recipe after forge implement custom ingredients
 public final class IgnoreUnknownTagIngredient extends Ingredient {
-    public static final Codec<IgnoreUnknownTagIngredient> SERIALIZER = new Serializer();
+    public static final Codec<Ingredient> SERIALIZER = new Serializer();
 
     private final List<? extends Value> values;
 
@@ -63,7 +64,7 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
 
     }
 
-    private static class Serializer implements Codec<IgnoreUnknownTagIngredient> {
+    private static class Serializer implements Codec<Ingredient> {
 
         public IgnoreUnknownTagIngredient parse(JsonObject json) {
             List<Value> valueList;
@@ -94,7 +95,7 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
         }
 
         @Override
-        public <T> DataResult<Pair<IgnoreUnknownTagIngredient, T>> decode(DynamicOps<T> ops, T input) {
+        public <T> DataResult<Pair<Ingredient, T>> decode(DynamicOps<T> ops, T input) {
             var json = ops.convertTo(JsonOps.INSTANCE, input);
             if (!json.isJsonObject()) {
                 return DataResult.error(() -> "%s is not map. It can't be loaded as a recipe".formatted(input));
@@ -104,26 +105,34 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
         }
 
         @Override
-        public <T> DataResult<T> encode(IgnoreUnknownTagIngredient input, DynamicOps<T> ops, T prefix) {
-            var builder = ops.mapBuilder()
-                .add("type", ops.createString(FluidTankCommon.modId + ":ignore_unknown_tag_ingredient"));
-            if (input.values.size() == 1) {
-                return builder.build(encodeValue(input.values.get(0), ops, prefix));
-            } else {
-                var list = ops.listBuilder();
-                input.values.stream().map(v -> encodeValue(v, ops, ops.empty()))
-                    .forEach(list::add);
-                return builder
-                    .add("values", list.build(ops.empty()))
-                    .build(prefix);
+        public <T> DataResult<T> encode(Ingredient ingredient, DynamicOps<T> ops, T prefix) {
+
+            try {
+                // Run in dev environment only
+                var field = Ingredient.class.getDeclaredField("values");
+                field.setAccessible(true);
+                var values = (Ingredient.Value[]) field.get(ingredient);
+
+                if (values.length == 1) {
+                    return encodeValue(values[0], ops, prefix);
+                } else {
+                    var list = ops.listBuilder();
+                    Stream.of(values).map(v -> encodeValue(v, ops, ops.empty()))
+                        .forEach(list::add);
+                    return list.build(prefix);
+                }
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
             }
         }
 
         private static <T> DataResult<T> encodeValue(Value value, DynamicOps<T> ops, T prefix) {
+            var builder = ops.mapBuilder()
+                .add("type", ops.createString(FluidTankCommon.modId + ":ignore_unknown_tag_ingredient"));
             if (value instanceof Ingredient.ItemValue || value instanceof Ingredient.TagValue) {
-                return Value.CODEC.encode(value, ops, prefix);
+                return builder.build(Value.CODEC.encode(value, ops, prefix));
             } else if (value instanceof IgnoreUnknownTagIngredient.TagValue tagValue) {
-                return ops.mapBuilder()
+                return builder
                     .add("tag", ops.createString(tagValue.tag.location().toString()))
                     .build(prefix);
             } else {

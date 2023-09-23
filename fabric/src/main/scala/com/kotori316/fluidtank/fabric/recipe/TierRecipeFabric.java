@@ -18,6 +18,10 @@ public final class TierRecipeFabric extends TierRecipe {
     }
 
     public static class Serializer extends SerializerBase {
+        public Serializer() {
+            super(Ingredient.CODEC_NONEMPTY);
+        }
+
         @Override
         protected TierRecipe createInstance(Tier tier, Ingredient tankItem, Ingredient subItem) {
             return new TierRecipeFabric(tier, tankItem, subItem);

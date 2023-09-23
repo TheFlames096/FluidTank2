@@ -203,11 +203,11 @@ public abstract class TierRecipe implements CraftingRecipe {
         public static final ResourceLocation LOCATION = new ResourceLocation(FluidTankCommon.modId, "crafting_grade_up");
         private final Codec<TierRecipe> codec;
 
-        public SerializerBase() {
+        public SerializerBase(Codec<Ingredient> ingredientCodec) {
             this.codec = RecordCodecBuilder.create(instance ->
                 instance.group(
                     Codec.STRING.xmap(Tier::valueOfIgnoreCase, Tier::name).fieldOf(KEY_TIER).forGetter(TierRecipe::getTier),
-                    Ingredient.CODEC_NONEMPTY.fieldOf(KEY_SUB_ITEM).forGetter(TierRecipe::getSubItem)
+                    ingredientCodec.fieldOf(KEY_SUB_ITEM).forGetter(TierRecipe::getSubItem)
                 ).apply(instance, this::createInstanceInternal)
             );
         }

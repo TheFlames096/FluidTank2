@@ -1,9 +1,11 @@
 package com.kotori316.fluidtank.forge.data
 
 import com.google.gson.{JsonArray, JsonObject}
-import net.minecraftforge.common.crafting.CraftingHelper
-import net.minecraftforge.common.crafting.conditions.{NotCondition, TagEmptyCondition}
+import com.mojang.serialization.JsonOps
+import net.minecraft.tags.ItemTags
+import net.minecraftforge.common.crafting.conditions.{ICondition, NotCondition, TagEmptyCondition}
 
+import scala.jdk.OptionConverters.RichOptional
 import scala.util.chaining.scalaUtilChainingOps
 
 trait PlatformedCondition {
@@ -16,8 +18,9 @@ object PlatformedCondition {
 
   case class Tag(helper: RecipeIngredientHelper) extends PlatformedCondition {
     override def forgeCondition: Option[JsonObject] = {
-      helper.forgeTagLimit.map(t => new NotCondition(new TagEmptyCondition(t)))
-        .map(CraftingHelper.serialize)
+      helper.forgeTagLimit.map(t => new NotCondition(new TagEmptyCondition(ItemTags.create(t))))
+        .flatMap(c => ICondition.CODEC.encodeStart(JsonOps.INSTANCE, c).result().toScala)
+        .collect{ case jO: JsonObject => jO}
     }
 
     override def fabricCondition: Option[JsonObject] = {

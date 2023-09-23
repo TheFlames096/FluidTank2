@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.IShapedRecipe;
-import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<CraftingContainer> {
@@ -36,6 +35,10 @@ public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<C
     }
 
     public static class Serializer extends SerializerBase {
+        public Serializer() {
+            super(IgnoreUnknownTagIngredient.SERIALIZER);
+        }
+
         @Override
         protected TierRecipe createInstance( Tier tier, Ingredient tankItem, Ingredient subItem) {
             return new TierRecipeForge( tier, tankItem, subItem);
@@ -60,8 +63,12 @@ public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<C
 
         @Override
         public void serializeRecipeData(JsonObject object) {
-            object.addProperty(KEY_TIER, tier.name());
-            object.add(KEY_SUB_ITEM, subIngredient.toJson(false));
+            // In serialization, tank ingredient is unused
+            var recipe = new TierRecipeForge(tier, Ingredient.EMPTY, subIngredient);
+            var recipeJson = ((Serializer) SERIALIZER).toJson(recipe);
+            recipeJson.entrySet().forEach(e ->
+                object.add(e.getKey(), e.getValue())
+            );
         }
 
         @Override

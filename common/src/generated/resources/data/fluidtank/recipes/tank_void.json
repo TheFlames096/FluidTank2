@@ -12,16 +12,9 @@
   ],
   "fabric:load_conditions": [],
   "key": {
-    "o": [
-      {
-        "type": "fluidtank:ignore_unknown_tag_ingredient",
-        "tag": "forge:obsidian"
-      },
-      {
-        "type": "fluidtank:ignore_unknown_tag_ingredient",
-        "item": "minecraft:obsidian"
-      }
-    ],
+    "o": {
+      "item": "minecraft:obsidian"
+    },
     "t": {
       "item": "fluidtank:tank_wood"
     }

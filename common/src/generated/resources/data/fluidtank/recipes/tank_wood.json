@@ -22,16 +22,9 @@
     "p": {
       "tag": "minecraft:logs"
     },
-    "x": [
-      {
-        "type": "fluidtank:ignore_unknown_tag_ingredient",
-        "tag": "forge:glass"
-      },
-      {
-        "type": "fluidtank:ignore_unknown_tag_ingredient",
-        "tag": "c:glass_blocks"
-      }
-    ]
+    "x": {
+      "item": "minecraft:glass"
+    }
   },
   "pattern": [
     "x x",

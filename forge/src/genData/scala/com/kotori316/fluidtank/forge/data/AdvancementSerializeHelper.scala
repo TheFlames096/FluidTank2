@@ -2,17 +2,18 @@ package com.kotori316.fluidtank.forge.data
 
 import com.google.gson.JsonObject
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
-import net.minecraft.advancements.{Advancement, AdvancementRewards, CriterionTriggerInstance, RequirementsStrategy}
+import net.minecraft.advancements.{Advancement, AdvancementRequirements, AdvancementRewards, Criterion, CriterionTriggerInstance}
+import net.minecraft.data.recipes.RecipeBuilder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Item
 import net.minecraftforge.registries.ForgeRegistries
 
-case class AdvancementSerializeHelper(criterionList: List[(String, CriterionTriggerInstance)] = Nil,
+case class AdvancementSerializeHelper(criterionList: List[(String, Criterion[? <: CriterionTriggerInstance])] = Nil,
                                       conditions: List[PlatformedCondition] = Nil,
                                       isRecipe: Boolean = true) {
 
-  def addCriterion(name: String, criterion: CriterionTriggerInstance): AdvancementSerializeHelper =
+  def addCriterion(name: String, criterion: Criterion[? <: CriterionTriggerInstance]): AdvancementSerializeHelper =
     copy(criterionList = (name, criterion) :: criterionList)
 
   def addItemCriterion(item: Item): AdvancementSerializeHelper =
@@ -42,14 +43,15 @@ case class AdvancementSerializeHelper(criterionList: List[(String, CriterionTrig
   def addCondition(condition: PlatformedCondition): AdvancementSerializeHelper =
     copy(conditions = condition :: conditions)
 
+  //noinspection ScalaDeprecation,deprecation
   def build(location: ResourceLocation): JsonObject = {
     val builder = if (this.isRecipe) Advancement.Builder.recipeAdvancement() else Advancement.Builder.advancement()
-    builder.parent(new ResourceLocation("recipes/root"))
+    builder.parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
       .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(location))
       .rewards(AdvancementRewards.Builder.recipe(location))
-      .requirements(RequirementsStrategy.OR)
+      .requirements(AdvancementRequirements.Strategy.OR)
     val obj = criterionList.foldLeft(builder) { case (b, (s, c)) => b.addCriterion(s, c) }
-      .serializeToJson()
+      .build(location).value().serializeToJson()
     obj.add("conditions", FluidTankDataProvider.makeForgeConditionArray(conditions))
     obj.add("fabric:load_conditions", FluidTankDataProvider.makeFabricConditionArray(conditions))
     obj
