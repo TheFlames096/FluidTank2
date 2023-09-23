@@ -9,6 +9,7 @@ import net.minecraft.data.{CachedOutput, DataGenerator, DataProvider}
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.crafting.Ingredient
 import net.minecraftforge.common.Tags
 
 import java.util.concurrent.CompletableFuture
@@ -75,7 +76,15 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
           .addItemCriterion(tank.asItem())
       }
 
-    Seq(woodTank, voidTank) ++ normalTanks ++ reservoirs
+    val cat = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_CAT.get())
+        .define('p', Ingredient.of(Items.CHEST, Items.BARREL))
+        .define('x', woodTankBlock)
+        .pattern("x x")
+        .pattern("xpx")
+        .pattern("xxx"))
+      .addItemCriterion(woodTankBlock.asItem())
+
+    Seq(woodTank, voidTank, cat) ++ normalTanks ++ reservoirs
   }
 
   private def getSubItem(tier: Tier): RecipeIngredientHelper = {
