@@ -19,10 +19,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -113,23 +115,16 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
 
         @Override
         public <T> DataResult<T> encode(Ingredient ingredient, DynamicOps<T> ops, T prefix) {
+            Ingredient.Value[] values = Objects.requireNonNull(ObfuscationReflectionHelper.getPrivateValue(Ingredient.class,
+                ingredient, "f_43902_"), "Value in ingredient must not be null.");
 
-            try {
-                // Run in dev environment only
-                var field = Ingredient.class.getDeclaredField("values");
-                field.setAccessible(true);
-                var values = (Ingredient.Value[]) field.get(ingredient);
-
-                if (values.length == 1) {
-                    return encodeValue(values[0], ops, prefix);
-                } else {
-                    var list = ops.listBuilder();
-                    Stream.of(values).map(v -> encodeValue(v, ops, ops.empty()))
-                        .forEach(list::add);
-                    return list.build(prefix);
-                }
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+            if (values.length == 1) {
+                return encodeValue(values[0], ops, prefix);
+            } else {
+                var list = ops.listBuilder();
+                Stream.of(values).map(v -> encodeValue(v, ops, ops.empty()))
+                    .forEach(list::add);
+                return list.build(prefix);
             }
         }
 
