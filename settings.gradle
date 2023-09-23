@@ -15,7 +15,7 @@ include("common")
 if (!Boolean.parseBoolean(System.getenv("FORGE_ONLY"))) {
     include("fabric")
 }
-if (false && !Boolean.parseBoolean(System.getenv("FABRIC_ONLY"))) {
+if (!Boolean.parseBoolean(System.getenv("FABRIC_ONLY"))) {
     include("forge")
 }
 
