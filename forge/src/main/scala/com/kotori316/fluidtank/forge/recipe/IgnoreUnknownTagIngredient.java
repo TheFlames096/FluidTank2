@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge.recipe;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -67,17 +68,21 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
     private static class Serializer implements Codec<Ingredient> {
 
         public IgnoreUnknownTagIngredient parse(JsonObject json) {
-            List<Value> valueList;
             if (json.has("item") || json.has("tag")) {
-                valueList = List.of(getValue(json));
+                List<Value> valueList = List.of(getValue(json));
+                return new IgnoreUnknownTagIngredient(valueList);
             } else if (json.has("values")) {
-                valueList = StreamSupport.stream(json.getAsJsonArray("values").spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(Serializer::getValue)
-                    .toList();
+                return parse(json.getAsJsonArray("values"));
             } else {
                 throw new JsonParseException("An IgnoreUnknownTagIngredient entry needs either a tag, an item or an array");
             }
+        }
+
+        public IgnoreUnknownTagIngredient parse(JsonArray json) {
+            List<Value> valueList = StreamSupport.stream(json.spliterator(), false)
+                .map(JsonElement::getAsJsonObject)
+                .map(Serializer::getValue)
+                .toList();
             return new IgnoreUnknownTagIngredient(valueList);
         }
 
@@ -97,10 +102,12 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
         @Override
         public <T> DataResult<Pair<Ingredient, T>> decode(DynamicOps<T> ops, T input) {
             var json = ops.convertTo(JsonOps.INSTANCE, input);
-            if (!json.isJsonObject()) {
-                return DataResult.error(() -> "%s is not map. It can't be loaded as a recipe".formatted(input));
-            } else {
+            if (json.isJsonObject()) {
                 return DataResult.success(Pair.of(parse(json.getAsJsonObject()), ops.empty()));
+            } else if (json.isJsonArray()) {
+                return DataResult.success(Pair.of(parse(json.getAsJsonArray()), ops.empty()));
+            } else {
+                return DataResult.error(() -> "%s is not map. It can't be loaded as a recipe".formatted(input));
             }
         }
 
