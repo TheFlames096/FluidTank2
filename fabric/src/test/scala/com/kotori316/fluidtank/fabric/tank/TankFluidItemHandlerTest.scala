@@ -170,4 +170,24 @@ final class TankFluidItemHandlerTest extends BeforeMC {
       assertEquals(before, BlockItem.getBlockEntityData(stack))
     }
   }
+
+  @Nested
+  class DrainTest {
+    @Test
+    def unknownTagAdded(): Unit = {
+      val tier = Tier.WOOD
+      val stack = RecipeInventoryUtil.getFilledTankStack(tier, FluidAmountUtil.BUCKET_WATER)
+      val handler = new TankFluidItemHandler(tier, stack)
+      handler.getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)
+        .putString("unknownTag", "unknownTag")
+      Using(Transaction.openOuter()) { transaction =>
+        val drained = handler.extract(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET, transaction)
+        assertEquals(FluidConstants.BUCKET, drained)
+        transaction.commit()
+      }
+
+      assertTrue(handler.getTank.isEmpty, "Tank: " + handler.getTank)
+      assertNull(BlockItem.getBlockEntityData(handler.getContainer))
+    }
+  }
 }

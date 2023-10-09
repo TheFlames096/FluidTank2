@@ -164,5 +164,17 @@ class TankFluidItemHandlerTest extends BeforeMC {
       val t2 = handler.drain(FluidStack.EMPTY, IFluidHandler.FluidAction.SIMULATE)
       assertTrue(t2.isEmpty)
     }
+
+    @Test
+    def unknownTagAdded(): Unit = {
+      val handler = new TankFluidItemHandler(Tier.WOOD, new ItemStack(Items.APPLE))
+      handler.saveTank(Tank(FluidAmountUtil.BUCKET_WATER, GenericUnit.fromForge(4000)))
+      handler.getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)
+        .putString("unknownTag", "unknownTag")
+      handler.drain(new FluidStack(Fluids.WATER, 1500), IFluidHandler.FluidAction.EXECUTE)
+
+      assertTrue(handler.getTank.isEmpty)
+      assertNull(BlockItem.getBlockEntityData(handler.getContainer))
+    }
   }
 }

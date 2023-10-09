@@ -38,7 +38,7 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends SingleFluidStor
   private def saveTag(): Unit = {
     val tag = getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)
     writeNbt(tag)
-    if (tag.isEmpty) {
+    if (tag.isEmpty || this.amount <= 0 || this.isResourceBlank) {
       getContainer.removeTagKey(BlockItem.BLOCK_ENTITY_TAG)
     }
   }
