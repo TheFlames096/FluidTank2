@@ -25,7 +25,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.platform.commons.function.Try;
@@ -47,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 final class RecipeTest {
 
     @GameTestGenerator

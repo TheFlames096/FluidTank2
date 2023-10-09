@@ -7,13 +7,12 @@ import com.kotori316.testutil.GameTestUtil
 import net.minecraft.gametest.framework.{GameTest, GameTestHelper}
 import net.minecraft.world.item.{BlockItem, ItemStack}
 import net.minecraft.world.level.material.Fluids
-import net.minecraftforge.fluids.{FluidStack, FluidUtil}
 import net.minecraftforge.fluids.capability.IFluidHandler
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.fluids.{FluidStack, FluidUtil}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions
 
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 final class TankItemTest {
   @GameTest(template = GameTestUtil.NO_PLACE_STRUCTURE)
   def tankItemHasCap(helper: GameTestHelper): Unit = {

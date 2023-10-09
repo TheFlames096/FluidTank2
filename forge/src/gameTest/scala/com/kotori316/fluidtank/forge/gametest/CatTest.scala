@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.entity.HopperBlockEntity
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.fluids.capability.IFluidHandler
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.{assertEquals, assertInstanceOf, assertNotNull, assertTrue}
 
 import java.util.Locale
@@ -22,7 +22,6 @@ import scala.jdk.OptionConverters.RichOptional
 
 //noinspection ScalaUnusedSymbol,DuplicatedCode
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 class CatTest {
   private final val BATCH = "defaultBatch"
 

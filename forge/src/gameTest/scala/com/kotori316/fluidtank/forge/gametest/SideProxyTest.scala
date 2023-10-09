@@ -6,11 +6,10 @@ import com.kotori316.testutil.GameTestUtil.NO_PLACE_STRUCTURE
 import net.minecraft.gametest.framework.{GameTest, GameTestHelper}
 import net.minecraftforge.api.distmarker.Dist.*
 import net.minecraftforge.fml.loading.FMLEnvironment
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 final class SideProxyTest {
   @GameTest(template = NO_PLACE_STRUCTURE)
   def checkProxyClass(helper: GameTestHelper): Unit = {

@@ -9,7 +9,7 @@ import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, Test
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.alchemy.{Potion, PotionUtils, Potions}
 import net.minecraft.world.item.{ItemStack, Items}
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.*
 
 import java.util.Locale
@@ -17,7 +17,6 @@ import scala.jdk.javaapi.CollectionConverters
 
 //noinspection ScalaUnusedSymbol
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 class PlatformAccessTest {
   private final val ACCESS: PlatformAccess = PlatformFluidAccess.getInstance().asInstanceOf[PlatformAccess]
   private final val BATCH_NAME = "platform_test"

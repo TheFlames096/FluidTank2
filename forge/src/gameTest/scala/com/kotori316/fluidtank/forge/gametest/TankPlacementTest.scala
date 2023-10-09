@@ -6,13 +6,12 @@ import com.kotori316.testutil.GameTestUtil
 import net.minecraft.core.BlockPos
 import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
 import net.minecraft.world.level.block.{Block, Blocks}
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 
 import java.util.Locale
 import scala.jdk.javaapi.CollectionConverters
 
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 final class TankPlacementTest {
   private final val BATCH_NAME = "tank_place_test"
 

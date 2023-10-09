@@ -8,12 +8,11 @@ import com.kotori316.fluidtank.forge.tank.TileTankForge
 import com.kotori316.fluidtank.tank.Tier
 import net.minecraft.core.BlockPos
 import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.*
 
 //noinspection DuplicatedCode,ScalaUnusedSymbol
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 class LoadTank2032Test {
   private final val BATCH = "loadTank2032"
   private type TankType = TileTankForge

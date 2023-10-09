@@ -16,14 +16,13 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.Potions
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.gametest.{GameTestHolder, PrefixGameTestTemplate}
+import net.minecraftforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 
 import scala.jdk.javaapi.CollectionConverters
 
 //noinspection ScalaUnusedSymbol,DuplicatedCode
 @GameTestHolder(FluidTankCommon.modId)
-@PrefixGameTestTemplate(value = false)
 class ReservoirTest {
   private final val BATCH = "defaultBatch"
   private final val WOOD_RESERVOIR = FluidTank.RESERVOIR_MAP.get(Tier.WOOD).get()
