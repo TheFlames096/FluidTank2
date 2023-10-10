@@ -31,13 +31,9 @@ class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends TankFluidHandle
 
   override def saveTank(tank: Tank[FluidLike]): Unit = {
     if (tank.isEmpty) {
-      // remove tags
-      val tag = getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)
-      tag.remove(TileTank.KEY_TANK)
-      tag.remove(TileTank.KEY_TIER)
-      if (tag.isEmpty) {
-        getContainer.removeTagKey(BlockItem.BLOCK_ENTITY_TAG)
-      }
+      // remove tags related to block entity
+      // Other mods might add own tags in BlockEntityTag, but remove them as they will cause rendering issue.
+      getContainer.removeTagKey(BlockItem.BLOCK_ENTITY_TAG)
     } else {
       val tankTag = TankUtil.save(tank)
       val tag = getContainer.getOrCreateTagElement(BlockItem.BLOCK_ENTITY_TAG)

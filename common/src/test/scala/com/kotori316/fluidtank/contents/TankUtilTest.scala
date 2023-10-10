@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.contents
 
 import com.kotori316.fluidtank.BeforeMC
 import com.kotori316.fluidtank.fluids.{FluidAmountUtil, fluidAccess}
+import net.minecraft.nbt.CompoundTag
 import org.junit.jupiter.api.{Assertions, Nested, Test}
 
 class TankUtilTest {
@@ -13,7 +14,7 @@ class TankUtilTest {
   }
 
   @Nested
-  class StringTankTest {
+  class StringTankTest extends BeforeMC {
     @Test
     def normal(): Unit = {
       val tank = Tank(GenericAmount("a", GenericUnit.fromForge(100), None), GenericUnit.fromForge(1000))
@@ -30,6 +31,22 @@ class TankUtilTest {
     def creativeTank(): Unit = {
       val tank = new CreativeTank(GenericAmount("a", GenericUnit.fromForge(1000), None), GenericUnit.fromForge(1000))
       cycle(tank)
+    }
+
+    @Test
+    def parseNullTag(): Unit = {
+      val tank = Assertions.assertDoesNotThrow(() => TankUtil.load(null)(gaString))
+      Assertions.assertTrue(tank.isEmpty)
+      Assertions.assertEquals(GenericUnit.ZERO, tank.content.amount)
+      Assertions.assertEquals(GenericUnit.ZERO, tank.capacity)
+    }
+
+    @Test
+    def parseEmptyTag(): Unit = {
+      val tank = Assertions.assertDoesNotThrow(() => TankUtil.load(new CompoundTag())(gaString))
+      Assertions.assertTrue(tank.isEmpty)
+      Assertions.assertEquals(GenericUnit.ZERO, tank.content.amount)
+      Assertions.assertEquals(GenericUnit.ZERO, tank.capacity)
     }
   }
 

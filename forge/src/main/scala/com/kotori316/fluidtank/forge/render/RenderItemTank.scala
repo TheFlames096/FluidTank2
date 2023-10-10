@@ -34,9 +34,11 @@ class RenderItemTank extends BlockEntityWithoutLevelRenderer(Minecraft.getInstan
         val compound = BlockItem.getBlockEntityData(stack)
         if (compound != null) {
           tileTank.load(compound)
-          Minecraft.getInstance.getBlockEntityRenderDispatcher.renderItem(
-            tileTank, matrixStack, renderTypeBuffer, light, otherLight
-          )
+          if (tileTank.getTank.hasContent) {
+            Minecraft.getInstance.getBlockEntityRenderDispatcher.renderItem(
+              tileTank, matrixStack, renderTypeBuffer, light, otherLight
+            )
+          }
           // RenderHelper.disableStandardItemLighting()
         }
       case _ => FluidTankCommon.LOGGER.info("RenderItemTank is called for " + stack.getItem)
