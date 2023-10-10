@@ -7,6 +7,7 @@ import net.minecraft.data.recipes.{FinishedRecipe, RecipeBuilder, RecipeOutput, 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.{CraftingRecipe, RecipeSerializer}
+import net.minecraftforge.common.crafting.conditions.ICondition
 
 case class RecipeSerializeHelper(recipe: FinishedRecipe,
                                  conditions: List[PlatformedCondition] = Nil,
@@ -26,7 +27,7 @@ case class RecipeSerializeHelper(recipe: FinishedRecipe,
   def build: JsonObject = {
     val o = recipe.serializeRecipe()
     if (conditions.nonEmpty) {
-      o.add("conditions", FluidTankDataProvider.makeForgeConditionArray(conditions))
+      o.add(ICondition.DEFAULT_FIELD, FluidTankDataProvider.makeForgeConditionArray(conditions))
       o.add("fabric:load_conditions", FluidTankDataProvider.makeFabricConditionArray(conditions))
     }
     o
