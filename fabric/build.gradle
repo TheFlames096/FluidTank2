@@ -72,7 +72,7 @@ dependencies {
 
     // Other mods
     modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_fabric_id)
-    modCompileOnly(group: "mezz.jei", name: "jei-1.20.1-fabric", version: project.jei_fabric_version) // FIXME
+    modImplementation(group: "mezz.jei", name: "jei-1.20.2-fabric", version: project.jei_fabric_version)
     modCompileOnly(group: "appeng", name: "appliedenergistics2-fabric", version: project.ae2_fabric_version) { transitive false }
     //noinspection SpellCheckingInspection
     modImplementation(group: "teamreborn", name: "energy", version: "3.0.0")

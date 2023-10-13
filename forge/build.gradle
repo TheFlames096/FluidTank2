@@ -1,5 +1,5 @@
-import com.kotori316.plugin.cf.CallVersionFunctionTask
 import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
+import com.kotori316.plugin.cf.CallVersionFunctionTask
 
 import java.util.stream.Collectors
 
@@ -135,9 +135,9 @@ dependencies {
     modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id) // FIXME
     modCompileOnly(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id) // FIXME
     if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
-        modCompileOnly(group: "mezz.jei", name: "jei-1.20.1-forge", version: project.jei_forge_version) { transitive false }
+        modCompileOnly(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jei_forge_version) { transitive false }
     } else {
-        modCompileOnly(group: "mezz.jei", name: "jei-1.20.1-forge", version: project.jei_forge_version) { transitive false } // FIXME
+        modImplementation(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jei_forge_version) { transitive false }
     }
     modCompileOnly(group: "appeng", name: "appliedenergistics2-forge", version: project.ae2_forge_version) { transitive false } // FIXME
 
