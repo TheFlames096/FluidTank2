@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:nether_stars"
-      }
-    }
-  ],
   "criteria": {
     "has_forge_nether_stars": {
       "conditions": {
@@ -40,6 +31,13 @@
     }
   },
   "fabric:load_conditions": [],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:nether_stars"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/lead"
-      }
-    }
-  ],
   "criteria": {
     "has_fabric_lead_ingots": {
       "conditions": {
@@ -45,6 +36,13 @@
       ]
     }
   ],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:ingots/lead"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

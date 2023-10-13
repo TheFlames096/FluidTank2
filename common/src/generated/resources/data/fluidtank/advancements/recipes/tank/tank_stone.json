@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:stone"
-      }
-    }
-  ],
   "criteria": {
     "has_forge_stone": {
       "conditions": {
@@ -40,6 +31,13 @@
     }
   },
   "fabric:load_conditions": [],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:stone"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

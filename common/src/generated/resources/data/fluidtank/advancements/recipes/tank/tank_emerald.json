@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:gems/emerald"
-      }
-    }
-  ],
   "criteria": {
     "has_fabric_emeralds": {
       "conditions": {
@@ -45,6 +36,13 @@
       ]
     }
   ],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:gems/emerald"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

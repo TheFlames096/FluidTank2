@@ -1,14 +1,5 @@
 {
   "type": "fluidtank:crafting_grade_up",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/lead"
-      }
-    }
-  ],
   "fabric:load_conditions": [
     {
       "condition": "fabric:item_tags_populated",
@@ -17,6 +8,13 @@
       ]
     }
   ],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:ingots/lead"
+    }
+  },
   "sub_item": [
     {
       "type": "fluidtank:ignore_unknown_tag_ingredient",

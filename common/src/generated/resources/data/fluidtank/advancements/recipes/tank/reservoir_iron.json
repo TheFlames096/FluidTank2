@@ -1,6 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [],
   "criteria": {
     "has_tank_iron": {
       "conditions": {
@@ -22,6 +21,10 @@
     }
   },
   "fabric:load_conditions": [],
+  "forge:condition": {
+    "type": "forge:true",
+    "value": {}
+  },
   "requirements": [
     [
       "has_the_recipe",

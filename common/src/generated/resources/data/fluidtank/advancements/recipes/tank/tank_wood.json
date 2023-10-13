@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:glass"
-      }
-    }
-  ],
   "criteria": {
     "has_fabric_glass_blocks": {
       "conditions": {
@@ -57,6 +48,13 @@
       ]
     }
   ],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:glass"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

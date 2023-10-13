@@ -1,16 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:obsidian"
-      }
-    }
-  ],
   "fabric:load_conditions": [],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:obsidian"
+    }
+  },
   "key": {
     "o": {
       "item": "minecraft:obsidian"

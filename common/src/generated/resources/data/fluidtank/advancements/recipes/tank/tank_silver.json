@@ -1,14 +1,5 @@
 {
   "parent": "minecraft:recipes/root",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/silver"
-      }
-    }
-  ],
   "criteria": {
     "has_fabric_silver_ingots": {
       "conditions": {
@@ -45,6 +36,13 @@
       ]
     }
   ],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:ingots/silver"
+    }
+  },
   "requirements": [
     [
       "has_the_recipe",

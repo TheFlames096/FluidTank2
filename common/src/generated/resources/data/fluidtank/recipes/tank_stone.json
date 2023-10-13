@@ -1,15 +1,13 @@
 {
   "type": "fluidtank:crafting_grade_up",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:stone"
-      }
-    }
-  ],
   "fabric:load_conditions": [],
+  "forge:condition": {
+    "type": "forge:not",
+    "value": {
+      "type": "forge:tag_empty",
+      "tag": "forge:stone"
+    }
+  },
   "sub_item": [
     {
       "type": "fluidtank:ignore_unknown_tag_ingredient",
