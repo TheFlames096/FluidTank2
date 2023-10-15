@@ -6,7 +6,8 @@ import net.minecraft.tags.{ItemTags, TagKey}
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.level.ItemLike
-import net.minecraftforge.common.crafting.ingredients.CompoundIngredient
+
+import scala.jdk.javaapi.CollectionConverters
 
 case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
                                   fabricIngredient: Option[IgnoreUnknownTagIngredient],
@@ -14,7 +15,8 @@ case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
                                   fabricTagLimit: Option[ResourceLocation],
                                  ) {
   def ingredient: Ingredient = {
-    CompoundIngredient.of(forgeIngredient, fabricIngredient.getOrElse(Ingredient.EMPTY))
+    val combined = forgeIngredient.getValues ++ fabricIngredient.flatMap(_.getValues)
+    Ingredient.fromValues(CollectionConverters.asJava(combined).stream())
   }
 }
 

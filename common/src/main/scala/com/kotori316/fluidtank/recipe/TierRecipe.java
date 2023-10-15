@@ -240,7 +240,7 @@ public abstract class TierRecipe implements CraftingRecipe {
             Tier tier = Tier.valueOf(tierName);
             Ingredient tankItem = Ingredient.fromNetwork(buffer);
             Ingredient subItem = Ingredient.fromNetwork(buffer);
-            if (subItem == Ingredient.EMPTY)
+            if (subItem.isEmpty())
                 LOGGER.warn("Empty ingredient was loaded for {}", tierName);
             LOGGER.debug("Serializer loaded from packet for tier {}, sub {}.", tier, PlatformItemAccess.convertIngredientToString(subItem));
             return createInstance(tier, tankItem, subItem);

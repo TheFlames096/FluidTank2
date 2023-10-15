@@ -9,7 +9,6 @@ import com.kotori316.fluidtank.fluids.VanillaFluid;
 import com.kotori316.fluidtank.fluids.VanillaPotion;
 import com.kotori316.fluidtank.forge.cat.EntityChestAsTank;
 import com.kotori316.fluidtank.forge.fluid.ForgeConverter;
-import com.kotori316.fluidtank.forge.recipe.IgnoreUnknownTagIngredient;
 import com.kotori316.fluidtank.potions.PotionFluidHandler;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.Tier;
@@ -156,8 +155,8 @@ final class ForgePlatformAccess implements PlatformAccess {
 
     @Override
     public Codec<Ingredient> ingredientCodec() {
-        // FIXME change after forge implements custom codec for ingredients
-        return IgnoreUnknownTagIngredient.SERIALIZER;
+        // OK, forge magic is included in the codec.
+        return Ingredient.CODEC;
     }
 
     @Override

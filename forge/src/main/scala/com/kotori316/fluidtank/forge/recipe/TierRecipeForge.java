@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<CraftingContainer> {
     public static final RecipeSerializer<TierRecipe> SERIALIZER = new Serializer();
 
-    public TierRecipeForge( Tier tier, Ingredient tankItem, Ingredient subItem) {
-        super( tier, tankItem, subItem);
+    public TierRecipeForge(Tier tier, Ingredient tankItem, Ingredient subItem) {
+        super(tier, tankItem, subItem);
     }
 
     @Override
@@ -36,12 +36,13 @@ public final class TierRecipeForge extends TierRecipe implements IShapedRecipe<C
 
     public static class Serializer extends SerializerBase {
         public Serializer() {
-            super(IgnoreUnknownTagIngredient.SERIALIZER);
+            // This codec includes forge magic!
+            super(Ingredient.CODEC_NONEMPTY);
         }
 
         @Override
-        protected TierRecipe createInstance( Tier tier, Ingredient tankItem, Ingredient subItem) {
-            return new TierRecipeForge( tier, tankItem, subItem);
+        protected TierRecipe createInstance(Tier tier, Ingredient tankItem, Ingredient subItem) {
+            return new TierRecipeForge(tier, tankItem, subItem);
         }
 
         /*@Override
