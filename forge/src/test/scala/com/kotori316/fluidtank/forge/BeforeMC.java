@@ -9,7 +9,11 @@ import org.junit.jupiter.api.BeforeAll;
 public abstract class BeforeMC {
     @BeforeAll
     public static void initialize() {
-        MCTestInitializer.setUp(FluidTankCommon.modId, BeforeMC::setup);
+        MCTestInitializer.setUp(FluidTankCommon.modId, BeforeMC::setup, e -> {
+            // make lazy to avoid accessing forge constants before initialization
+            var c = MCTestInitializer.getRegisterer(FluidTank.REGISTER_LIST);
+            c.accept(e);
+        });
     }
 
     private static void setup() {
