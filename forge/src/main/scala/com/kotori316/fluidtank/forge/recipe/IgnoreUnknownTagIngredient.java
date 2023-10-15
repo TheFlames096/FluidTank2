@@ -5,11 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.kotori316.fluidtank.FluidTankCommon;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +24,8 @@ import scala.jdk.javaapi.CollectionConverters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
@@ -83,7 +81,7 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
     }
 
     private static class Serializer implements IIngredientSerializer<IgnoreUnknownTagIngredient> {
-        private static final Codec<IgnoreUnknownTagIngredient> CODEC = new C();
+        private static final Codec<IgnoreUnknownTagIngredient> CODEC = new MapCodec.MapCodecCodec<>(new MapC());
 
         @Override
         public Codec<? extends IgnoreUnknownTagIngredient> codec() {
@@ -103,9 +101,9 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         }
     }
 
-    private static class C implements Codec<IgnoreUnknownTagIngredient> {
+    private static final class MapC extends MapCodec<IgnoreUnknownTagIngredient> {
 
-        public IgnoreUnknownTagIngredient parse(JsonObject json) {
+        public static IgnoreUnknownTagIngredient parse(JsonObject json) {
             if (json.has("item") || json.has("tag")) {
                 List<Value> valueList = List.of(getValue(json));
                 return new IgnoreUnknownTagIngredient(valueList);
@@ -116,10 +114,10 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
             }
         }
 
-        public IgnoreUnknownTagIngredient parse(JsonArray json) {
+        public static IgnoreUnknownTagIngredient parse(JsonArray json) {
             List<Value> valueList = StreamSupport.stream(json.spliterator(), false)
                 .map(JsonElement::getAsJsonObject)
-                .map(C::getValue)
+                .map(MapC::getValue)
                 .toList();
             return new IgnoreUnknownTagIngredient(valueList);
         }
@@ -138,41 +136,52 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         }
 
         @Override
-        public <T> DataResult<Pair<IgnoreUnknownTagIngredient, T>> decode(DynamicOps<T> ops, T input) {
-            var json = ops.convertTo(JsonOps.INSTANCE, input);
+        public <T> Stream<T> keys(DynamicOps<T> ops) {
+            return Stream.of("item", "tag", "values")
+                .map(ops::createString);
+        }
+
+        @Override
+        public <T> DataResult<IgnoreUnknownTagIngredient> decode(DynamicOps<T> ops, MapLike<T> input) {
+            var inputAsT = ops.createMap(input.entries());
+            var json = ops.convertTo(JsonOps.INSTANCE, inputAsT);
             if (json.isJsonObject()) {
-                return DataResult.success(Pair.of(parse(json.getAsJsonObject()), ops.empty()));
-            } else if (json.isJsonArray()) {
-                return DataResult.success(Pair.of(parse(json.getAsJsonArray()), ops.empty()));
+                return DataResult.success(parse(json.getAsJsonObject()));
             } else {
                 return DataResult.error(() -> "%s is not map. It can't be loaded as a recipe".formatted(input));
             }
         }
 
         @Override
-        public <T> DataResult<T> encode(IgnoreUnknownTagIngredient ingredient, DynamicOps<T> ops, T prefix) {
-            var values = ingredient.values;
-
-            if (values.size() == 1) {
-                return encodeValue(values.get(0), ops, prefix);
+        public <T> RecordBuilder<T> encode(IgnoreUnknownTagIngredient input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+            if (input.values.size() == 1) {
+                return encodeValue(input.values.get(0), ops, prefix);
             } else {
-                var list = ops.listBuilder();
-                values.stream().map(v -> encodeValue(v, ops, ops.empty()))
-                    .forEach(list::add);
-                return list.build(prefix);
+                var listBuilder = ops.listBuilder();
+                for (Value value : input.values) {
+                    var builder = encodeValue(value, ops, ops.mapBuilder());
+                    var map = builder.build(ops.empty());
+                    listBuilder.add(map);
+                }
+                var list = listBuilder.build(ops.empty());
+                prefix.add("values", list);
+                return prefix;
             }
         }
 
-        private static <T> DataResult<T> encodeValue(Value value, DynamicOps<T> ops, T prefix) {
-            var builder = ops.mapBuilder();
-            if (value instanceof Ingredient.ItemValue || value instanceof Ingredient.TagValue) {
-                return builder.build(Value.CODEC.encode(value, ops, prefix));
+        private static <T> RecordBuilder<T> encodeValue(Value value, DynamicOps<T> ops, RecordBuilder<T> builder) {
+            if (value instanceof Ingredient.ItemValue itemValue) {
+                var key = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(itemValue.item().getItem()));
+                builder.add("item", ops.createString(key.toString()));
+                return builder;
+            } else if (value instanceof Ingredient.TagValue tagValue) {
+                builder.add("tag", ops.createString(tagValue.tag().location().toString()));
+                return builder;
             } else if (value instanceof IgnoreUnknownTagIngredient.TagValue tagValue) {
-                return builder
-                    .add("tag", ops.createString(tagValue.tag.location().toString()))
-                    .build(prefix);
+                builder.add("tag", ops.createString(tagValue.tag.location().toString()));
+                return builder;
             } else {
-                return DataResult.error(() -> "Unexpected value type " + value);
+                throw new IllegalArgumentException("Unexpected value type " + value);
             }
         }
     }
