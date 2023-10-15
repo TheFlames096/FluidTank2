@@ -103,6 +103,7 @@ jobs:
         with:
           arguments: :${{ matrix.platform }}:test
       - name: ${{ matrix.platform }} GameTest
+        timeout-minutes: 5
         uses: gradle/gradle-build-action@v2
         env:
           RUN_GAME_TEST: true
