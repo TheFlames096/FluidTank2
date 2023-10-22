@@ -35,7 +35,7 @@ object DebugLogging {
     server.getRecipeManager.getRecipes.asScala
       .filter(_.getId.getNamespace === FluidTankCommon.modId)
       .map(r => (r.getId, r.getResultItem(server.registryAccess()), r.getIngredients.asScala.map(_.toJson).zipWithIndex.foldLeft(new JsonObject()) { case (a, (e, i)) => a.add(i.toString, e); a }))
-      .map { case (id, stack, value) => s"$id ${BuiltInRegistries.ITEM.getKey(stack.getItem)} x${stack.getCount}(${stack.getTag}) -> ${noPretty.toJson(value)}" }
+      .map { case (id, stack, value) => s"$id ${BuiltInRegistries.ITEM.getKey(stack.getItem)} x${stack.getCount}(tag: ${stack.getTag}) -> ${noPretty.toJson(value)}" }
       .zipWithIndex
       .foreach { case (s, index) => LOGGER.info("{} {}", index + 1, s) }
   }
