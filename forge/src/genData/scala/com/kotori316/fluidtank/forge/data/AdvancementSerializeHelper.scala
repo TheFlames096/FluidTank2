@@ -10,6 +10,8 @@ import net.minecraft.world.item.Item
 import net.minecraftforge.common.crafting.conditions.ICondition
 import net.minecraftforge.registries.ForgeRegistries
 
+import scala.annotation.nowarn
+
 case class AdvancementSerializeHelper(criterionList: List[(String, Criterion[? <: CriterionTriggerInstance])] = Nil,
                                       conditions: List[PlatformedCondition] = Nil,
                                       isRecipe: Boolean = true) {
@@ -45,6 +47,7 @@ case class AdvancementSerializeHelper(criterionList: List[(String, Criterion[? <
     copy(conditions = condition :: conditions)
 
   //noinspection ScalaDeprecation,deprecation
+  @nowarn
   def build(location: ResourceLocation): JsonObject = {
     val builder = if (this.isRecipe) Advancement.Builder.recipeAdvancement() else Advancement.Builder.advancement()
     builder.parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
