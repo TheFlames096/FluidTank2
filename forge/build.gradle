@@ -67,6 +67,7 @@ loom {
         server {
             configName = "Server"
             runDir = "run-server"
+            environmentVariable("MOD_CLASSES", classPath)
         }
         gameTest {
             configName = "GameTest"
@@ -75,7 +76,7 @@ loom {
             vmArg("-ea")
             property("fabric.dli.env", "gameTestServer")
             property("forge.enabledGameTestNamespaces", "fluidtank")
-            environmentVariable("MOD_CLASSES", classPath)
+            environmentVariable("MOD_CLASSES", gameTestPath + ":" + classPath)
             runDir = "game-test"
             mods {
                 create("main") {
