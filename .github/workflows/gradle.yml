@@ -135,6 +135,8 @@ jobs:
           ./gradlew configureLaunch downloadAssets ||
           (sleep 5 && ./gradlew configureLaunch downloadAssets) ||
           (sleep 5 && ./gradlew configureLaunch downloadAssets)
+      - name: Check assets file
+        run: ./gradlew checkResourceFiles
       - name: Forge DataGen
         uses: gradle/gradle-build-action@v2
         timeout-minutes: 5

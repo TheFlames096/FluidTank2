@@ -171,6 +171,16 @@ dependencies {
     "gameTestImplementation"(sourceSets.main.output)
 }
 
+tasks.register("checkResourceFiles") {
+    doLast {
+        def parent = "${loom.files.getUserCache()}/${project.minecraft_version}/forge/${project.forge_version}"
+        Files.list(java.nio.file.Path.of(parent))
+                .forEach {
+                    printf("IsDir %b, Size %d, name %s%n", Files.isDirectory(it), Files.size(it), it)
+                }
+    }
+}
+
 processResources {
     inputs.property "version", project.version
 
