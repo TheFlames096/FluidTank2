@@ -19,12 +19,8 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.ingredients.AbstractIngredient;
 import net.minecraftforge.common.crafting.ingredients.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
-import scala.jdk.javaapi.CollectionConverters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -56,8 +52,8 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         return SERIALIZER;
     }
 
-    public scala.collection.Seq<? extends Value> getValues() {
-        return CollectionConverters.asScala(this.values);
+    public List<? extends Value> getValues() {
+        return Collections.unmodifiableList(this.values);
     }
 
     @SuppressWarnings("ClassCanBeRecord")

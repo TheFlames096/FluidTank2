@@ -7,16 +7,17 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.level.ItemLike
 
-import scala.jdk.javaapi.CollectionConverters
-
 case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
                                   fabricIngredient: Option[IgnoreUnknownTagIngredient],
                                   forgeTagLimit: Option[ResourceLocation],
                                   fabricTagLimit: Option[ResourceLocation],
                                  ) {
   def ingredient: Ingredient = {
-    val combined = forgeIngredient.getValues ++ fabricIngredient.flatMap(_.getValues)
-    Ingredient.fromValues(CollectionConverters.asJava(combined).stream())
+    val combined: java.util.stream.Stream[_ <: Ingredient.Value] = java.util.stream.Stream.concat(
+      forgeIngredient.getValues.stream(),
+      fabricIngredient.map(_.getValues.stream()).getOrElse(java.util.stream.Stream.empty())
+    )
+    Ingredient.fromValues(combined)
   }
 }
 
