@@ -44,10 +44,15 @@ loom {
         useForgeLoggerConfig = true
     }
 
+    def gameTestPath = "gameTest%%${getProject().buildDir}/resources/gameTest:gameTest%%${getProject().buildDir}/classes/java/gameTest:gameTest%%${getProject().buildDir}/classes/scala/gameTest"
+    def classPath = "main%%${getProject().buildDir}/resources/main:main%%${getProject().buildDir}/classes/java/main:main%%${getProject().buildDir}/classes/scala/main"
+    def dataPath = "genData%%${getProject().buildDir}/resources/genData:genData%%${getProject().buildDir}/classes/java/genData:genData%%${getProject().buildDir}/classes/scala/genData"
+
     runs {
         client {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
+            environmentVariable("MOD_CLASSES", gameTestPath + ":" + classPath)
             runDir = "run"
             mods {
                 create("main") {
@@ -69,6 +74,7 @@ loom {
             vmArg("-ea")
             property("fabric.dli.env", "gameTestServer")
             property("forge.enabledGameTestNamespaces", "fluidtank")
+            environmentVariable("MOD_CLASSES", classPath)
             runDir = "game-test"
             mods {
                 create("main") {
@@ -89,6 +95,7 @@ loom {
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             data()
+            environmentVariable("MOD_CLASSES", dataPath + ":" + classPath)
             mods {
                 create("main") {
                     sourceSet("main")
@@ -149,6 +156,16 @@ dependencies {
     testImplementation(group: "org.mockito", name: "mockito-inline", version: project.mockitoVersion)
     forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
+
+    // Hack client-extra
+    def expect = "${loom.files.getUserCache()}/${project.minecraft_version}/forge/${project.forge_version}/client-extra.jar"
+    if (!file(expect).exists()) {
+        copy {
+            from("${loom.files.getUserCache()}/${project.minecraft_version}/forge/${project.forge_version}/forge-client-extra.jar")
+            into(expect)
+        }
+    }
+    forgeRuntimeLibrary(files("${loom.files.getUserCache()}/${project.minecraft_version}/forge/${project.forge_version}/client-extra.jar"))
 
     "genDataImplementation"(sourceSets.main.output)
     "gameTestImplementation"(sourceSets.main.output)
