@@ -1,14 +1,6 @@
 {
   "type": "fluidtank:crafting_grade_up",
-  "conditions": [
-    {
-      "type": "forge:not",
-      "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:nether_stars"
-      }
-    }
-  ],
+  "conditions": [],
   "fabric:load_conditions": [],
   "sub_item": [
     {

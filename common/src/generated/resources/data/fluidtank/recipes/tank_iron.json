@@ -4,16 +4,36 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/iron"
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:tag_empty",
+            "tag": "forge:ingots/iron"
+          },
+          {
+            "type": "forge:tag_empty",
+            "tag": "c:iron_ingots"
+          }
+        ]
       }
     }
   ],
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:iron_ingots"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:iron_ingots"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:ingots/iron"
+          ]
+        }
       ]
     }
   ],

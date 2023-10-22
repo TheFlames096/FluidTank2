@@ -4,16 +4,36 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/tin"
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:tag_empty",
+            "tag": "forge:ingots/tin"
+          },
+          {
+            "type": "forge:tag_empty",
+            "tag": "c:tin_ingots"
+          }
+        ]
       }
     }
   ],
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:tin_ingots"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:tin_ingots"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:ingots/tin"
+          ]
+        }
       ]
     }
   ],

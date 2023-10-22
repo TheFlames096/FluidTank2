@@ -4,16 +4,36 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:gems/emerald"
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:tag_empty",
+            "tag": "forge:gems/emerald"
+          },
+          {
+            "type": "forge:tag_empty",
+            "tag": "c:emeralds"
+          }
+        ]
       }
     }
   ],
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:emeralds"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:emeralds"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:gems/emerald"
+          ]
+        }
       ]
     }
   ],

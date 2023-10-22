@@ -4,16 +4,36 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/bronze"
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:tag_empty",
+            "tag": "forge:ingots/bronze"
+          },
+          {
+            "type": "forge:tag_empty",
+            "tag": "c:bronze_ingots"
+          }
+        ]
       }
     }
   ],
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:bronze_ingots"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:bronze_ingots"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:ingots/bronze"
+          ]
+        }
       ]
     }
   ],

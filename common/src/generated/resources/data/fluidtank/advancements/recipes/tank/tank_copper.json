@@ -4,8 +4,17 @@
     {
       "type": "forge:not",
       "value": {
-        "type": "forge:tag_empty",
-        "tag": "forge:ingots/copper"
+        "type": "forge:and",
+        "values": [
+          {
+            "type": "forge:tag_empty",
+            "tag": "forge:ingots/copper"
+          },
+          {
+            "type": "forge:tag_empty",
+            "tag": "c:copper_ingots"
+          }
+        ]
       }
     }
   ],
@@ -39,9 +48,20 @@
   },
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:copper_ingots"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:copper_ingots"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:ingots/copper"
+          ]
+        }
       ]
     }
   ],
