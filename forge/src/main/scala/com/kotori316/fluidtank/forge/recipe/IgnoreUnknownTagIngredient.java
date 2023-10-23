@@ -151,19 +151,16 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
 
         @Override
         public <T> RecordBuilder<T> encode(IgnoreUnknownTagIngredient input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
-            if (input.values.size() == 1) {
-                return encodeValue(input.values.get(0), ops, prefix);
-            } else {
-                var listBuilder = ops.listBuilder();
-                for (Value value : input.values) {
-                    var builder = encodeValue(value, ops, ops.mapBuilder());
-                    var map = builder.build(ops.empty());
-                    listBuilder.add(map);
-                }
-                var list = listBuilder.build(ops.empty());
-                prefix.add("values", list);
-                return prefix;
+            prefix.add("fabric:type", ops.createString(FluidTankCommon.modId + ":" + NAME));
+            var listBuilder = ops.listBuilder();
+            for (Value value : input.values) {
+                var builder = encodeValue(value, ops, ops.mapBuilder());
+                var map = builder.build(ops.empty());
+                listBuilder.add(map);
             }
+            var list = listBuilder.build(ops.empty());
+            prefix.add("values", list);
+            return prefix;
         }
 
         private static <T> RecordBuilder<T> encodeValue(Value value, DynamicOps<T> ops, RecordBuilder<T> builder) {
