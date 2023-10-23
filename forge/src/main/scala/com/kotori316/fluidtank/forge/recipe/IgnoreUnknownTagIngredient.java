@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
+    public static final String NAME = "ignore_unknown_tag_ingredient";
     public static final IIngredientSerializer<IgnoreUnknownTagIngredient> SERIALIZER = new Serializer();
 
     private final List<? extends Value> values;

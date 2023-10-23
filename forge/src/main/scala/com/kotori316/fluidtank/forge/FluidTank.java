@@ -114,7 +114,7 @@ public final class FluidTank {
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
     public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(TankLootFunction.CODEC);
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
-    public static final RegistryObject<IIngredientSerializer<IgnoreUnknownTagIngredient>> IU_INGREDIENT = INGREDIENT_REGISTER.register("ignore_unknown_tag_ingredient", () -> IgnoreUnknownTagIngredient.SERIALIZER);
+    public static final RegistryObject<IIngredientSerializer<IgnoreUnknownTagIngredient>> IU_INGREDIENT = INGREDIENT_REGISTER.register(IgnoreUnknownTagIngredient.NAME, () -> IgnoreUnknownTagIngredient.SERIALIZER);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
         var b = CreativeModeTab.builder();
         createTab(b);
