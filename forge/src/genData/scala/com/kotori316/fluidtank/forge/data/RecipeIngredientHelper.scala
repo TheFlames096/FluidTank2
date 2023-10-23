@@ -6,7 +6,6 @@ import net.minecraft.tags.{ItemTags, TagKey}
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.level.ItemLike
-import net.minecraftforge.common.crafting.ingredients.CompoundIngredient
 
 case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
                                   fabricIngredient: Option[IgnoreUnknownTagIngredient],
@@ -14,12 +13,10 @@ case class RecipeIngredientHelper(forgeIngredient: IgnoreUnknownTagIngredient,
                                   fabricTagLimit: Option[ResourceLocation],
                                  ) {
   def ingredient: Ingredient = {
-    /*val combined: java.util.stream.Stream[_ <: Ingredient.Value] = java.util.stream.Stream.concat(
+    new IgnoreUnknownTagIngredient(java.util.stream.Stream.concat(
       forgeIngredient.getValues.stream(),
       fabricIngredient.map(_.getValues.stream()).getOrElse(java.util.stream.Stream.empty())
-    )
-    Ingredient.fromValues(combined)*/
-    CompoundIngredient.of((Seq(forgeIngredient) ++ fabricIngredient.iterator) *)
+    ).toList)
   }
 }
 
