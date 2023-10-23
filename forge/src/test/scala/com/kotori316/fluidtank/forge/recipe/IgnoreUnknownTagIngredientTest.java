@@ -1,5 +1,6 @@
 package com.kotori316.fluidtank.forge.recipe;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.forge.BeforeMC;
@@ -77,6 +78,28 @@ class IgnoreUnknownTagIngredientTest extends BeforeMC {
             var ingredient = assertDoesNotThrow(() -> result.get().orThrow().getFirst());
             assertNotEquals(0, ingredient.getItems().length);
         }
+
+        @Test
+        void compound() {
+            // language=json
+            var json = """
+                [
+                  {
+                    "item": "minecraft:apple"
+                  },
+                  {
+                    "item": "minecraft:stone"
+                  },
+                  {
+                    "tag": "c:logs"
+                  }
+                ]
+                """;
+            var result = Ingredient.CODEC.decode(JsonOps.INSTANCE, GsonHelper.parseArray(json));
+            var ingredient = assertDoesNotThrow(() -> result.get().orThrow().getFirst());
+            // including error item
+            assertEquals(3, ingredient.getItems().length);
+        }
     }
 
     @Nested
@@ -127,6 +150,23 @@ class IgnoreUnknownTagIngredientTest extends BeforeMC {
             var ingredient = assertInstanceOf(IgnoreUnknownTagIngredient.class, assertDoesNotThrow(() -> result.get().orThrow().getFirst()));
             assertEquals(0, ingredient.getItems().length);
         }
+
+        @Test
+        void values1() {
+            // language=json
+            var json = """
+                {
+                  "type": "fluidtank:ignore_unknown_tag_ingredient",
+                  "values": [
+                    {"item": "minecraft:apple"},
+                    {"tag": "minecraft:logs"}
+                  ]
+                }
+                """;
+            var result = Ingredient.CODEC.decode(JsonOps.INSTANCE, GsonHelper.parse(json));
+            var ingredient = assertInstanceOf(IgnoreUnknownTagIngredient.class, assertDoesNotThrow(() -> result.get().orThrow().getFirst()));
+            assertEquals(2, ingredient.getValues().size());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -140,8 +180,8 @@ class IgnoreUnknownTagIngredientTest extends BeforeMC {
             var json = assertDoesNotThrow(() -> encoded.get().orThrow());
             assertTrue(json.isJsonObject());
 
-            var expected = new JsonObject();
-            expected.addProperty("item", "minecraft:apple");
+            var expected = singleObj("item", "minecraft:apple");
+            expected.addProperty("fabric:type", FluidTankCommon.modId + ":ignore_unknown_tag_ingredient");
             assertEquals(expected, json);
         }
 
@@ -152,9 +192,9 @@ class IgnoreUnknownTagIngredientTest extends BeforeMC {
             var json = assertDoesNotThrow(() -> encoded.get().orThrow());
             assertTrue(json.isJsonObject());
 
-            var expected = new JsonObject();
+            var expected = singleObj("item", "minecraft:apple");
             expected.addProperty("type", FluidTankCommon.modId + ":ignore_unknown_tag_ingredient");
-            expected.addProperty("item", "minecraft:apple");
+            expected.addProperty("fabric:type", FluidTankCommon.modId + ":ignore_unknown_tag_ingredient");
             assertEquals(expected, json);
         }
 
@@ -165,10 +205,20 @@ class IgnoreUnknownTagIngredientTest extends BeforeMC {
             var json = assertDoesNotThrow(() -> encoded.get().orThrow());
             assertTrue(json.isJsonObject());
 
-            var expected = new JsonObject();
+            var expected = singleObj("tag", "minecraft:logs");
             expected.addProperty("type", FluidTankCommon.modId + ":ignore_unknown_tag_ingredient");
-            expected.addProperty("tag", "minecraft:logs");
+            expected.addProperty("fabric:type", FluidTankCommon.modId + ":ignore_unknown_tag_ingredient");
             assertEquals(expected, json);
         }
+    }
+
+    static JsonObject singleObj(String key, String value) {
+        var parent = new JsonObject();
+        var arr = new JsonArray();
+        var obj = new JsonObject();
+        obj.addProperty(key, value);
+        arr.add(obj);
+        parent.add("values", arr);
+        return parent;
     }
 }

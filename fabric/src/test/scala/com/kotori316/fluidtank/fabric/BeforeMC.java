@@ -2,6 +2,8 @@ package com.kotori316.fluidtank.fabric;
 
 import com.kotori316.fluidtank.config.ConfigData;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
+import com.kotori316.fluidtank.fabric.recipe.IgnoreUnknownTagIngredientFabric;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +21,7 @@ public abstract class BeforeMC {
             SharedConstants.tryDetectVersion();
             Bootstrap.bootStrap();
             PlatformConfigAccess.setInstance(ConfigData::DEFAULT);
+            CustomIngredientSerializer.register(IgnoreUnknownTagIngredientFabric.SERIALIZER);
         }
     }
 
