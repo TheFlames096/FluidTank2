@@ -2,21 +2,20 @@
   "type": "fluidtank:crafting_grade_up",
   "fabric:load_conditions": [],
   "forge:condition": {
-    "type": "forge:not",
-    "value": {
-      "type": "forge:tag_empty",
-      "tag": "forge:stone"
-    }
+    "type": "forge:true",
+    "value": {}
   },
-  "sub_item": [
-    {
-      "type": "fluidtank:ignore_unknown_tag_ingredient",
-      "tag": "forge:stone"
-    },
-    {
-      "type": "fluidtank:ignore_unknown_tag_ingredient",
-      "item": "minecraft:stone"
-    }
-  ],
+  "sub_item": {
+    "type": "fluidtank:ignore_unknown_tag_ingredient",
+    "fabric:type": "fluidtank:ignore_unknown_tag_ingredient",
+    "values": [
+      {
+        "tag": "forge:stone"
+      },
+      {
+        "item": "minecraft:stone"
+      }
+    ]
+  },
   "tier": "STONE"
 }
