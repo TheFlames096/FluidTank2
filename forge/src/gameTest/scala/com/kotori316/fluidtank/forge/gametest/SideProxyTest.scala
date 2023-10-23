@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 
 @GameTestHolder(FluidTankCommon.modId)
 final class SideProxyTest {
-  @GameTest(template = NO_PLACE_STRUCTURE)
+  @GameTest(template = NO_PLACE_STRUCTURE, batch = GetGameTestMethods.DEFAULT_BATCH)
   def checkProxyClass(helper: GameTestHelper): Unit = {
     val clazz = FMLEnvironment.dist match {
       case DEDICATED_SERVER => Class.forName("com.kotori316.fluidtank.forge.SideProxy$ServerProxy")

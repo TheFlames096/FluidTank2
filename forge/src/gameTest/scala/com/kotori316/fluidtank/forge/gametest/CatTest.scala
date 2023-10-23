@@ -92,8 +92,9 @@ class CatTest {
       bucket = if (kind.contentEqual(FluidAmountUtil.BUCKET_WATER)) Items.WATER_BUCKET else Items.LAVA_BUCKET
       count = if (kind.contentEqual(FluidAmountUtil.BUCKET_WATER)) 4 else 5
     } yield {
-      new TestFunction(BATCH, s"cat_test_${kind.content.getKey.getPath}_${amount}_${rot.name()}".toLowerCase(Locale.ROOT),
-        FluidTankCommon.modId + ":cat_test", rot, 100, 0, true,
+      new TestFunction(FluidTankCommon.modId + "." + BATCH,
+        s"cat_test_${kind.content.getKey.getPath}_${amount}_${rot.name()}".toLowerCase(Locale.ROOT),
+        FluidTankCommon.modId + ":" + FluidTankCommon.modId + "." + "cat_test", rot, 100, 0, true,
         g => fillMore(g, fluid, count, bucket))
     }
     t.asJava

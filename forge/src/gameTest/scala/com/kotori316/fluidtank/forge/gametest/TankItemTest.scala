@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions
 
 @GameTestHolder(FluidTankCommon.modId)
 final class TankItemTest {
-  @GameTest(template = GameTestUtil.NO_PLACE_STRUCTURE)
+  @GameTest(template = GameTestUtil.NO_PLACE_STRUCTURE, batch = GetGameTestMethods.DEFAULT_BATCH)
   def tankItemHasCap(helper: GameTestHelper): Unit = {
     val stack = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get)
     val handler = FluidUtil.getFluidHandler(stack)
@@ -22,7 +22,7 @@ final class TankItemTest {
     helper.succeed()
   }
 
-  @GameTest(template = GameTestUtil.NO_PLACE_STRUCTURE)
+  @GameTest(template = GameTestUtil.NO_PLACE_STRUCTURE, batch = GetGameTestMethods.DEFAULT_BATCH)
   def tankItemCheckNBT(helper: GameTestHelper): Unit = {
     val stack = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get)
     val handler = FluidUtil.getFluidHandler(stack)
