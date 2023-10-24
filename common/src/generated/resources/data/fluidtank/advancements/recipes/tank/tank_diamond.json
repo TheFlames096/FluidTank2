@@ -30,17 +30,37 @@
   },
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:diamonds"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:diamonds"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:gems/diamond"
+          ]
+        }
       ]
     }
   ],
   "forge:condition": {
     "type": "forge:not",
     "value": {
-      "type": "forge:tag_empty",
-      "tag": "forge:gems/diamond"
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "forge:tag_empty",
+          "tag": "forge:gems/diamond"
+        },
+        {
+          "type": "forge:tag_empty",
+          "tag": "c:diamonds"
+        }
+      ]
     }
   },
   "requirements": [

@@ -30,17 +30,37 @@
   },
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:silver_ingots"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:silver_ingots"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:ingots/silver"
+          ]
+        }
       ]
     }
   ],
   "forge:condition": {
     "type": "forge:not",
     "value": {
-      "type": "forge:tag_empty",
-      "tag": "forge:ingots/silver"
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "forge:tag_empty",
+          "tag": "forge:ingots/silver"
+        },
+        {
+          "type": "forge:tag_empty",
+          "tag": "c:silver_ingots"
+        }
+      ]
     }
   },
   "requirements": [

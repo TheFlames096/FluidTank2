@@ -42,17 +42,37 @@
   },
   "fabric:load_conditions": [
     {
-      "condition": "fabric:item_tags_populated",
+      "condition": "fabric:or",
       "values": [
-        "c:glass_blocks"
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "c:glass_blocks"
+          ]
+        },
+        {
+          "condition": "fabric:item_tags_populated",
+          "values": [
+            "forge:glass"
+          ]
+        }
       ]
     }
   ],
   "forge:condition": {
     "type": "forge:not",
     "value": {
-      "type": "forge:tag_empty",
-      "tag": "forge:glass"
+      "type": "forge:and",
+      "values": [
+        {
+          "type": "forge:tag_empty",
+          "tag": "forge:glass"
+        },
+        {
+          "type": "forge:tag_empty",
+          "tag": "c:glass_blocks"
+        }
+      ]
     }
   },
   "requirements": [
