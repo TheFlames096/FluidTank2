@@ -4,6 +4,11 @@ plugins {
     id("com.github.breadmoirai.github-release") version("2.4.1")
 }
 
+tasks.named("wrapper", Wrapper) {
+    gradleVersion = "8.3"
+    distributionType = Wrapper.DistributionType.BIN
+}
+
 architectury {
     minecraft = project.minecraft_version
 }
