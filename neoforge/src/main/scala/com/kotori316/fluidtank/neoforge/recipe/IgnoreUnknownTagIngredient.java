@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.neoforge.FluidTank;
 import com.mojang.serialization.*;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,7 +34,7 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
     private final List<? extends Value> values;
 
     public IgnoreUnknownTagIngredient(List<? extends Value> values) {
-        super(values.stream());
+        super(values.stream(), FluidTank.IU_INGREDIENT);
         this.values = values;
     }
 

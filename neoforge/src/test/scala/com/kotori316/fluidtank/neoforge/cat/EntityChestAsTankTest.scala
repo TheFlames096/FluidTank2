@@ -25,7 +25,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def fillToBucket(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(Seq.fill(10)(new ItemStack(Items.BUCKET)) *)
     val handler = new EntityChestAsTank.FluidHandlerProxy(new InvWrapper(items))
@@ -36,7 +36,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def drainFromBucket1(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(Seq.fill(10)(ItemHandlerHelper.copyStackWithSize(filledItem, 1)) *)
     val handler = new EntityChestAsTank.FluidHandlerProxy(new InvWrapper(items))
@@ -50,7 +50,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def drainFromBucket2(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(Seq.fill(10)(ItemHandlerHelper.copyStackWithSize(filledItem, 1)) *)
     val handler = new EntityChestAsTank.FluidHandlerProxy(new InvWrapper(items))
@@ -64,7 +64,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def fillStackedBucket(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(2)
     items.setItem(0, new ItemStack(Items.BUCKET, 2))
@@ -77,7 +77,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def drainStackedBucket1(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(2)
     items.setItem(1, ItemHandlerHelper.copyStackWithSize(filledItem, 2))
@@ -89,7 +89,7 @@ class EntityChestAsTankTest extends BeforeMC {
   }
 
   @ParameterizedTest
-  @MethodSource(Array("com.kotori316.fluidtank.forge.cat.EntityChestAsTankTest#fluids"))
+  @MethodSource(Array("com.kotori316.fluidtank.neoforge.cat.EntityChestAsTankTest#fluids"))
   def drainStackedBucket2(fluid: FluidAmount, filledItem: ItemStack): Unit = {
     val items = new SimpleContainer(2)
     items.setItem(0, ItemHandlerHelper.copyStackWithSize(filledItem, 2))
