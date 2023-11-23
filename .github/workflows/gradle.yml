@@ -32,7 +32,7 @@ jobs:
       - name: Check build environments
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment
+          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment :neoforge:buildEnvironment
       - name: Check changelog
         uses: gradle/gradle-build-action@v2
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :fabric:remapJar :forge:remapJar
+          arguments: remapJar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
