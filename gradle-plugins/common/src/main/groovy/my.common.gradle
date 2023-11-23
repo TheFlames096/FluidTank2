@@ -60,6 +60,7 @@ architectury {
 }
 
 loom {
+    knownIndyBsms.add("scala/runtime/LambdaDeserialize")
     silentMojangMappingsLicense()
 }
 
