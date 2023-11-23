@@ -1,10 +1,10 @@
 # FluidTank2
 
 This is a renovated version of [FluidTank](https://github.com/Kotori316/FluidTank).
-The main parts of code are shared between Forge and Fabric.
+The main parts of code are shared between platforms.
 
-[![](http://cf.way2muchnoise.eu/versions/largefluidtank.svg)][CurseForge Forge]
-[![](http://cf.way2muchnoise.eu/full_largefluidtank_downloads.svg)][CurseForge Forge]
+[![](http://cf.way2muchnoise.eu/versions/291006.svg?badge_style=flat)][CurseForge Forge]
+[![](http://cf.way2muchnoise.eu/full_291006_downloads.svg?badge_style=flat)][CurseForge Forge]
 
 [![](https://img.shields.io/modrinth/dt/large-fluid-tank?logo=modrinth&style=flat-square)][Modrinth]
 
@@ -21,15 +21,18 @@ Copyright (c) 2019-2023 Kotori316
 
 ## Downloads
 
-You need Scalable Cat's Force([CurseForge](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force), [Modrinth](https://modrinth.com/mod/scalable-cats-force)) to run this mod. Both Forge and Fabric version require this dependency.
+You need Scalable Cat's
+Force([CurseForge](https://www.curseforge.com/minecraft/mc-mods/scalable-cats-force), [Modrinth](https://modrinth.com/mod/scalable-cats-force))
+to run this mod. All platform require this dependency.
 
 * CurseForge
   * [Forge][CurseForge Forge]
   * [Fabric][CurseForge Fabric]
+  * [NeoForge][CurseForge Forge]
 * Modrinth
-  * [Forge and Fabric][Modrinth]
+  * [Forge, Fabric and NeoForge][Modrinth]
 
-I don't allow users to redistribute this mod unless in modpacks or I give the permission.
+I don't allow users to redistribute this mod unless in mod-packs.
 
 ## Function
 

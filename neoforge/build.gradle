@@ -194,6 +194,73 @@ tasks.register("checkChangelog") {
     }
 }
 
+publishing {
+    publications {
+        create("mavenNeoForge", MavenPublication.class) {
+            artifactId = project.maven_base_name + "-" + project.name + "-" + project.minecraft_version
+            from(components["java"])
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        if (!Boolean.parseBoolean(System.getenv("CI")) || !RELEASE_DEBUG) {
+            maven {
+                name = "AzureRepository"
+                url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
+                credentials {
+                    username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
+                    password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
+                }
+            }
+        }
+    }
+}
+
+curseforge {
+    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
+    project {
+        id = "291006"
+        changelogType = "markdown"
+        changelog = createChangelog(true)
+        releaseType = "release"
+        addGameVersion("NeoForge")
+        addGameVersion(project.minecraft_version)
+        mainArtifact(tasks.remapJar) {
+            displayName = "${project.version}-neoforge"
+        }
+        addArtifact(tasks.shadowJar)
+        addArtifact(tasks.sourcesJar)
+        relations {
+            requiredDependency "scalable-cats-force"
+        }
+    }
+    options {
+        curseGradleOptions.debug = RELEASE_DEBUG // defaults to false
+        javaVersionAutoDetect = false
+        forgeGradleIntegration = false
+    }
+}
+
+modrinth {
+    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
+    projectId = "large-fluid-tank"
+    versionType = "release"
+    versionName = "${project.version}-neoforge"
+    uploadFile = tasks.remapJar
+    getAdditionalFiles().set([
+            tasks.shadowJar,
+            tasks.sourcesJar,
+    ])
+    getGameVersions().set([project.minecraft_version])
+    getLoaders().set(["neoforge"])
+    changelog = createChangelog(false)
+    debugMode = RELEASE_DEBUG
+    dependencies {
+        required.project("scalable-cats-force")
+    }
+}
+
 remapJar.finalizedBy("jksSignJar")
 
 tasks.register("jksSignJar") {
