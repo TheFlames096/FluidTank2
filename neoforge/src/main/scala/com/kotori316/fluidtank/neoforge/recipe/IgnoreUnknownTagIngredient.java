@@ -67,7 +67,7 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             var manager = BuiltInRegistries.ITEM.getTag(this.tag);
             if (manager.isEmpty()) {
-                FluidTankCommon.LOGGER.warn("[IgnoreUnknownTagIngredient] Can't get items from tag {}", tag);
+                FluidTankCommon.LOGGER.warn(FluidTankCommon.MARKER_INGREDIENT, "Can't get items from tag {}", tag);
                 return List.of();
             }
             return manager.stream().flatMap(HolderSet.Named::stream).map(ItemStack::new).toList();
