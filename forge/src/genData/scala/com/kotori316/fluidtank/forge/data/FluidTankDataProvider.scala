@@ -1,6 +1,6 @@
 package com.kotori316.fluidtank.forge.data
 
-import com.google.gson.{JsonArray, JsonElement, JsonNull}
+import com.google.gson.{JsonArray, JsonElement, JsonNull, JsonObject}
 import com.kotori316.fluidtank.FluidTankCommon
 import com.mojang.serialization.JsonOps
 import net.minecraft.data.loot.LootTableProvider
@@ -32,6 +32,15 @@ object FluidTankDataProvider {
     event.getGenerator.addProvider(event.includeServer(), new RecipeProvider(event.getGenerator))
   }
 
+  def addPlatformConditions(obj: JsonObject, conditions: List[PlatformedCondition]): Unit = {
+    if (conditions.nonEmpty) {
+      obj.add(ICondition.DEFAULT_FIELD, FluidTankDataProvider.makeForgeConditionArray(conditions))
+      obj.add("fabric:load_conditions", FluidTankDataProvider.makeFabricConditionArray(conditions))
+      // See net.neoforged.neoforge.common.conditions.ConditionalOps#DEFAULT_CONDITIONS_KEY
+      obj.add("neoforge:conditions", FluidTankDataProvider.makeNeoForgeConditionArray(conditions))
+    }
+  }
+
   def makeForgeConditionArray(conditions: List[PlatformedCondition]): JsonElement = {
     val oneCondition = conditions.flatMap(_.forgeCondition) match {
       case head :: Nil => head
@@ -45,5 +54,9 @@ object FluidTankDataProvider {
 
   def makeFabricConditionArray(conditions: List[PlatformedCondition]): JsonArray = {
     conditions.flatMap(_.fabricCondition).foldLeft(new JsonArray) { case (a, c) => a.add(c); a }
+  }
+
+  def makeNeoForgeConditionArray(conditions: List[PlatformedCondition]): JsonArray = {
+    conditions.flatMap(_.neoForgeCondition).foldLeft(new JsonArray) { case (a, c) => a.add(c); a }
   }
 }

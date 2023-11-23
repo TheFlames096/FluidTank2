@@ -63,6 +63,24 @@
       ]
     }
   },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "forge:ingots/silver"
+          },
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "c:silver_ingots"
+          }
+        ]
+      }
+    }
+  ],
   "requirements": [
     [
       "has_the_recipe",

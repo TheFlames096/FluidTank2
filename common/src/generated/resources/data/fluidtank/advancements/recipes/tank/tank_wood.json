@@ -75,6 +75,24 @@
       ]
     }
   },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "forge:glass"
+          },
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "c:glass_blocks"
+          }
+        ]
+      }
+    }
+  ],
   "requirements": [
     [
       "has_the_recipe",

@@ -23,6 +23,7 @@
       "item": "fluidtank:tank_wood"
     }
   },
+  "neoforge:conditions": [],
   "pattern": [
     "ooo",
     "oto",

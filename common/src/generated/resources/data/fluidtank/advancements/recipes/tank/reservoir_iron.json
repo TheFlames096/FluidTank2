@@ -20,11 +20,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "fabric:load_conditions": [],
-  "forge:condition": {
-    "type": "forge:true",
-    "value": {}
-  },
   "requirements": [
     [
       "has_the_recipe",
