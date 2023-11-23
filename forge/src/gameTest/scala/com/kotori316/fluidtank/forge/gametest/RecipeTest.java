@@ -13,6 +13,7 @@ import com.kotori316.testutil.GameTestUtil;
 import io.netty.buffer.ByteBufAllocator;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.gametest.framework.GameTestGenerator;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.gametest.GameTestHolder;
 import org.apache.commons.io.FilenameUtils;
@@ -235,6 +237,15 @@ final class RecipeTest {
             return files.map(p -> GameTestUtil.create(FluidTankCommon.modId, "recipe_test", "load_" + FilenameUtils.getBaseName(p.getFileName().toString()),
                 () -> loadFromFile(p))).toList();
         }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    void notLoadLeadRecipe(GameTestHelper helper) throws IOException {
+        var recipeParent = Path.of("../../common/src/generated/resources", "data/fluidtank/recipes");
+        var leadRecipe = recipeParent.resolve("tank_lead.json");
+        var read = GsonHelper.parse(Files.newBufferedReader(leadRecipe));
+        assertFalse(ForgeHooks.readAndTestCondition(GameTestUtil.getContext(helper), read), "Lead recipe must not be loaded");
+        helper.succeed();
     }
 
     static void loadFromFile(Path path) {

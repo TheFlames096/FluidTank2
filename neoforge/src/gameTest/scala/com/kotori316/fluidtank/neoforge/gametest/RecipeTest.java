@@ -10,6 +10,7 @@ import com.kotori316.fluidtank.neoforge.FluidTank;
 import com.kotori316.fluidtank.neoforge.recipe.TierRecipeNeoForge;
 import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.testutil.GameTestUtil;
+import com.mojang.serialization.JsonOps;
 import io.netty.buffer.ByteBufAllocator;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.gametest.framework.GameTestGenerator;
@@ -27,8 +28,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
-import org.junit.platform.commons.function.Try;
-import org.junit.platform.commons.support.ReflectionSupport;
 import scala.jdk.javaapi.CollectionConverters;
 
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -218,7 +218,7 @@ final class RecipeTest {
               }
             }
             """.formatted(TierRecipeNeoForge.Serializer.LOCATION.toString());
-        var read = managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString));
+        var read = managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_serialize"), GsonHelper.parse(jsonString)).orElseThrow();
         var recipe = new TierRecipeNeoForge(
             Tier.STONE, TierRecipeNeoForge.Serializer.getIngredientTankForTier(Tier.STONE), Ingredient.of(Items.DIAMOND));
 
@@ -237,21 +237,24 @@ final class RecipeTest {
         }
     }
 
-    static void loadFromFile(Path path) {
+    void notLoadLeadRecipe() {
+        var recipeParent = Path.of("../../common/src/generated/resources", "data/fluidtank/recipes");
+        var leadRecipe = recipeParent.resolve("tank_lead.json");
+        var read = loadFromFile(leadRecipe);
+        assertTrue(read.isEmpty(), "Lead recipe must not be loaded");
+    }
+
+    static Optional<Recipe<?>> loadFromFile(Path path) {
         try {
             var json = GsonHelper.parse(Files.newBufferedReader(path));
-            assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));
+            return assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private static Recipe<?> managerFromJson(ResourceLocation location, JsonObject jsonObject) {
-        return Try.call(() -> RecipeManager.class.getDeclaredMethod("fromJson", ResourceLocation.class, JsonObject.class))
-            .andThenTry(m -> ReflectionSupport.invokeMethod(m, null, location, jsonObject))
-            .andThenTry(RecipeHolder.class::cast)
-            .andThenTry(RecipeHolder::value)
-            .andThenTry(Recipe.class::cast)
-            .getOrThrow(RuntimeException::new);
+    private static Optional<Recipe<?>> managerFromJson(ResourceLocation location, JsonObject jsonObject) {
+        return RecipeManager.fromJson(location, jsonObject, JsonOps.INSTANCE)
+            .map(RecipeHolder::value);
     }
 }
