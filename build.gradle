@@ -22,12 +22,15 @@ githubRelease {
     releaseName = "v${project.findProperty("mod_version")} for ${project.findProperty("minecraft_version")}"
     body = createChangelog()
     releaseAssets = files(
-            fileTree("${findProject(":forge")?.buildDir}/libs") {
+            fileTree(findProject(":forge")?.layout?.buildDirectory?.dir("libs")) {
                 include("*.jar")
             },
-            fileTree("${findProject(":fabric")?.buildDir}/libs") {
+            fileTree(findProject(":fabric")?.layout?.buildDirectory?.dir("libs")) {
                 include("*.jar")
-            }
+            },
+            fileTree(findProject(":neoforge")?.layout?.buildDirectory?.dir("libs")) {
+                include("*.jar")
+            },
     )
     dryRun = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
     overwrite = false
@@ -43,6 +46,7 @@ String createChangelog() {
         | Minecraft | ${project.minecraft_version} |
         | Forge | ${project.forge_version} |
         | Fabric | ${project.fabric_api_version} |
+        | NeoForge | ${project.neoforge_version} |
         """.stripIndent()
     String fromFile = rootProject.file(project.changelog_file).text
     String shortFormat = fromFile.split("---", 2)[0]
