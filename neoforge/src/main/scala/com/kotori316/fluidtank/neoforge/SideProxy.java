@@ -11,6 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
@@ -69,6 +70,13 @@ public abstract class SideProxy {
         @Override
         public Optional<Level> getLevel(NetworkEvent.Context context) {
             return Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
+        }
+
+        /**
+         * Here to avoid the exception to "class has no @SubscribeEvent methods, but register was called anyway."
+         */
+        @SubscribeEvent
+        public void dummy(FMLCommonSetupEvent event) {
         }
     }
 }
