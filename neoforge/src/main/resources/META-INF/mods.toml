@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Fluid Tank"
 displayURL = "https://github.com/Kotori316/FluidTank2"
 modUrl = "https://github.com/Kotori316/FluidTank2"
-updateJSONURL = "https://version.kotori316.com/get-version/1.20.2/forge/fluidtank"
+updateJSONURL = "https://version.kotori316.com/get-version/1.20.2/neoforge/fluidtank"
 credits = "Kotori316"
 authors = "Kotori316"
 description = '''
@@ -20,7 +20,7 @@ logoFile = "assets/fluidtank/textures/icon.png"
 [[dependencies.fluidtank]]
 modId = "neoforge"
 mandatory = true
-versionRange = "[20.2.59-beta,)"
+versionRange = "[20.2.61-beta,)"
 ordering = "NONE"
 side = "BOTH"
 

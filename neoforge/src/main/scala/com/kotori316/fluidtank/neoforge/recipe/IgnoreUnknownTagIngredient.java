@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.kotori316.fluidtank.DebugLogging;
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.neoforge.FluidTank;
 import com.mojang.serialization.*;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.IngredientType;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +69,7 @@ public final class IgnoreUnknownTagIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             var manager = BuiltInRegistries.ITEM.getTag(this.tag);
             if (manager.isEmpty()) {
-                FluidTankCommon.LOGGER.warn(FluidTankCommon.MARKER_INGREDIENT, "Can't get items from tag {}", tag);
+                DebugLogging.LOGGER().info(MarkerManager.getMarker(FluidTankCommon.MARKER_INGREDIENT.getName()), "Can't get items from tag {}", tag);
                 return List.of();
             }
             return manager.stream().flatMap(HolderSet.Named::stream).map(ItemStack::new).toList();

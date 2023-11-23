@@ -45,9 +45,9 @@ loom {
                 create("main") {
                     sourceSet("main")
                 }
-                /*create("gameTest") {
+                create("gameTest") {
                     sourceSet("gameTest")
-                }*/
+                }
             }
         }
         server {
@@ -86,10 +86,6 @@ configurations {
 
     gameTestCompileClasspath.extendsFrom(testCompileClasspath)
     gameTestRuntimeClasspath.extendsFrom(testRuntimeClasspath)
-}
-
-repositories {
-    maven { url = "https://maven.neoforged.net/releases" }
 }
 
 dependencies {
@@ -237,7 +233,7 @@ tasks.withType(Sign).configureEach {
 
 tasks.withType(AbstractPublishToMaven).configureEach {
     if (hasGpgSignature) {
-        it.dependsOn(":forge:signRemapJar")
+        it.dependsOn(":neoforge:signRemapJar")
     }
 }
 
