@@ -5,6 +5,7 @@
     "type": "forge:true",
     "value": {}
   },
+  "neoforge:conditions": [],
   "sub_item": {
     "type": "fluidtank:ignore_unknown_tag_ingredient",
     "fabric:type": "fluidtank:ignore_unknown_tag_ingredient",

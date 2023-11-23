@@ -12,6 +12,7 @@ import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.tank.Tier;
 import io.netty.buffer.ByteBufAllocator;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -196,7 +197,7 @@ public final class RecipeTest implements FabricGameTest {
         var recipe = new TierRecipeFabric(
             tier, TierRecipeFabric.Serializer.getIngredientTankForTier(tier), subItem);
 
-        var fromSerializer = TierRecipeFabric.SERIALIZER.toJson( recipe);
+        var fromSerializer = TierRecipeFabric.SERIALIZER.toJson(recipe);
 
         var deserialized = TierRecipeFabric.SERIALIZER.fromJson(fromSerializer);
         assertNotNull(deserialized);
@@ -249,7 +250,15 @@ public final class RecipeTest implements FabricGameTest {
         }
     }
 
-    void loadFromFile(Path path) {
+    void notLoadLeadRecipe(GameTestHelper helper) throws IOException {
+        var recipeParent = Path.of("../../common/src/generated/resources", "data/fluidtank/recipes");
+        var leadRecipe = recipeParent.resolve("tank_lead.json");
+        var read = GsonHelper.parse(Files.newBufferedReader(leadRecipe));
+        assertFalse(ResourceConditions.objectMatchesConditions(read), "Lead recipe must not be loaded");
+        helper.succeed();
+    }
+
+    static void loadFromFile(Path path) {
         try {
             var json = GsonHelper.parse(Files.newBufferedReader(path));
             assertDoesNotThrow(() -> managerFromJson(new ResourceLocation(FluidTankCommon.modId, "test_load"), json));

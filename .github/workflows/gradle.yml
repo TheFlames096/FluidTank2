@@ -32,7 +32,7 @@ jobs:
       - name: Check build environments
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment
+          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment :neoforge:buildEnvironment
       - name: Check changelog
         uses: gradle/gradle-build-action@v2
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Generate Jar
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: :fabric:remapJar :forge:remapJar
+          arguments: remapJar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -57,8 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      FORGE_ONLY: true
-      FABRIC_ONLY: true
+      DISABLE_FORGE: true
+      DISABLE_FABRIC: true
+      DISABLE_NEOFORGE: true
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java JDK
@@ -82,10 +83,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ forge, fabric ]
+        platform: [ forge, fabric, neoforge ]
     env:
-      FORGE_ONLY: ${{ matrix.platform == 'forge' }}
-      FABRIC_ONLY: ${{ matrix.platform == 'fabric' }}
+      DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
+      DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
+      DISABLE_NEOFORGE: ${{ matrix.platform != 'neoforge' }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java JDK
@@ -113,7 +115,9 @@ jobs:
   forge-data-gen:
     runs-on: ubuntu-latest
     env:
-      FORGE_ONLY: true
+      DISABLE_FORGE: false
+      DISABLE_FABRIC: true
+      DISABLE_NEOFORGE: true
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java JDK

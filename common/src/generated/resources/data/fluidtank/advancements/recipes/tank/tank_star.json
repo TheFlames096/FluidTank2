@@ -35,6 +35,7 @@
     "type": "forge:true",
     "value": {}
   },
+  "neoforge:conditions": [],
   "requirements": [
     [
       "has_the_recipe",

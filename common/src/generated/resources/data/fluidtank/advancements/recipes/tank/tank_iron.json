@@ -63,6 +63,24 @@
       ]
     }
   },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "forge:ingots/iron"
+          },
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "c:iron_ingots"
+          }
+        ]
+      }
+    }
+  ],
   "requirements": [
     [
       "has_the_recipe",

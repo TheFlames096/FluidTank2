@@ -69,7 +69,7 @@ public final class IgnoreUnknownTagIngredient extends AbstractIngredient {
         public Collection<ItemStack> getItems() {
             var manager = ForgeRegistries.ITEMS.tags();
             if (manager == null) {
-                FluidTankCommon.LOGGER.warn("[IgnoreUnknownTagIngredient] Can't get items from tag {}", tag);
+                FluidTankCommon.LOGGER.warn(FluidTankCommon.MARKER_INGREDIENT, "Can't get items from tag {}", tag);
                 return List.of();
             }
             return manager.getTag(this.tag).stream().map(ItemStack::new).toList();

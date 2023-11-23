@@ -63,6 +63,24 @@
       ]
     }
   },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:and",
+        "values": [
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "forge:gems/emerald"
+          },
+          {
+            "type": "neoforge:tag_empty",
+            "tag": "c:emeralds"
+          }
+        ]
+      }
+    }
+  ],
   "requirements": [
     [
       "has_the_recipe",

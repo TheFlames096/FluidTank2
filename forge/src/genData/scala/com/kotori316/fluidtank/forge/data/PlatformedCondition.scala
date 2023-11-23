@@ -1,17 +1,21 @@
 package com.kotori316.fluidtank.forge.data
 
 import cats.data.Ior
-import com.google.gson.{JsonArray, JsonObject}
+import com.google.gson.{Gson, JsonArray, JsonObject}
+import com.mojang.serialization.JsonOps
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraftforge.common.crafting.conditions.{AndCondition, ICondition, NotCondition, TagEmptyCondition}
 
+import scala.jdk.OptionConverters.RichOptional
 import scala.util.chaining.scalaUtilChainingOps
 
 trait PlatformedCondition {
   def forgeCondition: Option[ICondition]
 
   def fabricCondition: Option[JsonObject]
+
+  def neoForgeCondition: Option[JsonObject]
 }
 
 object PlatformedCondition {
@@ -70,6 +74,42 @@ object PlatformedCondition {
               }
           }
       }
+    }
+
+    /**
+     * Create this
+     *
+     * {{{
+     *   [
+     *   {
+     *     "type": "neoforge:not",
+     *     "value": {
+     *       "type": "neoforge:and",
+     *       "values": [
+     *         {
+     *           "type": "neoforge:tag_empty",
+     *           "tag": "forge:ingots/copper"
+     *         },
+     *         {
+     *           "type": "neoforge:tag_empty",
+     *           "tag": "c:copper_ingots"
+     *         }
+     *       ]
+     *     }
+     *   }
+     *   ]
+     * }}}
+     */
+    override def neoForgeCondition: Option[JsonObject] = {
+      val gson = new Gson()
+      forgeCondition.flatMap(c => ICondition.CODEC.encodeStart(JsonOps.INSTANCE, c).result().toScala)
+        .map(j => gson.toJson(j))
+        .map(s => s
+          .replace("forge:not", "neoforge:not")
+          .replace("forge:and", "neoforge:and")
+          .replace("forge:tag_empty", "neoforge:tag_empty")
+        )
+        .map(s => gson.fromJson(s, classOf[JsonObject]))
     }
   }
 }

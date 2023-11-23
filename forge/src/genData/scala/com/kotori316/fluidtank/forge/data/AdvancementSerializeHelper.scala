@@ -7,7 +7,6 @@ import net.minecraft.data.recipes.RecipeBuilder
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Item
-import net.minecraftforge.common.crafting.conditions.ICondition
 import net.minecraftforge.registries.ForgeRegistries
 
 import scala.annotation.nowarn
@@ -56,8 +55,7 @@ case class AdvancementSerializeHelper(criterionList: List[(String, Criterion[? <
       .requirements(AdvancementRequirements.Strategy.OR)
     val obj = criterionList.foldLeft(builder) { case (b, (s, c)) => b.addCriterion(s, c) }
       .build(location).value().serializeToJson()
-    obj.add(ICondition.DEFAULT_FIELD, FluidTankDataProvider.makeForgeConditionArray(conditions))
-    obj.add("fabric:load_conditions", FluidTankDataProvider.makeFabricConditionArray(conditions))
+    FluidTankDataProvider.addPlatformConditions(obj, this.conditions)
     obj
   }
 }

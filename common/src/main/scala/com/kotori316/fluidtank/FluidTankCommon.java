@@ -21,6 +21,7 @@ public final class FluidTankCommon {
     public static final Marker MARKER_CONNECTION = MarkerFactory.getMarker("Connection");
     public static final Marker MARKER_TANK = MarkerFactory.getMarker("Tank");
     public static final Marker MARKER_FLUID_LIKE = MarkerFactory.getMarker("FluidLike");
+    public static final Marker MARKER_INGREDIENT = MarkerFactory.getMarker("IU_Ingredient");
 
     private static final double d = 1 / 16d;
     public static final VoxelShape TANK_SHAPE = Shapes.create(new AABB(2 * d, 0, 2 * d, 14 * d, 1d, 14 * d));

@@ -19,6 +19,10 @@ repositories {
         url = "https://maven.parchmentmc.org"
     }
     maven {
+        name = "NeoForged"
+        url = "https://maven.neoforged.net/releases"
+    }
+    maven {
         name = "Azure-SLP"
         url = "https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1"
         content {
@@ -26,11 +30,7 @@ repositories {
             includeVersion("org.typelevel", "cats-kernel_3", project.cats_version)
             includeVersion("org.typelevel", "cats-core_2.13", project.cats_version)
             includeVersion("org.typelevel", "cats-kernel_2.13", project.cats_version)
-            includeVersion("com.kotori316", "scalable-cats-force-fabric", project.slp_fabric_version)
-            includeVersion("com.kotori316", "ScalableCatsForce".toLowerCase(), project.slpVersion)
-            // Required these libraries to execute the tests.
-            includeVersion("com.kotori316", "test_utility", project.testUtilVersion)
-            includeModule("com.kotori316", "test_utility_dependency")
+            includeGroup("com.kotori316")
         }
     }
     maven {
@@ -64,6 +64,7 @@ architectury {
 }
 
 loom {
+    knownIndyBsms.add("scala/runtime/LambdaDeserialize")
     silentMojangMappingsLicense()
 }
 

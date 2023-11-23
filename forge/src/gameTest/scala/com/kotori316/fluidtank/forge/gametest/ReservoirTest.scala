@@ -42,8 +42,8 @@ class ReservoirTest {
   @GameTestGenerator
   def fillTank(): java.util.List[TestFunction] = CollectionConverters.asJava(
     for {
-      f <- Seq(FluidAmountUtil.BUCKET_WATER, FluidAmountUtil.BUCKET_LAVA)
-        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET))
+      f <- (Seq(FluidAmountUtil.BUCKET_WATER, FluidAmountUtil.BUCKET_LAVA)
+        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET)))
       amount <- f.content match {
         case _: VanillaFluid => Seq(GenericUnit.fromForge(500), GenericUnit.ONE_BUCKET, GenericUnit.fromForge(2000))
         case _: VanillaPotion => Seq(GenericUnit.ONE_BOTTLE, GenericUnit.ONE_BUCKET, GenericUnit.fromForge(2000))
@@ -105,8 +105,8 @@ class ReservoirTest {
   @GameTestGenerator
   def fillTankFail(): java.util.List[TestFunction] = CollectionConverters.asJava(
     for {
-      fluid <- Seq(FluidAmountUtil.BUCKET_WATER)
-        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET))
+      fluid <- (Seq(FluidAmountUtil.BUCKET_WATER)
+        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET)))
       initial <- Seq(FluidAmountUtil.BUCKET_LAVA, FluidAmountUtil.from(PotionType.SPLASH, Potions.WATER, GenericUnit.ONE_BUCKET))
     } yield GameTestUtil.create(FluidTankCommon.modId, BATCH,
       s"ReservoirTestFillTankFail_${initial.content.getKey.getPath}_${fluid.content.getKey.getPath}_${fluid.amount.asForge}", g => {
@@ -131,8 +131,8 @@ class ReservoirTest {
   @GameTestGenerator
   def drainTank(): java.util.List[TestFunction] = CollectionConverters.asJava(
     for {
-      f <- Seq(FluidAmountUtil.BUCKET_WATER, FluidAmountUtil.BUCKET_LAVA)
-        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET))
+      f <- (Seq(FluidAmountUtil.BUCKET_WATER, FluidAmountUtil.BUCKET_LAVA)
+        ++ PotionType.values().map(p => FluidAmountUtil.from(p, Potions.POISON, GenericUnit.ONE_BUCKET)))
       amount <- f.content match {
         case _: VanillaFluid => Seq(GenericUnit.fromForge(500), GenericUnit.ONE_BUCKET, GenericUnit.fromForge(2000))
         case _: VanillaPotion => Seq(GenericUnit.ONE_BOTTLE, GenericUnit.ONE_BUCKET, GenericUnit.fromForge(2000))
