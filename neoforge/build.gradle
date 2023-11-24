@@ -310,6 +310,7 @@ tasks.register("registerVersion", CallVersionFunctionTask.class) {
     platform = "neoforge"
     modName = project.findProperty("maven_base_name")
     changelog = noHeaderChangelog()
+    homepage = "https://modrinth.com/mod/large-fluid-tank"
 }
 
 tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
