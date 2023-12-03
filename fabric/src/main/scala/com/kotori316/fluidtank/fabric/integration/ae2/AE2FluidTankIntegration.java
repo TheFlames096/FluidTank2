@@ -1,5 +1,5 @@
 package com.kotori316.fluidtank.fabric.integration.ae2;
-
+/*
 import appeng.api.storage.MEStorage;
 import com.kotori316.fluidtank.tank.PlatformTankAccess;
 import com.kotori316.fluidtank.tank.TileTank;
@@ -25,4 +25,4 @@ class AE2Capability {
                 PlatformTankAccess.getInstance().getCreativeType()
         );
     }
-}
+}*/

@@ -8,7 +8,6 @@ import com.kotori316.fluidtank.cat.ItemChestAsTank;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import com.kotori316.fluidtank.fabric.cat.ChestAsTankStorage;
 import com.kotori316.fluidtank.fabric.config.FabricPlatformConfigAccess;
-import com.kotori316.fluidtank.fabric.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.fabric.message.PacketHandler;
 import com.kotori316.fluidtank.fabric.recipe.IgnoreUnknownTagIngredientFabric;
 import com.kotori316.fluidtank.fabric.recipe.TierRecipeFabric;
@@ -52,7 +51,7 @@ public final class FluidTank implements ModInitializer {
         ConnectionStorage.register();
         ChestAsTankStorage.register();
         ReservoirFluidStorage.register();
-        AE2FluidTankIntegration.onAPIAvailable();
+        // AE2FluidTankIntegration.onAPIAvailable();
         ServerLifecycleEvents.SERVER_STARTED.register(FluidTank::onServerStart);
         FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
     }

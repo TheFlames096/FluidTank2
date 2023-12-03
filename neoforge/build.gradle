@@ -1,19 +1,8 @@
-import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
-import com.kotori316.plugin.cf.CallVersionFunctionTask
-
-import java.util.stream.Collectors
-
 plugins {
-    id("my.common")
-    id("architectury-plugin").version("3.4-SNAPSHOT")
-    id("dev.architectury.loom").version("1.4-SNAPSHOT")
-    id("com.github.johnrengelman.shadow").version("8.1.1")
-    id("com.matthewprenger.cursegradle").version("1.4.0")
-    id("com.modrinth.minotaur").version("2.+")
-    id("com.kotori316.plugin.cf").version("1.+")
+    id("com.kotori316.common")
+    id("com.kotori316.publishments")
+    id("com.kotori316.subprojects")
 }
-
-archivesBaseName = "${project.archives_base_name}-neoforge"
 
 architectury {
     platformSetupLoomIde()
@@ -75,15 +64,7 @@ loom {
 }
 
 configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
-
-    testCompileClasspath.extendsFrom(compileClasspath)
-    testRuntimeClasspath.extendsFrom(runtimeClasspath)
-
     gameTestCompileClasspath.extendsFrom(testCompileClasspath)
     gameTestRuntimeClasspath.extendsFrom(testRuntimeClasspath)
 }
@@ -111,57 +92,8 @@ dependencies {
     "gameTestImplementation"(sourceSets.main.output)
 }
 
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
-}
-
-afterEvaluate {
-    tasks.named("runClient") {
-        it.dependsOn("gameTestClasses")
-    }
-    tasks.named("runGameTest") {
-        it.dependsOn("gameTestClasses")
-    }
-}
-
-shadowJar {
-    exclude "fabric.mod.json"
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set("dev")
-}
-
-remapJar {
-    inputFile.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier.set(null)
-}
-
-jar {
-    archiveClassifier.set("dev-only-platform")
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
-
-final boolean RELEASE_DEBUG = Boolean.parseBoolean(System.getenv("RELEASE_DEBUG") ?: "true")
-
-String createChangelog(boolean useLongFormat) {
-    String base = """\
+ext {
+    changelogHeader = """\
         # Large Fluid Tank for neoforge
         
         | Dependency | Version |
@@ -170,158 +102,4 @@ String createChangelog(boolean useLongFormat) {
         | NeoForge | ${project.neoforge_version} |
         | scalable-cats-force | ${project.slpVersion} |
         """.stripIndent()
-    String fromFile = rootProject.file(project.changelog_file).text
-    if (useLongFormat) {
-        return base + System.lineSeparator() + fromFile
-    } else {
-        String shortFormat = fromFile.split("---", 2)[0]
-        return base + System.lineSeparator() + shortFormat
-    }
-}
-
-String noHeaderChangelog() {
-    String fromFile = rootProject.file(project.changelog_file).text
-    String headVersion = fromFile.split("---", 2)[0]
-            .lines().filter { s -> !s.startsWith("## ") }.collect(Collectors.joining(System.lineSeparator()))
-            .strip()
-    return headVersion;
-}
-
-tasks.register("checkChangelog") {
-    doLast {
-        println(createChangelog(true))
-        println("-" * 20 + " noHeader " + "-" * 20)
-        println(noHeaderChangelog())
-    }
-}
-
-publishing {
-    publications {
-        create("mavenNeoForge", MavenPublication.class) {
-            artifactId = project.maven_base_name + "-" + project.name + "-" + project.minecraft_version
-            from(components["java"])
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        if (!Boolean.parseBoolean(System.getenv("CI")) || !RELEASE_DEBUG) {
-            maven {
-                name = "AzureRepository"
-                url = uri("https://pkgs.dev.azure.com/Kotori316/minecraft/_packaging/mods/maven/v1")
-                credentials {
-                    username = project.findProperty("azureUserName") ?: System.getenv("AZURE_USER_NAME") ?: ""
-                    password = project.findProperty("azureToken") ?: System.getenv("AZURE_TOKEN") ?: "TOKEN"
-                }
-            }
-        }
-    }
-}
-
-curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
-    project {
-        id = "291006"
-        changelogType = "markdown"
-        changelog = createChangelog(true)
-        releaseType = "release"
-        addGameVersion("NeoForge")
-        addGameVersion(project.minecraft_version)
-        mainArtifact(tasks.remapJar) {
-            displayName = "${project.version}-neoforge"
-        }
-        addArtifact(tasks.shadowJar)
-        addArtifact(tasks.sourcesJar)
-        relations {
-            requiredDependency "scalable-cats-force"
-        }
-    }
-    options {
-        curseGradleOptions.debug = RELEASE_DEBUG // defaults to false
-        javaVersionAutoDetect = false
-        forgeGradleIntegration = false
-    }
-}
-
-modrinth {
-    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
-    projectId = "large-fluid-tank"
-    versionType = "release"
-    versionName = "${project.version}-neoforge"
-    uploadFile = tasks.remapJar
-    getAdditionalFiles().set([
-            tasks.shadowJar,
-            tasks.sourcesJar,
-    ])
-    getGameVersions().set([project.minecraft_version])
-    getLoaders().set(["neoforge"])
-    changelog = createChangelog(false)
-    debugMode = RELEASE_DEBUG
-    dependencies {
-        required.project("scalable-cats-force")
-    }
-}
-
-remapJar.finalizedBy("jksSignJar")
-
-tasks.register("jksSignJar") {
-    dependsOn("remapJar")
-    boolean executeCondition = project.hasProperty("jarSign.keyAlias") &&
-            project.hasProperty("jarSign.keyLocation") &&
-            project.hasProperty("jarSign.storePass")
-    onlyIf { executeCondition }
-    doLast {
-        //noinspection HttpUrlsUsage
-        ant.signjar(
-                jar: remapJar.archiveFile.get(),
-                alias: project.findProperty("jarSign.keyAlias") ?: "",
-                keystore: project.findProperty("jarSign.keyLocation") ?: "",
-                storepass: project.findProperty("jarSign.storePass") ?: "",
-                sigalg: "Ed25519",
-                digestalg: "SHA-256",
-                tsaurl: "http://timestamp.digicert.com",
-        )
-    }
-}
-
-signing {
-    sign(publishing.publications)
-    sign(tasks.shadowJar, tasks.remapJar, tasks.sourcesJar)
-}
-
-boolean hasGpgSignature = project.hasProperty("signing.keyId") &&
-        project.hasProperty("signing.password") &&
-        project.hasProperty("signing.secretKeyRingFile")
-
-tasks.withType(Sign).configureEach {
-    it.onlyIf {
-        hasGpgSignature
-    }
-}
-
-tasks.withType(AbstractPublishToMaven).configureEach {
-    if (hasGpgSignature) {
-        it.dependsOn(":neoforge:signRemapJar")
-    }
-}
-
-tasks.register("registerVersion", CallVersionFunctionTask.class) {
-    functionEndpoint = readVersionFunctionEndpoint(project)
-    gameVersion = project.findProperty("minecraft_version")
-    platform = "neoforge"
-    modName = project.findProperty("maven_base_name")
-    changelog = noHeaderChangelog()
-    homepage = "https://modrinth.com/mod/large-fluid-tank"
-}
-
-tasks.register("checkReleaseVersion", CallVersionCheckFunctionTask.class) {
-    gameVersion = project.findProperty("minecraft_version")
-    platform = "neoforge"
-    modName = project.findProperty("maven_base_name")
-    version = project.version
-    failIfExists = !RELEASE_DEBUG
-}
-
-afterEvaluate {
-    rootProject.tasks.named("githubRelease").configure { it.dependsOn(":neoforge:assemble") }
 }
