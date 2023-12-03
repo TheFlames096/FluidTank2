@@ -70,17 +70,6 @@ tasks {
     }
 
     val baseName = project.findProperty("maven_base_name") as String
-    fun cfChangelog(): String {
-        return rootProject
-            .file(project.property("changelog_file") as String)
-            .useLines {
-                it.joinToString(System.lineSeparator())
-                    .split("---", limit = 2)[0]
-                    .lines()
-                    .filterNot { t -> t.startsWith("## ") }
-                    .joinToString(System.lineSeparator())
-            }
-    }
 
     register("registerVersion", CallVersionFunctionTask::class) {
         functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
@@ -98,6 +87,18 @@ tasks {
         version = project.version.toString()
         failIfExists = !releaseDebug
     }
+}
+
+fun cfChangelog(): String {
+    return rootProject
+        .file(project.property("changelog_file") as String)
+        .useLines {
+            it.joinToString(System.lineSeparator())
+                .split("---", limit = 2)[0]
+                .lines()
+                .filterNot { t -> t.startsWith("## ") }
+                .joinToString(System.lineSeparator())
+        }
 }
 
 publishing {
@@ -180,8 +181,7 @@ curseforge {
 
 fun modrinthChangelog(): String {
     if (!ext.has("changelogHeader")) {
-        return "NNM ${project.name}"
-        // throw IllegalStateException("No changelogHeader for project(${project.name})")
+        throw IllegalStateException("No changelogHeader for project(${project.name})")
     }
     val header = ext.get("changelogHeader").toString()
     val fromFile = rootProject
@@ -210,5 +210,19 @@ modrinth {
 afterEvaluate {
     rootProject.tasks.named("githubRelease") {
         dependsOn(tasks.assemble)
+    }
+}
+
+tasks.register("checkChangelog") {
+    doLast {
+        listOf(
+            "cfChangelog" to cfChangelog(),
+            "curseChangelog" to curseChangelog(),
+            "modrinthChangelog" to modrinthChangelog(),
+        ).forEach { pair ->
+            println("*".repeat(10) + pair.first + "*".repeat(10))
+            println(pair.second)
+            println("*".repeat(30))
+        }
     }
 }

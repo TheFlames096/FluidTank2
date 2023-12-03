@@ -142,7 +142,7 @@ tasks {
         options.encoding = "UTF-8"
     }
 
-    processResources {
+    withType(ProcessResources::class) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
     jar {
