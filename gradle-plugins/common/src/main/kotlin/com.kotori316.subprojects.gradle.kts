@@ -14,7 +14,7 @@ configurations {
     compileClasspath { extendsFrom(common) }
     runtimeClasspath { extendsFrom(common) }
     testCompileClasspath { extendsFrom(compileClasspath.get()) }
-    testRuntimeClasspath { extendsFrom(compileClasspath.get()) }
+    testRuntimeClasspath { extendsFrom(runtimeClasspath.get()) }
 }
 
 tasks {
