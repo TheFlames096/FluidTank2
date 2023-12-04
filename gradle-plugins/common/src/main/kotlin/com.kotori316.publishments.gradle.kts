@@ -4,7 +4,9 @@ import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
 import com.matthewprenger.cursegradle.Options
+import groovy.lang.Closure
 import net.fabricmc.loom.task.RemapJarTask
+import java.io.Serial
 
 plugins {
     id("java")
@@ -134,16 +136,22 @@ fun mapPlatformToCamel(platform: String): String {
     }
 }
 
-fun curseChangelog(): String {
-    if (!ext.has("changelogHeader")) {
-        return "NNC ${project.name}"
-        // throw IllegalStateException("No changelogHeader for project(${project.name})")
+fun curseChangelog(): Closure<String> {
+    return object : Closure<String>(project) {
+        @Serial
+        private val serialVersionUID: Long = 1806094812687791796L
+
+        fun doCall(): String {
+            if (!ext.has("changelogHeader")) {
+                throw IllegalStateException("No changelogHeader for project(${project.name})")
+            }
+            val header = ext.get("changelogHeader").toString()
+            val fromFile = rootProject
+                .file(project.property("changelog_file") as String)
+                .readText()
+            return header + System.lineSeparator() + fromFile
+        }
     }
-    val header = ext.get("changelogHeader").toString()
-    val fromFile = rootProject
-        .file(project.property("changelog_file") as String)
-        .readText()
-    return header + System.lineSeparator() + fromFile
 }
 
 fun curseProjectId(platform: String): String {
@@ -217,7 +225,7 @@ tasks.register("checkChangelog") {
     doLast {
         listOf(
             "cfChangelog" to cfChangelog(),
-            "curseChangelog" to curseChangelog(),
+            "curseChangelog" to curseChangelog().call(),
             "modrinthChangelog" to modrinthChangelog(),
         ).forEach { pair ->
             println("::group::${pair.first} in ${project.name}")
