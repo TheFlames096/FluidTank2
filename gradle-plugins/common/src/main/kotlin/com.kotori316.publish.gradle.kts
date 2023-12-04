@@ -32,7 +32,7 @@ val hasGpgSignature = project.hasProperty("signing.keyId") &&
 
 tasks {
     val jksSignJar = register("jksSignJar") {
-        //dependsOn(remapJar)
+        dependsOn(remapJar)
         onlyIf {
             project.hasProperty("jarSign.keyAlias") &&
                     project.hasProperty("jarSign.keyLocation") &&
