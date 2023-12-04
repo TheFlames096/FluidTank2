@@ -1,5 +1,5 @@
 package com.kotori316.fluidtank.neoforge.integration.jade;
-/*
+
 import com.kotori316.fluidtank.FluidTankCommon;
 import com.kotori316.fluidtank.integration.tooltip.TooltipContent;
 import com.kotori316.fluidtank.tank.BlockTank;
@@ -28,4 +28,4 @@ public class FluidTankJadePlugin implements IWailaPlugin {
         registration.addConfig(TooltipContent.JADE_CONFIG_SHORT(), false);
         registration.addConfig(TooltipContent.JADE_CONFIG_COMPACT(), false);
     }
-}*/
+}

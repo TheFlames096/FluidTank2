@@ -1,5 +1,5 @@
 package com.kotori316.fluidtank.neoforge.integration.jade;
-/*
+
 import com.kotori316.fluidtank.integration.tooltip.TooltipContent;
 import com.kotori316.fluidtank.tank.TileTank;
 import net.minecraft.client.Minecraft;
@@ -34,4 +34,4 @@ class FluidTankJadeProvider implements IServerDataProvider<BlockAccessor>, IBloc
     public int getDefaultPriority() {
         return TooltipPosition.BODY;
     }
-}*/
+}
