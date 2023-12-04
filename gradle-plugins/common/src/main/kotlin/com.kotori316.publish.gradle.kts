@@ -1,12 +1,6 @@
 import com.kotori316.plugin.cf.CallVersionCheckFunctionTask
 import com.kotori316.plugin.cf.CallVersionFunctionTask
-import com.matthewprenger.cursegradle.CurseArtifact
-import com.matthewprenger.cursegradle.CurseProject
-import com.matthewprenger.cursegradle.CurseRelation
-import com.matthewprenger.cursegradle.Options
-import groovy.lang.Closure
 import net.fabricmc.loom.task.RemapJarTask
-import java.io.Serial
 
 plugins {
     id("java")
@@ -17,8 +11,7 @@ plugins {
     id("signing")
     id("com.kotori316.plugin.cf")
     id("com.github.johnrengelman.shadow")
-    id("com.matthewprenger.cursegradle")
-    id("com.modrinth.minotaur")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 val minecraftVersion = project.property("minecraft_version") as String
@@ -136,22 +129,15 @@ fun mapPlatformToCamel(platform: String): String {
     }
 }
 
-fun curseChangelog(): Closure<String> {
-    return object : Closure<String>(project) {
-        @Serial
-        private val serialVersionUID: Long = 1806094812687791796L
-
-        fun doCall(): String {
-            if (!ext.has("changelogHeader")) {
-                throw IllegalStateException("No changelogHeader for project(${project.name})")
-            }
-            val header = ext.get("changelogHeader").toString()
-            val fromFile = rootProject
-                .file(project.property("changelog_file") as String)
-                .readText()
-            return header + System.lineSeparator() + fromFile
-        }
+fun curseChangelog(): String {
+    if (!ext.has("changelogHeader")) {
+        throw IllegalStateException("No changelogHeader for project(${project.name})")
     }
+    val header = ext.get("changelogHeader").toString()
+    val fromFile = rootProject
+        .file(project.property("changelog_file") as String)
+        .readText()
+    return header + System.lineSeparator() + fromFile
 }
 
 fun curseProjectId(platform: String): String {
@@ -161,30 +147,6 @@ fun curseProjectId(platform: String): String {
         "neoforge" -> "291006"
         else -> throw IllegalArgumentException("Unknown platform $platform")
     }
-}
-
-curseforge {
-    apiKey = project.findProperty("curseforge_additional-enchanted-miner_key") ?: System.getenv("CURSE_TOKEN") ?: ""
-    project(closureOf<CurseProject> {
-        id = curseProjectId(project.name)
-        changelogType = "markdown"
-        changelog = curseChangelog()
-        releaseType = "release"
-        addGameVersion(minecraftVersion)
-        addGameVersion(mapPlatformToCamel(project.name))
-        mainArtifact(remapJar.archiveFile.get(), closureOf<CurseArtifact> {
-            displayName = "${project.version}-${project.name}"
-        })
-        addArtifact(tasks.shadowJar.flatMap { it.archiveFile }.get())
-        relations(closureOf<CurseRelation> {
-            requiredDependency("scalable-cats-force")
-        })
-    })
-    options(closureOf<Options> {
-        curseGradleOptions.debug = releaseDebug
-        curseGradleOptions.javaVersionAutoDetect = false
-        curseGradleOptions.forgeGradleIntegration = false
-    })
 }
 
 fun modrinthChangelog(): String {
@@ -199,19 +161,38 @@ fun modrinthChangelog(): String {
     return header + System.lineSeparator() + shortFormat
 }
 
-modrinth {
-    token.set((project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String)
-    projectId = "large-fluid-tank"
-    versionType = "release"
-    versionName = "${project.version}-${project.name}"
-    uploadFile = remapJar
-    additionalFiles = listOf(tasks.shadowJar)
-    gameVersions = listOf(minecraftVersion)
-    loaders = listOf(project.name)
-    changelog = provider { modrinthChangelog() }
-    debugMode = releaseDebug
-    dependencies {
-        required.project("scalable-cats-force")
+publishMods {
+    dryRun = releaseDebug
+    type = STABLE
+    file = remapJar.archiveFile
+    additionalFiles = files(
+        tasks.shadowJar,
+        tasks.named("sourcesJar")
+    )
+    modLoaders = listOf(project.name)
+    displayName = "${project.version}-${project.name}"
+
+    curseforge {
+        accessToken = (
+                project.findProperty("curseforge_additional-enchanted-miner_key")
+                    ?: System.getenv("CURSE_TOKEN")
+                    ?: "") as String
+        projectId = curseProjectId(project.name)
+        minecraftVersions = listOf(minecraftVersion)
+        changelog = provider { curseChangelog() }
+        requires {
+            slug = "scalable-cats-force"
+        }
+    }
+
+    modrinth {
+        accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
+        projectId = "large-fluid-tank"
+        minecraftVersions = listOf(minecraftVersion)
+        changelog = provider { modrinthChangelog() }
+        requires {
+            slug = "scalable-cats-force"
+        }
     }
 }
 
@@ -225,7 +206,7 @@ tasks.register("checkChangelog") {
     doLast {
         listOf(
             "cfChangelog" to cfChangelog(),
-            "curseChangelog" to curseChangelog().call(),
+            "curseChangelog" to curseChangelog(),
             "modrinthChangelog" to modrinthChangelog(),
         ).forEach { pair ->
             println("::group::${pair.first} in ${project.name}")

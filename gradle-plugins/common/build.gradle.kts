@@ -16,8 +16,7 @@ dependencies {
         "dev.architectury.loom" to libs.versions.plugin.loom.get(),
         "com.kotori316.plugin.cf" to libs.versions.plugin.cf.get(),
         "com.github.johnrengelman.shadow" to libs.versions.plugin.shadow.get(),
-        "com.matthewprenger.cursegradle" to libs.versions.plugin.curse.get(),
-        "com.modrinth.minotaur" to libs.versions.plugin.minotaur.get(),
+        "me.modmuss50.mod-publish-plugin" to libs.versions.plugin.publish.all.get(),
     ).forEach { (name, version) ->
         implementation(group = name, name = "${name}.gradle.plugin", version = version)
     }
