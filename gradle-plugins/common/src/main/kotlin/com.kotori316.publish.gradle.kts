@@ -92,6 +92,7 @@ fun cfChangelog(): String {
                 .split("---", limit = 2)[0]
                 .lines()
                 .filterNot { t -> t.startsWith("## ") }
+                .filter { t -> t.isNotBlank() }
                 .joinToString(System.lineSeparator())
         }
 }
