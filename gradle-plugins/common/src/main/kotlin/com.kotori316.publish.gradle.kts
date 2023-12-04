@@ -41,7 +41,7 @@ tasks {
         doLast {
             ant.withGroovyBuilder {
                 "signjar"(
-                    "jar" to remapJar.map { it.archiveFile }.get(),
+                    "jar" to remapJar.flatMap { it.archiveFile }.get(),
                     "alias" to project.findProperty("jarSign.keyAlias"),
                     "keystore" to project.findProperty("jarSign.keyLocation"),
                     "storepass" to project.findProperty("jarSign.storePass"),
@@ -131,7 +131,7 @@ fun mapPlatformToCamel(platform: String): String {
 
 fun curseChangelog(): String {
     if (!ext.has("changelogHeader")) {
-        throw IllegalStateException("No changelogHeader for project(${project.name})")
+        throw IllegalStateException("No changelogHeader in curseChangelog for project(${project.name})")
     }
     val header = ext.get("changelogHeader").toString()
     val fromFile = rootProject
@@ -151,7 +151,7 @@ fun curseProjectId(platform: String): String {
 
 fun modrinthChangelog(): String {
     if (!ext.has("changelogHeader")) {
-        throw IllegalStateException("No changelogHeader for project(${project.name})")
+        throw IllegalStateException("No changelogHeader in modrinthChangelog for project(${project.name})")
     }
     val header = ext.get("changelogHeader").toString()
     val fromFile = rootProject

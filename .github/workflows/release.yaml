@@ -69,7 +69,7 @@ jobs:
           -PjarSign.keyLocation="${HOME}/kotori316_keystore.jks"
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
-          clean assemble publishToMavenLocal githubRelease curseforge modrinth registerVersion publish
+          clean assemble publishToMavenLocal githubRelease publishMods registerVersion publish
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
