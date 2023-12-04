@@ -78,7 +78,7 @@ jobs:
           JAR_PASSWORD: ${{steps.get-secrets.outputs.jar_password}}
           CURSE_TOKEN: ${{steps.get-secrets.outputs.curseforge_token}}
           MODRINTH_TOKEN: ${{steps.get-secrets.outputs.modrinth_token}}
-          RELEASE_DEBUG: false
+          RELEASE_DEBUG: true
           VERSION_FUNCTION_ENDPOINT: ${{ secrets.GCP_VERSION_FUNCTION_ENDPOINT }}
           SERVICE_ACCOUNT: ${{ secrets.GCP_FUNCTION_EXECUTION_ACCOUNT }}
       - name: Verify Build Files
