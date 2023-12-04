@@ -220,9 +220,9 @@ tasks.register("checkChangelog") {
             "curseChangelog" to curseChangelog(),
             "modrinthChangelog" to modrinthChangelog(),
         ).forEach { pair ->
-            println("*".repeat(10) + pair.first + "*".repeat(10))
+            println("::group::${pair.first} in ${project.name}")
             println(pair.second)
-            println("*".repeat(30))
+            println("::EndGroup::".lowercase())
         }
     }
 }

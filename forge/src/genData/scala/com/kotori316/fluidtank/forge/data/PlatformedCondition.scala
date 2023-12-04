@@ -18,6 +18,7 @@ trait PlatformedCondition {
   def neoForgeCondition: Option[JsonObject]
 }
 
+// TODO Remove support of different loader tags
 object PlatformedCondition {
 
   case class Tag(helper: RecipeIngredientHelper) extends PlatformedCondition {
