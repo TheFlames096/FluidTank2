@@ -188,7 +188,7 @@ publishMods {
 
     modrinth {
         accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
-        projectId = "large-fluid-tank"
+        projectId = "uMlJQMHT"
         minecraftVersions = listOf(minecraftVersion)
         changelog = provider { modrinthChangelog() }
         requires {
