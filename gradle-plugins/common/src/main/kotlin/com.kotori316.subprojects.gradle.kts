@@ -22,7 +22,6 @@ tasks {
         archiveClassifier = "dev-only-platform"
     }
     shadowJar {
-        exclude("fabric.mod.json")
         exclude("architectury.common.json")
         configurations = listOf(project.configurations.getAt("shadowCommon"))
         archiveClassifier = "dev"
