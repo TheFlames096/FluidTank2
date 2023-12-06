@@ -1,6 +1,5 @@
 package com.kotori316.fluidtank.fabric.integration.ae2
 
-/*
 import appeng.api.config.Actionable
 import appeng.api.networking.security.IActionSource
 import appeng.api.stacks.{AEFluidKey, AEKey, KeyCounter}
@@ -11,7 +10,6 @@ import com.kotori316.fluidtank.contents.GenericUnit
 import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, VanillaFluid, VanillaPotion}
 import com.kotori316.fluidtank.tank.TileTank
 import net.minecraft.network.chat.Component
-import net.minecraft.world.level.material.Fluids
 
 case class TankMEStorage(tank: TileTank) extends MEStorage {
 
@@ -59,4 +57,4 @@ case class TankMEStorage(tank: TileTank) extends MEStorage {
   private def fromAeFluid(fluidKey: AEFluidKey, amount: Long): FluidAmount = {
     FluidAmountUtil.from(fluidKey.getFluid, GenericUnit.fromFabric(amount), Option(fluidKey.copyTag()))
   }
-}*/
+}
