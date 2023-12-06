@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":prHourlyLimitNone"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "curse.maven"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "org.typelevel",
+        "net.minecraftforge:forge",
+        "net.fabricmc.fabric-api",
+        "dev.architectury.loom",
+        "architectury-plugin",
+        "net.neoforged:neoforge"
+      ],
+      "enabled": false
+    }
+  ]
+}
