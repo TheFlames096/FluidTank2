@@ -33,5 +33,6 @@
       ],
       "automerge": true
     }
-  ]
+  ],
+  "automergeStrategy": "merge-commit"
 }
