@@ -23,10 +23,15 @@
         "net.minecraftforge:forge",
         "net.fabricmc.fabric-api",
         "dev.architectury.loom",
-        "architectury-plugin",
-        "net.neoforged:neoforge"
+        "architectury-plugin"
       ],
       "enabled": false
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "automerge": true
     }
   ]
 }
