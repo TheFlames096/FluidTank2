@@ -17,6 +17,8 @@ case class FluidLikeKey(fluid: FluidLike, tag: Option[CompoundTag]) {
 object FluidLikeKey {
   def apply(fluid: FluidLike, tag: Option[CompoundTag]): FluidLikeKey = new FluidLikeKey(fluid, tag.map(_.copy()))
 
+  def apply(fluid: FluidLike, tag: CompoundTag): FluidLikeKey = apply(fluid, Option(tag))
+
   def from(fluidAmount: FluidAmount): FluidLikeKey = FluidLikeKey(fluidAmount.content, fluidAmount.nbt)
 
   implicit val FluidKeyHash: Hash[FluidLikeKey] = Hash.fromUniversalHashCode

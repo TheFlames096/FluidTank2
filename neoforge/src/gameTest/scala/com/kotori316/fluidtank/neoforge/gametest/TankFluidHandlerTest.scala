@@ -11,7 +11,8 @@ import com.kotori316.fluidtank.tank.Tier
 import net.minecraft.core.BlockPos
 import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, TestFunction}
 import net.minecraft.world.item.alchemy.Potions
-import net.neoforged.neoforge.common.capabilities.Capabilities
+import net.neoforged.neoforge.capabilities.Capabilities
+import net.neoforged.neoforge.fluids.capability.IFluidHandler
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
 import net.neoforged.neoforge.gametest.GameTestHolder
 import org.junit.jupiter.api.Assertions.{assertDoesNotThrow, assertEquals, assertNotNull, assertTrue}
@@ -25,12 +26,17 @@ class TankFluidHandlerTest {
     GetGameTestMethods.getTests(getClass, this, BATCH)
   }
 
+  private def getTankCapability(helper: GameTestHelper, pos: BlockPos, tile: TileTankNeoForge): IFluidHandler = {
+    val h = assertDoesNotThrow(() => helper.getLevel.getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(pos), null, tile, null))
+    assertNotNull(h)
+    h
+  }
+
   def testGetCapability(helper: GameTestHelper): Unit = {
     val basePos = BlockPos.ZERO.above()
     val tile = TankTest.placeTank(helper, basePos, Tier.WOOD).asInstanceOf[TileTankNeoForge]
 
-    val cap = assertDoesNotThrow(() => tile.getCapability(Capabilities.FLUID_HANDLER, null))
-    assertNotNull(cap)
+    getTankCapability(helper, basePos, tile)
     helper.succeed()
   }
 
@@ -38,7 +44,7 @@ class TankFluidHandlerTest {
     val basePos = BlockPos.ZERO.above()
     val tile = TankTest.placeTank(helper, basePos, Tier.WOOD).asInstanceOf[TileTankNeoForge]
 
-    val cap = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val cap = getTankCapability(helper, basePos, tile)
     assertEquals(4000, cap.getTankCapacity(0))
     helper.succeed()
   }
@@ -48,7 +54,7 @@ class TankFluidHandlerTest {
     val tile = TankTest.placeTank(helper, basePos, Tier.WOOD).asInstanceOf[TileTankNeoForge]
     tile.getConnection.getHandler.fill(FluidAmountUtil.BUCKET_WATER, execute = true)
 
-    val cap = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val cap = getTankCapability(helper, basePos, tile)
     assertEquals(FluidAmountUtil.BUCKET_WATER.toStack, cap.getFluidInTank(0))
     helper.succeed()
   }
@@ -56,7 +62,7 @@ class TankFluidHandlerTest {
   def fillSimulate1(helper: GameTestHelper): Unit = {
     val basePos = BlockPos.ZERO.above()
     val tile = TankTest.placeTank(helper, basePos, Tier.WOOD).asInstanceOf[TileTankNeoForge]
-    val handler = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val handler = getTankCapability(helper, basePos, tile)
 
     val filled = handler.fill(FluidAmountUtil.BUCKET_WATER.toStack, FluidAction.SIMULATE)
     assertEquals(1000, filled)
@@ -68,7 +74,7 @@ class TankFluidHandlerTest {
     val basePos = BlockPos.ZERO.above()
     val tile = TankTest.placeTank(helper, basePos, Tier.WOOD).asInstanceOf[TileTankNeoForge]
     TankTest.placeTank(helper, basePos.above(), Tier.STONE)
-    val handler = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val handler = getTankCapability(helper, basePos, tile)
 
     val toFill = FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(20000))
     val filled = handler.fill(toFill.toStack, FluidAction.EXECUTE)
@@ -83,7 +89,7 @@ class TankFluidHandlerTest {
     TankTest.placeTank(helper, basePos.above(), Tier.STONE)
     tile.getConnection.getHandler.fill(FluidAmountUtil.from(PotionType.SPLASH, Potions.NIGHT_VISION, GenericUnit.ONE_BUCKET), execute = true)
 
-    val handler = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val handler = getTankCapability(helper, basePos, tile)
     assertEquals(20000, handler.getTankCapacity(0))
     assertTrue(handler.getFluidInTank(0).isEmpty)
     helper.succeed()
@@ -96,7 +102,7 @@ class TankFluidHandlerTest {
     val content = FluidAmountUtil.from(PotionType.SPLASH, Potions.NIGHT_VISION, GenericUnit.ONE_BUCKET.combineN(3))
     tile.getConnection.getHandler.fill(content, execute = true)
 
-    val handler = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val handler = getTankCapability(helper, basePos, tile)
     val filled = handler.fill(FluidAmountUtil.BUCKET_WATER.toStack, FluidAction.SIMULATE)
     assertEquals(0, filled)
     assertEqualHelper(Option(content), tile.getConnection.getContent)
@@ -110,7 +116,7 @@ class TankFluidHandlerTest {
     val content = FluidAmountUtil.from(PotionType.SPLASH, Potions.NIGHT_VISION, GenericUnit.ONE_BUCKET.combineN(3))
     tile.getConnection.getHandler.fill(content, execute = true)
 
-    val handler = tile.getCapability(Capabilities.FLUID_HANDLER, null).orElseThrow(() => new AssertionError())
+    val handler = getTankCapability(helper, basePos, tile)
     val drained = handler.drain(FluidAmountUtil.BUCKET_WATER.toStack, FluidAction.SIMULATE)
     assertTrue(drained.isEmpty)
     assertEqualHelper(Option(content), tile.getConnection.getContent)

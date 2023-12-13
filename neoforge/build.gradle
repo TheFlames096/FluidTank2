@@ -79,7 +79,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
-    modImplementation(group: "curse.maven", name: "jade-324717", version: project.property("jade_neoforge_id"))
+    modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.property("jade_neoforge_id"))
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.

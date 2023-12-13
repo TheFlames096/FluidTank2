@@ -11,10 +11,10 @@ import net.minecraft.gametest.framework.{GameTestGenerator, GameTestHelper, Test
 import net.minecraft.world.item.{Item, Items}
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.entity.HopperBlockEntity
-import net.neoforged.neoforge.common.capabilities.Capabilities
+import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.fluids.capability.IFluidHandler
 import net.neoforged.neoforge.gametest.GameTestHolder
-import org.junit.jupiter.api.Assertions.{assertEquals, assertInstanceOf, assertNotNull, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertDoesNotThrow, assertEquals, assertInstanceOf, assertNotNull, assertTrue}
 
 import java.util.Locale
 import scala.jdk.CollectionConverters.{ListHasAsScala, SeqHasAsJava}
@@ -34,7 +34,6 @@ class CatTest {
     val pos = new BlockPos(2, 2, 2)
     val cat = assertInstanceOf(classOf[EntityChestAsTank], helper.getBlockEntity(pos))
 
-    cat.getCapability(Capabilities.FLUID_HANDLER)
     val fluids = cat.getFluids.toScala.toSeq.flatMap(_.asScala)
     assertTrue(fluids.contains(FluidAmountUtil.BUCKET_WATER.setAmount(GenericUnit.fromForge(2000))),
       s"CAT should recognize fluids, $fluids")
@@ -48,10 +47,7 @@ class CatTest {
     val pos = new BlockPos(2, 2, 2)
     val cat = assertInstanceOf(classOf[EntityChestAsTank], helper.getBlockEntity(pos))
 
-    cat.getCapability(Capabilities.FLUID_HANDLER).orElseThrow(() => {
-      GameTestUtil.throwExceptionAt(helper, pos, "CAT must create proxy handler")
-      new AssertionError()
-    })
+    assertDoesNotThrow(() => helper.getLevel.getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(pos), null))
   }
 
   def fillLava(helper: GameTestHelper): Unit = {

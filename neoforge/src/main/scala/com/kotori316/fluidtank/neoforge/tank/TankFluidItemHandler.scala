@@ -5,20 +5,13 @@ import com.kotori316.fluidtank.fluids.{FluidAmount, FluidAmountUtil, FluidLike, 
 import com.kotori316.fluidtank.neoforge.fluid.NeoForgeConverter.*
 import com.kotori316.fluidtank.neoforge.fluid.TankFluidHandler
 import com.kotori316.fluidtank.tank.{Tier, TileTank}
-import net.minecraft.core.Direction
 import net.minecraft.world.item.{BlockItem, ItemStack}
-import net.neoforged.neoforge.common.capabilities.{Capabilities, Capability, ICapabilityProvider}
-import net.neoforged.neoforge.common.util.LazyOptional
 import net.neoforged.neoforge.fluids.capability.{IFluidHandler, IFluidHandlerItem}
 import org.jetbrains.annotations.VisibleForTesting
 
-class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends TankFluidHandler with ICapabilityProvider {
+class TankFluidItemHandler(tier: Tier, stack: ItemStack) extends TankFluidHandler {
 
-  private val handler = LazyOptional.of[IFluidHandlerItem](() => this)
-
-  override def getCapability[T](capability: Capability[T], arg: Direction): LazyOptional[T] = {
-    Capabilities.FLUID_HANDLER_ITEM.orEmpty(capability, this.handler)
-  }
+  def getCapability(ignored: Void): IFluidHandlerItem = this
 
   override def getContainer: ItemStack = stack
 

@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,6 +34,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -60,6 +63,7 @@ public final class FluidTank {
         setupConfig(modBus);
         modBus.register(this);
         modBus.register(proxy);
+        modBus.addListener(FluidTank::registerCapabilities);
         PacketHandler.init();
         // AE2FluidTankIntegration.onAPIAvailable();
         // FluidTankTopPlugin.sendIMC();
@@ -158,5 +162,13 @@ public final class FluidTank {
 
     static void onServerStart(ServerStartedEvent event) {
         DebugLogging.initialLog(event.getServer());
+    }
+
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_TANK_TYPE.get(), TileTankNeoForge::getCapability);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_CREATIVE_TANK_TYPE.get(), TileCreativeTankNeoForge::getCapability);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_VOID_TANK_TYPE.get(), TileVoidTankNeoForge::getCapability);
+        event.registerItem(Capabilities.FluidHandler.ITEM, ItemBlockTankNeoForge::initCapabilities, TANK_ITEM_MAP.values().stream().map(DeferredItem::asItem).toArray(Item[]::new));
+        event.registerItem(Capabilities.FluidHandler.ITEM, ItemReservoirNeoForge::initCapabilities, RESERVOIR_MAP.values().stream().map(DeferredItem::asItem).toArray(Item[]::new));
     }
 }

@@ -11,4 +11,6 @@ class BlockTankForge(t: Tier) extends BlockTank(t) {
   override def newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity = {
     new TileTankForge(t, pos, state)
   }
+
+  override protected def createBlockInstance(): BlockTank = new BlockTankForge(t)
 }

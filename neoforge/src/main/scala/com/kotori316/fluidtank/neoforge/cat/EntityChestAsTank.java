@@ -7,28 +7,29 @@ import com.kotori316.fluidtank.fluids.FluidLikeKey;
 import com.kotori316.fluidtank.neoforge.FluidTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scala.Option;
+import org.jetbrains.annotations.VisibleForTesting;
 import scala.math.BigInt;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,50 +38,31 @@ public class EntityChestAsTank extends BlockEntity {
         super(FluidTank.TILE_CAT.get(), pos, state);
     }
 
-    @NotNull
-    private LazyOptional<FluidHandlerProxy> proxy = LazyOptional.empty();
+    @Nullable
+    private FluidHandlerProxy proxy = null;
 
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (Capabilities.FLUID_HANDLER == cap) {
-            if (!this.proxy.isPresent()) {
-                this.proxy = createProxy();
-            }
-            return this.proxy.cast();
+    @Nullable
+    public IFluidHandler getCapability(Direction ignored) {
+        if (!(getLevel() instanceof ServerLevel)) return null;
+        if (this.proxy == null) {
+            this.proxy = createProxy();
         }
-        return super.getCapability(cap, side);
+        return proxy;
     }
 
-    private LazyOptional<FluidHandlerProxy> createProxy() {
+    @Nullable
+    private FluidHandlerProxy createProxy() {
         var facing = getBlockState().getValue(BlockStateProperties.FACING);
         var pos = getBlockPos().relative(facing);
-        var handler = Optional.ofNullable(getLevel())
-            .map(l -> l.getBlockEntity(pos))
-            .flatMap(b -> {
-                var o = b.getCapability(Capabilities.ITEM_HANDLER, facing.getOpposite());
-                // No problem even if o is empty
-                o.addListener(h -> this.markInvalid());
-                return o.filter(IItemHandlerModifiable.class::isInstance).map(IItemHandlerModifiable.class::cast);
-            })
-            .or(() -> Optional.ofNullable(HopperBlockEntity.getContainerAt(getLevel(), pos)).map(InvWrapper::new));
-
-        return handler.map(i -> LazyOptional.of(() -> new FluidHandlerProxy(i)))
-            .orElse(LazyOptional.empty());
-    }
-
-    private void markInvalid() {
-        this.proxy.invalidate();
-        this.proxy = LazyOptional.empty();
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        markInvalid();
+        var cache = BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, (ServerLevel) Objects.requireNonNull(getLevel()), pos, facing.getOpposite(), () -> true, () -> this.proxy = null);
+        if (cache.getCapability() instanceof IItemHandlerModifiable) {
+            return new FluidHandlerProxy(cache);
+        }
+        return null;
     }
 
     public Optional<List<GenericAmount<FluidLike>>> getFluids() {
-        return proxy.map(FluidHandlerProxy::fluids)
+        return Optional.ofNullable(proxy).map(FluidHandlerProxy::fluids)
             .map(m ->
                 m.entrySet().stream().map(e -> e.getKey().toAmount(e.getValue())).toList()
             );
@@ -88,19 +70,27 @@ public class EntityChestAsTank extends BlockEntity {
 
     static class FluidHandlerProxy implements IFluidHandler {
 
-        private final IItemHandlerModifiable inventory;
+        private final Supplier<IItemHandler> cache;
 
-        FluidHandlerProxy(IItemHandlerModifiable inventory) {
-            this.inventory = inventory;
+        FluidHandlerProxy(BlockCapabilityCache<IItemHandler, ?> cache) {
+            this.cache = cache::getCapability;
         }
 
-        LazyOptional<IFluidHandlerItem> getHandler(int slot) {
-            var stack = this.inventory.getStackInSlot(slot);
-            return FluidUtil.getFluidHandler(stack);
+        @VisibleForTesting
+        FluidHandlerProxy(IItemHandlerModifiable handler) {
+            this.cache = () -> handler;
+        }
+
+        Optional<IFluidHandlerItem> getHandler(int slot) {
+            return Optional.ofNullable(cache.get())
+                .map(i -> i.getStackInSlot(slot))
+                .flatMap(FluidUtil::getFluidHandler);
         }
 
         @Override
         public int getTanks() {
+            var inventory = cache.get();
+            if (inventory == null) return 0;
             return inventory.getSlots();
         }
 
@@ -122,18 +112,20 @@ public class EntityChestAsTank extends BlockEntity {
         @Override
         public int fill(FluidStack resource, FluidAction fluidAction) {
             if (resource == null || resource.isEmpty()) return 0;
+            var t = cache.get();
+            if (!(t instanceof IItemHandlerModifiable inventory)) return 0;
             var rest = resource.copy();
 
             for (int i = 0; i < getTanks(); i++) {
-                var stack = this.inventory.getStackInSlot(i);
+                var stack = inventory.getStackInSlot(i);
                 if (stack.isEmpty() || stack.getCount() > 1) continue; // Don't fill to stacked item
                 var handlerO = FluidUtil.getFluidHandler(stack);
-                if (!handlerO.isPresent()) continue; // Not a fluid container
+                if (handlerO.isEmpty()) continue; // Not a fluid container
 
                 var handler = handlerO.orElseThrow(AssertionError::new);
                 var filled = handler.fill(rest, fluidAction);
                 rest.shrink(filled);
-                if (fluidAction.execute()) this.inventory.setStackInSlot(i, handler.getContainer());
+                if (fluidAction.execute()) inventory.setStackInSlot(i, handler.getContainer());
 
                 if (rest.isEmpty()) {
                     // Filled all resources, early return
@@ -146,18 +138,20 @@ public class EntityChestAsTank extends BlockEntity {
         @Override
         public @NotNull FluidStack drain(FluidStack resource, FluidAction fluidAction) {
             if (resource == null || resource.isEmpty()) return FluidStack.EMPTY;
+            var t = cache.get();
+            if (!(t instanceof IItemHandlerModifiable inventory)) return FluidStack.EMPTY;
             var rest = resource.copy();
 
             for (int i = 0; i < getTanks(); i++) {
-                var stack = this.inventory.getStackInSlot(i);
+                var stack = inventory.getStackInSlot(i);
                 if (stack.isEmpty() || stack.getCount() > 1) continue; // Don't drain from stacked item
                 var handlerO = FluidUtil.getFluidHandler(stack);
-                if (!handlerO.isPresent()) continue; // Not a fluid container
+                if (handlerO.isEmpty()) continue; // Not a fluid container
 
                 var handler = handlerO.orElseThrow(AssertionError::new);
                 var drained = handler.drain(rest, fluidAction);
                 rest.shrink(drained.getAmount());
-                if (fluidAction.execute()) this.inventory.setStackInSlot(i, handler.getContainer());
+                if (fluidAction.execute()) inventory.setStackInSlot(i, handler.getContainer());
 
                 if (rest.isEmpty()) {
                     // Drained all resources, early return
@@ -188,7 +182,7 @@ public class EntityChestAsTank extends BlockEntity {
             return IntStream.range(0, getTanks())
                 .mapToObj(this::getFluidInTank)
                 .filter(Predicate.not(FluidStack::isEmpty))
-                .collect(Collectors.groupingBy(f -> FluidLikeKey.apply(FluidLike.of(f.getFluid()), Option.apply(f.getTag())),
+                .collect(Collectors.groupingBy(f -> FluidLikeKey.apply(FluidLike.of(f.getFluid()), f.getTag()),
                     Collectors.reducing(BigInt.apply(0), f -> GenericUnit.asBigIntFromForge(f.getAmount()), BigInt::$plus)));
         }
     }

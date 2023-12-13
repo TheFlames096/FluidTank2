@@ -5,7 +5,7 @@ pluginManagement {
         maven { url = "https://maven.minecraftforge.net/" }
         maven { url = "https://maven.neoforged.net/releases/" }
         maven { url = "https://maven.parchmentmc.org" }
-        maven { url = "https://storage.googleapis.com/kotori316-maven-storage/maven/" }
+        maven { url = "https://maven.kotori316.com/" }
         gradlePluginPortal()
     }
 }

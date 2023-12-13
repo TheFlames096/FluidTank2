@@ -4,6 +4,7 @@ import cats.implicits.toShow
 import com.kotori316.fluidtank.FluidTankCommon
 import com.kotori316.fluidtank.MCImplicits.showPos
 import com.kotori316.fluidtank.fluids.{PlatformFluidAccess, TransferFluid}
+import com.mojang.serialization.MapCodec
 import net.minecraft.core.{BlockPos, Direction}
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -12,7 +13,7 @@ import net.minecraft.world.level.block.entity.{BlockEntity, BlockEntityTicker, B
 import net.minecraft.world.level.block.state.{BlockBehaviour, BlockState, StateDefinition}
 import net.minecraft.world.level.block.{Block, EntityBlock}
 import net.minecraft.world.level.material.PushReaction
-import net.minecraft.world.level.{BlockGetter, Level}
+import net.minecraft.world.level.{BlockGetter, Level, LevelReader}
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.{CollisionContext, VoxelShape}
 import net.minecraft.world.{InteractionHand, InteractionResult}
@@ -20,12 +21,16 @@ import org.jetbrains.annotations.Nullable
 
 import scala.annotation.nowarn
 
-class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK).forceSolidOn()) with EntityBlock {
+abstract class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().strength(1f).dynamicShape().pushReaction(PushReaction.BLOCK).forceSolidOn()) with EntityBlock {
 
   registerDefaultState(this.getStateDefinition.any.setValue[TankPos, TankPos](TankPos.TANK_POS_PROPERTY, TankPos.SINGLE))
   final val itemBlock: ItemBlockTank = createTankItem()
 
   protected def createTankItem(): ItemBlockTank = new ItemBlockTank(this)
+
+  protected def createBlockInstance(): BlockTank
+
+  override protected final val codec: MapCodec[BlockTank] = BlockBehaviour.simpleCodec(_ => createBlockInstance())
 
   override final def asItem(): Item = itemBlock
 
@@ -112,7 +117,7 @@ class BlockTank(val tier: Tier) extends Block(BlockBehaviour.Properties.of().str
     }
   }
 
-  override def getCloneItemStack(level: BlockGetter, pos: BlockPos, state: BlockState): ItemStack = {
+  override def getCloneItemStack(level: LevelReader, pos: BlockPos, state: BlockState): ItemStack = {
     val stack = super.getCloneItemStack(level, pos, state)
     saveTankNBT(level.getBlockEntity(pos), stack)
     stack

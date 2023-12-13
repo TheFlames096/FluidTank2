@@ -4,11 +4,9 @@ import com.kotori316.fluidtank.neoforge.render.RenderItemTank;
 import com.kotori316.fluidtank.tank.BlockTank;
 import com.kotori316.fluidtank.tank.ItemBlockTank;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.function.Consumer;
 
@@ -28,8 +26,7 @@ public final class ItemBlockTankNeoForge extends ItemBlockTank {
         });
     }
 
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new TankFluidItemHandler(blockTank().tier(), stack);
+    public static IFluidHandlerItem initCapabilities(ItemStack stack, Void ignored) {
+        return new TankFluidItemHandler(((ItemBlockTankNeoForge) stack.getItem()).blockTank().tier(), stack);
     }
 }

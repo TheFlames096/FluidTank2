@@ -19,4 +19,9 @@ class BlockVoidTank extends BlockTank(Tier.VOID) {
       case _ => // should be unreachable
     }
   }
+
+  override protected def createBlockInstance(): BlockTank = {
+    val constructor = getClass.getConstructor()
+    constructor.newInstance()
+  }
 }

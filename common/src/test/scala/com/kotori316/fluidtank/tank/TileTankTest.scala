@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.{Nested, Test}
 
 class TileTankTest extends BeforeMC {
-  private val tankBlock = new BlockTank(Tier.WOOD)
+  private val tankBlock = new BlockTank(Tier.WOOD) {
+    override protected def createBlockInstance(): BlockTank = throw new UnsupportedOperationException("TileTankTest#createBlockInstance")
+  }
   private val creativeTankBlock = new BlockCreativeTank
   private val voidTankBlock = new BlockVoidTank
 

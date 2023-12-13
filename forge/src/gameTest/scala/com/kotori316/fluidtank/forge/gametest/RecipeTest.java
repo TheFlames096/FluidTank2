@@ -69,7 +69,7 @@ final class RecipeTest {
 
     void match1() {
         var recipe = getRecipe();
-        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "tst", CollectionConverters.asScala(Map.of(
+        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "tst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get()),
             's', new ItemStack(Items.STONE)
         ))), null));
@@ -79,7 +79,7 @@ final class RecipeTest {
         var recipe = getRecipe();
         var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
 
-        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "tst", CollectionConverters.asScala(Map.of(
+        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "tst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', stack,
             's', new ItemStack(Items.STONE)
         ))), null));
@@ -89,7 +89,7 @@ final class RecipeTest {
         var recipe = getRecipe();
         var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
 
-        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.asScala(Map.of(
+        assertTrue(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', stack,
             'k', new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get()),
             's', new ItemStack(Items.STONE)
@@ -101,7 +101,7 @@ final class RecipeTest {
         var stack = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_WATER());
         var stack2 = RecipeInventoryUtil.getFilledTankStack(Tier.WOOD, FluidAmountUtil.BUCKET_LAVA());
 
-        assertFalse(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.asScala(Map.of(
+        assertFalse(recipe.matches(RecipeInventoryUtil.getInv("tsk", "s s", "kst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', stack,
             'k', stack2,
             's', new ItemStack(Items.STONE)
@@ -110,7 +110,7 @@ final class RecipeTest {
 
     void notMatch5() {
         var recipe = getRecipe();
-        assertFalse(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "ts ", CollectionConverters.asScala(Map.of(
+        assertFalse(recipe.matches(RecipeInventoryUtil.getInv("tst", "s s", "ts ", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get()),
             's', new ItemStack(Items.STONE)
         ))), null));
@@ -137,7 +137,7 @@ final class RecipeTest {
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
 
-        var inv = RecipeInventoryUtil.getInv("ksk", "s s", "kst", CollectionConverters.asScala(Map.of(
+        var inv = RecipeInventoryUtil.getInv("ksk", "s s", "kst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', filled,
             'k', empty,
             's', new ItemStack(Items.STONE)
@@ -154,7 +154,7 @@ final class RecipeTest {
         var empty = new ItemStack(FluidTank.TANK_MAP.get(Tier.WOOD).get());
         var recipe = getRecipe();
 
-        var inv = RecipeInventoryUtil.getInv("kst", "s s", "kst", CollectionConverters.asScala(Map.of(
+        var inv = RecipeInventoryUtil.getInv("kst", "s s", "kst", CollectionConverters.<Character, ItemStack>asScala(Map.of(
             't', filled,
             'k', empty,
             's', new ItemStack(Items.STONE)
@@ -184,10 +184,6 @@ final class RecipeTest {
             tier, TierRecipeForge.Serializer.getIngredientTankForTier(tier), subItem);
 
         var fromSerializer = ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).toJson(recipe);
-        var finishedRecipe = new TierRecipeForge.TierFinishedRecipe(id, tier, subItem);
-        var fromFinishedRecipe = new JsonObject();
-        finishedRecipe.serializeRecipeData(fromFinishedRecipe);
-        assertEquals(fromSerializer, fromFinishedRecipe);
 
         var deserialized = ((TierRecipeForge.Serializer) TierRecipeForge.SERIALIZER).fromJson(fromSerializer);
         assertNotNull(deserialized);
