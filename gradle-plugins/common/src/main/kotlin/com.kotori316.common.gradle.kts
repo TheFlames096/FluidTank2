@@ -38,6 +38,13 @@ repositories {
         }
     }
     maven {
+        name = "Kotori316-main"
+        url = uri("https://maven.kotori316.com")
+        content {
+            includeGroup("com.kotori316")
+        }
+    }
+    maven {
         name = "Curse"
         url = uri("https://www.cursemaven.com")
         content {
