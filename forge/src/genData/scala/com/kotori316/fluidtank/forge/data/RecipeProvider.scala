@@ -1,11 +1,13 @@
 package com.kotori316.fluidtank.forge.data
 
 import com.kotori316.fluidtank.FluidTankCommon
+import com.kotori316.fluidtank.forge.FluidTank
 import com.kotori316.fluidtank.forge.recipe.TierRecipeForge
-import com.kotori316.fluidtank.forge.{FluidTank, data}
+import com.kotori316.fluidtank.recipe.TierRecipe
 import com.kotori316.fluidtank.tank.Tier
+import net.minecraft.data.PackOutput.Target
 import net.minecraft.data.recipes.{RecipeCategory, ShapedRecipeBuilder, ShapelessRecipeBuilder}
-import net.minecraft.data.{CachedOutput, DataGenerator, DataProvider}
+import net.minecraft.data.{CachedOutput, DataProvider, PackOutput}
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Items
@@ -15,7 +17,10 @@ import net.minecraftforge.common.Tags
 import java.util.concurrent.CompletableFuture
 import scala.jdk.javaapi.CollectionConverters
 
-class RecipeProvider(gen: DataGenerator) extends DataProvider {
+class RecipeProvider(output: PackOutput) extends DataProvider {
+  private final val recipePathProvider = output.createPathProvider(Target.DATA_PACK, "recipes")
+  private final val advancementPathProvider = output.createPathProvider(Target.DATA_PACK, "advancements")
+
   override def run(output: CachedOutput): CompletableFuture[?] = {
     val outputWork = for {
       recipe <- getRecipes
@@ -27,25 +32,25 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
 
   private def saveRecipe(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[?] = {
     val location = recipe.location
-    val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/recipes/${location.getPath}.json")
+    val out = recipePathProvider.json(location)
     DataProvider.saveStable(output, recipe.build, out)
   }
 
   private def saveAdvancement(output: CachedOutput, recipe: RecipeSerializeHelper): CompletableFuture[?] = {
     val location = recipe.location
-    val out = gen.getPackOutput.getOutputFolder.resolve(s"data/${location.getNamespace}/advancements/recipes/tank/${location.getPath}.json")
+    val out = advancementPathProvider.json(location)
     DataProvider.saveStable(output, recipe.advancement.build(location), out)
   }
 
   def getRecipes: Seq[RecipeSerializeHelper] = {
-    val woodTankBlock = FluidTank.TANK_MAP.get(Tier.WOOD).get()
+    val woodTankBlock = FluidTank.TANK_MAP.get(Tier.WOOD)
     val glassSubItem = RecipeIngredientHelper.bothTag(Tags.Items.GLASS, "c:glass_blocks")
-    val woodTank = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, woodTankBlock)
+    val woodTank = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, woodTankBlock.get())
         .define('x', glassSubItem.ingredient)
         .define('p', ItemTags.LOGS)
         .pattern("x x")
         .pattern("xpx")
-        .pattern("xxx"))
+        .pattern("xxx"), woodTankBlock.getId)
       .addTagCondition(glassSubItem)
       .addItemCriterion(Items.WATER_BUCKET)
       .addItemCriterion(glassSubItem)
@@ -53,16 +58,18 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
     val voidTank = RecipeSerializeHelper.by(
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_VOID_TANK.get())
           .define('o', obsidianSubItem.ingredient)
-          .define('t', woodTankBlock)
+          .define('t', woodTankBlock.get())
           .pattern("ooo")
           .pattern("oto")
-          .pattern("ooo"))
+          .pattern("ooo"), FluidTank.BLOCK_VOID_TANK.getId)
       .addTagCondition(obsidianSubItem)
-      .addItemCriterion(woodTankBlock.asItem())
+      .addItemCriterion(woodTankBlock.get().asItem())
     val normalTanks = Tier.values().filter(_.isNormalTankTier).filterNot(_ == Tier.WOOD)
       .map { t =>
+        val tankItem = TierRecipe.SerializerBase.getIngredientTankForTier(t)
         val subItem = getSubItem(t)
-        data.RecipeSerializeHelper(new TierRecipeForge.TierFinishedRecipe(new ResourceLocation(FluidTankCommon.modId, t.getBlockName), t, subItem.ingredient))
+        val location = new ResourceLocation(FluidTankCommon.modId, t.getBlockName)
+        RecipeSerializeHelper(new TierRecipeForge(t, tankItem, subItem.ingredient), location = location)
           .addTagCondition(subItem)
           .addItemCriterion(subItem)
       }
@@ -73,17 +80,17 @@ class RecipeProvider(gen: DataGenerator) extends DataProvider {
         RecipeSerializeHelper.by(ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, value)
             .requires(tank)
             .requires(Items.BUCKET)
-            .requires(Items.BUCKET))
+            .requires(Items.BUCKET), v.getId)
           .addItemCriterion(tank.asItem())
       }
 
     val cat = RecipeSerializeHelper.by(ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, FluidTank.BLOCK_CAT.get())
         .define('p', Ingredient.of(Items.CHEST, Items.BARREL))
-        .define('x', woodTankBlock)
+        .define('x', woodTankBlock.get())
         .pattern("x x")
         .pattern("xpx")
-        .pattern("xxx"))
-      .addItemCriterion(woodTankBlock.asItem())
+        .pattern("xxx"), FluidTank.BLOCK_CAT.getId)
+      .addItemCriterion(woodTankBlock.get().asItem())
 
     Seq(woodTank, voidTank, cat) ++ normalTanks ++ reservoirs
   }

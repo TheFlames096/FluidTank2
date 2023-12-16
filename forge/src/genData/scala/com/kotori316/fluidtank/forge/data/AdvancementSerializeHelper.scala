@@ -1,6 +1,8 @@
 package com.kotori316.fluidtank.forge.data
 
 import com.google.gson.JsonObject
+import com.mojang.serialization.JsonOps
+import net.minecraft.Util
 import net.minecraft.advancements.critereon.{InventoryChangeTrigger, ItemPredicate, RecipeUnlockedTrigger}
 import net.minecraft.advancements.{Advancement, AdvancementRequirements, AdvancementRewards, Criterion, CriterionTriggerInstance}
 import net.minecraft.data.recipes.RecipeBuilder
@@ -53,8 +55,10 @@ case class AdvancementSerializeHelper(criterionList: List[(String, Criterion[? <
       .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(location))
       .rewards(AdvancementRewards.Builder.recipe(location))
       .requirements(AdvancementRequirements.Strategy.OR)
-    val obj = criterionList.foldLeft(builder) { case (b, (s, c)) => b.addCriterion(s, c) }
-      .build(location).value().serializeToJson()
+    val obj: JsonObject = Util.getOrThrow(Advancement.CODEC.encodeStart(JsonOps.INSTANCE,
+      criterionList.foldLeft(builder) { case (b, (s, c)) => b.addCriterion(s, c) }
+        .build(location).value()
+    ).map(_.getAsJsonObject), s => new RuntimeException(s))
     FluidTankDataProvider.addPlatformConditions(obj, this.conditions)
     obj
   }

@@ -1,20 +1,22 @@
 package com.kotori316.fluidtank.forge.data
 
-import com.google.gson.JsonObject
+import com.google.gson.{JsonElement, JsonObject}
+import com.mojang.serialization.JsonOps
+import net.minecraft.Util
 import net.minecraft.advancements.Advancement
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
-import net.minecraft.data.recipes.{FinishedRecipe, RecipeBuilder, RecipeOutput, SpecialRecipeBuilder}
+import net.minecraft.data.recipes.{RecipeBuilder, RecipeOutput}
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.crafting.{CraftingRecipe, RecipeSerializer}
+import net.minecraft.world.item.crafting.Recipe
 
-case class RecipeSerializeHelper(recipe: FinishedRecipe,
+case class RecipeSerializeHelper(recipe: Recipe[?],
                                  conditions: List[PlatformedCondition] = Nil,
-                                 saveName: ResourceLocation = null,
+                                 location: ResourceLocation,
                                  advancement: AdvancementSerializeHelper = AdvancementSerializeHelper(),
                                 ) {
-  def this(c: RecipeBuilder, saveName: ResourceLocation) = {
-    this(RecipeSerializeHelper.getConsumeValue(c), saveName = saveName)
+  def this(c: RecipeBuilder, location: ResourceLocation) = {
+    this(RecipeSerializeHelper.getConsumeValue(c), location = location)
   }
 
   def addCondition(condition: PlatformedCondition): RecipeSerializeHelper =
@@ -24,12 +26,10 @@ case class RecipeSerializeHelper(recipe: FinishedRecipe,
     addCondition(PlatformedCondition.Tag(ingredientHelper))
 
   def build: JsonObject = {
-    val o = recipe.serializeRecipe()
-    FluidTankDataProvider.addPlatformConditions(o, this.conditions)
+    val o = Util.getOrThrow(Recipe.CODEC.encodeStart(JsonOps.INSTANCE, this.recipe).map(_.getAsJsonObject), s => new IllegalStateException(s))
+    FluidTankDataProvider.addPlatformConditions(o, conditions)
     o
   }
-
-  def location: ResourceLocation = if (saveName == null) recipe.id() else saveName
 
   def addItemCriterion(item: Item): RecipeSerializeHelper =
     this.copy(advancement = advancement.addItemCriterion(item))
@@ -39,25 +39,15 @@ case class RecipeSerializeHelper(recipe: FinishedRecipe,
 }
 
 object RecipeSerializeHelper {
-  def by(c: RecipeBuilder, saveName: ResourceLocation = null): RecipeSerializeHelper = new RecipeSerializeHelper(c, saveName)
+  def by(c: RecipeBuilder, location: ResourceLocation): RecipeSerializeHelper = new RecipeSerializeHelper(c, location)
 
-  def bySpecial(serializer: RecipeSerializer[? <: CraftingRecipe], recipeId: String, saveName: ResourceLocation = null): RecipeSerializeHelper = {
-    val c = SpecialRecipeBuilder.special(serializer)
-    var t: FinishedRecipe = null
-    c.save(new RecipeOutput {
-      override def accept(arg: FinishedRecipe): Unit = t = arg
-
-      override def advancement(): Advancement.Builder = Advancement.Builder.recipeAdvancement()
-    }, recipeId)
-    new RecipeSerializeHelper(t, Nil, saveName)
-  }
-
-  private def getConsumeValue(c: RecipeBuilder): FinishedRecipe = {
+  private def getConsumeValue(c: RecipeBuilder): Recipe[?] = {
     val fixed: RecipeBuilder = c.unlockedBy("dummy", RecipeUnlockedTrigger.unlocked(new ResourceLocation("dummy:dummy")))
-    var t: FinishedRecipe = null
+    var t: Recipe[?] = null
     fixed.save(new RecipeOutput {
-      override def accept(arg: FinishedRecipe): Unit = t = arg
-
+      override def accept(arg: ResourceLocation, arg2: Recipe[?], arg3: ResourceLocation, jsonElement: JsonElement): Unit = {
+        t = arg2
+      }
       override def advancement(): Advancement.Builder = Advancement.Builder.recipeAdvancement()
     })
     t

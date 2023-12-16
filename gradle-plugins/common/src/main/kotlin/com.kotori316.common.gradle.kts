@@ -91,7 +91,12 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-$parchmentMC:$parchmentDate@zip")
     })
 
-    implementation(
+    compileOnly(
+        group = "org.scala-lang",
+        name = "scala-library",
+        version = project.property("scala2_version") as String
+    )
+    testImplementation(
         group = "org.scala-lang",
         name = "scala-library",
         version = project.property("scala2_version") as String
@@ -99,22 +104,37 @@ dependencies {
     if (enableScala2 && System.getProperty("idea.sync.active", "false").toBoolean() ||
         System.getenv("FORCE_SCALA2").toBoolean()
     ) {
-        implementation(
+        compileOnly(
             group = "org.typelevel",
             name = "cats-core_2.13",
             version = project.property("cats_version") as String
-        )
+        ) { exclude("org.scala-lang") }
+        testImplementation(
+            group = "org.typelevel",
+            name = "cats-core_2.13",
+            version = project.property("cats_version") as String
+        ) { exclude("org.scala-lang") }
     } else {
-        implementation(
+        compileOnly(
             group = "org.scala-lang",
             name = "scala3-library_3",
             version = project.property("scala3_version") as String
         )
-        implementation(
+        compileOnly(
             group = "org.typelevel",
             name = "cats-core_3",
             version = project.property("cats_version") as String
+        ) { exclude("org.scala-lang") }
+        testImplementation(
+            group = "org.scala-lang",
+            name = "scala3-library_3",
+            version = project.property("scala3_version") as String
         )
+        testImplementation(
+            group = "org.typelevel",
+            name = "cats-core_3",
+            version = project.property("cats_version") as String
+        ) { exclude("org.scala-lang") }
     }
 
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))

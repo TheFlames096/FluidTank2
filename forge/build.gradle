@@ -131,8 +131,8 @@ dependencies {
     // The library will avoid errors of ForgeRegistry and Capability.
     testImplementation(group: "org.mockito", name: "mockito-core", version: project.mockitoCoreVersion)
     testImplementation(group: "org.mockito", name: "mockito-inline", version: project.mockitoInlineVersion)
-    forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
-    forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
+    // forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
+    // forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
 
     "genDataImplementation"(sourceSets.main.output)
     "gameTestImplementation"(sourceSets.main.output)

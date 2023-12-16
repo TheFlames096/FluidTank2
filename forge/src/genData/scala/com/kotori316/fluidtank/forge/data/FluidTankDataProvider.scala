@@ -29,7 +29,7 @@ object FluidTankDataProvider {
     // State and model
     event.getGenerator.addProvider(event.includeClient(), new StateAndModelProvider(event.getGenerator, event.getExistingFileHelper))
     // Recipe
-    event.getGenerator.addProvider(event.includeServer(), new RecipeProvider(event.getGenerator))
+    event.getGenerator.addProvider(event.includeServer(), new RecipeProvider(event.getGenerator.getPackOutput))
   }
 
   def addPlatformConditions(obj: JsonObject, conditions: List[PlatformedCondition]): Unit = {
