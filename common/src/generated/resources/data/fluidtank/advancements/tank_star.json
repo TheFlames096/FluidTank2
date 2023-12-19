@@ -47,6 +47,5 @@
     "recipes": [
       "fluidtank:tank_star"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

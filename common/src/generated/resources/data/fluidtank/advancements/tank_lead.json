@@ -1,21 +1,21 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_fabric_glass_blocks": {
+    "has_fabric_lead_ingots": {
       "conditions": {
         "items": [
           {
-            "tag": "c:glass_blocks"
+            "tag": "c:lead_ingots"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_forge_glass": {
+    "has_forge_ingots/lead": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:glass"
+            "tag": "forge:ingots/lead"
           }
         ]
       },
@@ -23,21 +23,9 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_wood"
+        "recipe": "fluidtank:tank_lead"
       },
       "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_water_bucket": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "minecraft:water_bucket"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
     }
   },
   "fabric:load_conditions": [
@@ -47,13 +35,13 @@
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "c:glass_blocks"
+            "c:lead_ingots"
           ]
         },
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "forge:glass"
+            "forge:ingots/lead"
           ]
         }
       ]
@@ -66,11 +54,11 @@
       "values": [
         {
           "type": "forge:tag_empty",
-          "tag": "forge:glass"
+          "tag": "forge:ingots/lead"
         },
         {
           "type": "forge:tag_empty",
-          "tag": "c:glass_blocks"
+          "tag": "c:lead_ingots"
         }
       ]
     }
@@ -83,11 +71,11 @@
         "values": [
           {
             "type": "neoforge:tag_empty",
-            "tag": "forge:glass"
+            "tag": "forge:ingots/lead"
           },
           {
             "type": "neoforge:tag_empty",
-            "tag": "c:glass_blocks"
+            "tag": "c:lead_ingots"
           }
         ]
       }
@@ -96,15 +84,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_forge_glass",
-      "has_fabric_glass_blocks",
-      "has_water_bucket"
+      "has_forge_ingots/lead",
+      "has_fabric_lead_ingots"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_wood"
+      "fluidtank:tank_lead"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_void"
+        "recipe": "fluidtank:chest_as_tank"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,8 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_void"
+      "fluidtank:chest_as_tank"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

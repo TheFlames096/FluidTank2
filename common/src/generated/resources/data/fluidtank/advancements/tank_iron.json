@@ -1,21 +1,21 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_fabric_copper_ingots": {
+    "has_fabric_iron_ingots": {
       "conditions": {
         "items": [
           {
-            "tag": "c:copper_ingots"
+            "tag": "c:iron_ingots"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_forge_ingots/copper": {
+    "has_forge_ingots/iron": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/copper"
+            "tag": "forge:ingots/iron"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_copper"
+        "recipe": "fluidtank:tank_iron"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -35,13 +35,13 @@
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "c:copper_ingots"
+            "c:iron_ingots"
           ]
         },
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "forge:ingots/copper"
+            "forge:ingots/iron"
           ]
         }
       ]
@@ -54,11 +54,11 @@
       "values": [
         {
           "type": "forge:tag_empty",
-          "tag": "forge:ingots/copper"
+          "tag": "forge:ingots/iron"
         },
         {
           "type": "forge:tag_empty",
-          "tag": "c:copper_ingots"
+          "tag": "c:iron_ingots"
         }
       ]
     }
@@ -71,11 +71,11 @@
         "values": [
           {
             "type": "neoforge:tag_empty",
-            "tag": "forge:ingots/copper"
+            "tag": "forge:ingots/iron"
           },
           {
             "type": "neoforge:tag_empty",
-            "tag": "c:copper_ingots"
+            "tag": "c:iron_ingots"
           }
         ]
       }
@@ -84,14 +84,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_forge_ingots/copper",
-      "has_fabric_copper_ingots"
+      "has_forge_ingots/iron",
+      "has_fabric_iron_ingots"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_copper"
+      "fluidtank:tank_iron"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

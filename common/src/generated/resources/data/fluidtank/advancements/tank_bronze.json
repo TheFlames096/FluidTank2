@@ -92,6 +92,5 @@
     "recipes": [
       "fluidtank:tank_bronze"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -30,6 +30,5 @@
     "recipes": [
       "fluidtank:reservoir_wood"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

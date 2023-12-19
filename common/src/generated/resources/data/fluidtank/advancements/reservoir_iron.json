@@ -30,6 +30,5 @@
     "recipes": [
       "fluidtank:reservoir_iron"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

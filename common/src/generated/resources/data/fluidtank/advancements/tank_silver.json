@@ -1,21 +1,21 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_fabric_diamonds": {
+    "has_fabric_silver_ingots": {
       "conditions": {
         "items": [
           {
-            "tag": "c:diamonds"
+            "tag": "c:silver_ingots"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_forge_gems/diamond": {
+    "has_forge_ingots/silver": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:gems/diamond"
+            "tag": "forge:ingots/silver"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_diamond"
+        "recipe": "fluidtank:tank_silver"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -35,13 +35,13 @@
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "c:diamonds"
+            "c:silver_ingots"
           ]
         },
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "forge:gems/diamond"
+            "forge:ingots/silver"
           ]
         }
       ]
@@ -54,11 +54,11 @@
       "values": [
         {
           "type": "forge:tag_empty",
-          "tag": "forge:gems/diamond"
+          "tag": "forge:ingots/silver"
         },
         {
           "type": "forge:tag_empty",
-          "tag": "c:diamonds"
+          "tag": "c:silver_ingots"
         }
       ]
     }
@@ -71,11 +71,11 @@
         "values": [
           {
             "type": "neoforge:tag_empty",
-            "tag": "forge:gems/diamond"
+            "tag": "forge:ingots/silver"
           },
           {
             "type": "neoforge:tag_empty",
-            "tag": "c:diamonds"
+            "tag": "c:silver_ingots"
           }
         ]
       }
@@ -84,14 +84,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_forge_gems/diamond",
-      "has_fabric_diamonds"
+      "has_forge_ingots/silver",
+      "has_fabric_silver_ingots"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_diamond"
+      "fluidtank:tank_silver"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

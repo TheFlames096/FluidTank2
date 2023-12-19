@@ -47,6 +47,5 @@
     "recipes": [
       "fluidtank:tank_stone"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }
