@@ -58,7 +58,7 @@ dependencies {
     modCompileOnly(group: "appeng", name: "appliedenergistics2-fabric", version: project.ae2_fabric_version) { transitive false }
     //noinspection SpellCheckingInspection
     modImplementation(group: "teamreborn", name: "energy", version: "3.0.0")
-    modImplementation("com.kotori316:test-utility-${project.name}:${project.property("test_util_version").toString()}")
+    modImplementation("com.kotori316:test-utility-fabric:${project.property("test_util_version").toString()}")
 
     testImplementation("net.fabricmc:fabric-loader-junit:${project.fabric_loader_version}")
 }
