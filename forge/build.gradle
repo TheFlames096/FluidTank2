@@ -79,6 +79,7 @@ loom {
             )
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
+            property("bsl.debug", "true")
             data()
             mods {
                 create("main") {
