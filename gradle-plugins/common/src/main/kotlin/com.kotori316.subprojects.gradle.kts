@@ -52,13 +52,7 @@ tasks {
 }
 
 dependencies {
-    modImplementation(
-        group = "com.kotori316",
-        name = "test-utility-${project.name}",
-        version = project.property("test_util_version").toString()
-    ) {
-        exclude("net.minecraftforge", "forge")
-    }
+
 }
 
 components.named("java", AdhocComponentWithVariants::class) {
