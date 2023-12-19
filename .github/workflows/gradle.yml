@@ -73,9 +73,7 @@ jobs:
           cache-read-only: false
           gradle-home-cache-cleanup: true
       - name: Common JUnit
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :common:test
+        run: ./gradlew :common:test
 
   test:
     runs-on: ubuntu-latest
@@ -101,16 +99,14 @@ jobs:
           cache-read-only: false
           gradle-home-cache-cleanup: true
       - name: ${{ matrix.platform }} JUnit
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :${{ matrix.platform }}:test
+        run: ./gradlew :${{ matrix.platform }}:test
+        env:
+          RUN_JUNIT: true
       - name: ${{ matrix.platform }} GameTest
         timeout-minutes: 5
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew :${{ matrix.platform }}:runGameTest
         env:
           RUN_GAME_TEST: true
-        with:
-          arguments: :${{ matrix.platform }}:runGameTest
 
   forge-data-gen:
     runs-on: ubuntu-latest
@@ -142,12 +138,10 @@ jobs:
       - name: Check assets file
         run: ./gradlew checkResourceFiles
       - name: Forge DataGen
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew :forge:runData
         timeout-minutes: 5
         env:
           RUN_DATA_GEN: true
-        with:
-          arguments: :forge:runData
       - name: Check updated files
         run: git status
       - name: Check diff
