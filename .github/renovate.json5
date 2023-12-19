@@ -32,6 +32,18 @@
         "github-actions"
       ],
       "automerge": true
+    },
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchPackagePatterns": [
+        "^com.kotori316:test-utility"
+      ],
+      registryUrls: [
+        "https://maven.kotori316.com"
+      ],
+      "automerge": true
     }
   ],
   "automergeStrategy": "fast-forward"
