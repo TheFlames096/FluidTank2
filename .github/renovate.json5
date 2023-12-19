@@ -34,5 +34,5 @@
       "automerge": true
     }
   ],
-  "automergeStrategy": "merge-commit"
+  "automergeStrategy": "fast-forward"
 }
