@@ -65,8 +65,8 @@ loom {
 
 configurations {
     developmentNeoForge.extendsFrom common
-    gameTestCompileClasspath.extendsFrom(testCompileClasspath)
-    gameTestRuntimeClasspath.extendsFrom(testRuntimeClasspath)
+    gameTestCompileClasspath.extendsFrom(compileClasspath)
+    gameTestRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
 dependencies {
@@ -87,7 +87,9 @@ dependencies {
     testImplementation(group: "org.mockito", name: "mockito-inline", version: project.mockitoInlineVersion)
     forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
-    modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version").toString()}")
+    modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version").toString()}") {
+        exclude(group: "org.mockito")
+    }
 
     "gameTestImplementation"(sourceSets.main.output)
 }
