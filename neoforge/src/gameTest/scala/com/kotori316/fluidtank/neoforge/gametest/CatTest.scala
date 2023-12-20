@@ -47,7 +47,9 @@ class CatTest {
     val pos = new BlockPos(2, 2, 2)
     val cat = assertInstanceOf(classOf[EntityChestAsTank], helper.getBlockEntity(pos))
 
-    assertDoesNotThrow(() => helper.getLevel.getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(pos), null))
+    val handler = assertDoesNotThrow(() => helper.getLevel.getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(pos), null))
+    assertNotNull(handler)
+    handler
   }
 
   def fillLava(helper: GameTestHelper): Unit = {

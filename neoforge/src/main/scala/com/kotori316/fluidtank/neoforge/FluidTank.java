@@ -33,7 +33,6 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -54,10 +53,9 @@ import java.util.stream.Stream;
 public final class FluidTank {
     public static final SideProxy proxy = SideProxy.get();
 
-    public FluidTank() {
+    public FluidTank(IEventBus modBus) {
         FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize {}", FluidTankCommon.modId);
         NeoForgeMod.enableMilkFluid();
-        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
         REGISTER_LIST.forEach(r -> r.register(modBus));
         PlatformAccess.setInstance(new NeoForgePlatformAccess());
         setupConfig(modBus);
@@ -168,6 +166,7 @@ public final class FluidTank {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_TANK_TYPE.get(), TileTankNeoForge::getCapability);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_CREATIVE_TANK_TYPE.get(), TileCreativeTankNeoForge::getCapability);
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_VOID_TANK_TYPE.get(), TileVoidTankNeoForge::getCapability);
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, TILE_CAT.get(), EntityChestAsTank::getCapability);
         event.registerItem(Capabilities.FluidHandler.ITEM, ItemBlockTankNeoForge::initCapabilities, TANK_ITEM_MAP.values().stream().map(DeferredItem::asItem).toArray(Item[]::new));
         event.registerItem(Capabilities.FluidHandler.ITEM, ItemReservoirNeoForge::initCapabilities, RESERVOIR_MAP.values().stream().map(DeferredItem::asItem).toArray(Item[]::new));
     }

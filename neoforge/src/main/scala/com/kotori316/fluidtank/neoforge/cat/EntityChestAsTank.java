@@ -62,7 +62,10 @@ public class EntityChestAsTank extends BlockEntity {
     }
 
     public Optional<List<GenericAmount<FluidLike>>> getFluids() {
-        return Optional.ofNullable(proxy).map(FluidHandlerProxy::fluids)
+        return Optional.ofNullable(getCapability(null))
+            .filter(FluidHandlerProxy.class::isInstance)
+            .map(FluidHandlerProxy.class::cast)
+            .map(FluidHandlerProxy::fluids)
             .map(m ->
                 m.entrySet().stream().map(e -> e.getKey().toAmount(e.getValue())).toList()
             );
