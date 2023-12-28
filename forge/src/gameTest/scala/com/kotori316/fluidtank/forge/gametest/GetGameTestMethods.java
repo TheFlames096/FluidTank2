@@ -6,7 +6,6 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.platform.commons.support.ReflectionSupport;
@@ -17,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Mod("fluidtank_game_test")
 public class GetGameTestMethods {
     public static final String DEFAULT_BATCH = "fluidtank.defaultBatch";
 

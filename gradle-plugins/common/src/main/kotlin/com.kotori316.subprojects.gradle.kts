@@ -28,16 +28,6 @@ tasks {
         configurations = listOf(project.configurations.getAt("shadowCommon"))
         archiveClassifier = "dev"
     }
-    processResources {
-        val version = project.version.toString()
-        inputs.property("version", version)
-        filesMatching("fabric.mod.json") {
-            expand("version" to version)
-        }
-        filesMatching("META-INF/mods.toml") {
-            expand("version" to version)
-        }
-    }
     named("remapJar", RemapJarTask::class) {
         val shadowJarProvider = provider { project }.flatMap { p -> p.tasks.shadowJar }
         inputFile = shadowJarProvider.flatMap { j -> j.archiveFile }
@@ -66,8 +56,23 @@ afterEvaluate {
         tasks.findByName("runClient")?.dependsOn(c)
         tasks.findByName("runGameTest")?.dependsOn(c)
     }
+    tasks.findByName("runGameClasses")?.let { c ->
+        tasks.findByName("runClient")?.dependsOn(c)
+        tasks.findByName("runServer")?.dependsOn(c)
+    }
     tasks.findByName("genDataClasses")?.let { c ->
         tasks.findByName("runData")?.dependsOn(c)
+    }
+    tasks.withType(ProcessResources::class) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        val version = project.version.toString()
+        inputs.property("version", version)
+        filesMatching("fabric.mod.json") {
+            expand("version" to version)
+        }
+        filesMatching("META-INF/mods.toml") {
+            expand("version" to version)
+        }
     }
 }
 

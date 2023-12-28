@@ -1,8 +1,0 @@
-modLoader = "javafml"
-loaderVersion = "[43,)"
-license = "All rights reserved"
-
-[[mods]]
-modId = "fluidtank_game_test"
-version = "1.0"
-description = "Test for FluidTank"

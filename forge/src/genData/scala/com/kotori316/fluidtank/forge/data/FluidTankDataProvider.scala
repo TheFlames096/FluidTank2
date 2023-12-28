@@ -15,7 +15,7 @@ import java.util.Collections
 import scala.jdk.OptionConverters.RichOptional
 import scala.jdk.javaapi.CollectionConverters
 
-@Mod.EventBusSubscriber(modid = FluidTankDataMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = FluidTankCommon.modId, bus = Mod.EventBusSubscriber.Bus.MOD)
 object FluidTankDataProvider {
   final val MARKER = MarkerFactory.getMarker("FluidTankDataProvider")
 

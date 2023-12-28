@@ -19,6 +19,10 @@ sourceSets {
         resources { SourceDirectorySet set ->
             set.srcDir("src/genData/resources")
         }
+        def dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        output.setResourcesDir(dir)
+        java.destinationDirectory = dir
+        scala.destinationDirectory = dir
     }
     create("gameTest") {
         scala { SourceDirectorySet set ->
@@ -27,7 +31,48 @@ sourceSets {
         resources { SourceDirectorySet set ->
             set.srcDir("src/gameTest/resources")
         }
+        def dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        output.setResourcesDir(dir)
+        java.destinationDirectory = dir
+        scala.destinationDirectory = dir
     }
+
+    create("runGame") {
+        def dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        output.setResourcesDir(dir)
+        java.destinationDirectory = dir
+        scala.destinationDirectory = dir
+    }
+}
+
+tasks.named("compileRunGameScala", ScalaCompile.class) {
+    source(
+            sourceSets.main.java, sourceSets.main.scala,
+    )
+    dependsOn("processRunGameResources")
+}
+tasks.named("processRunGameResources", ProcessResources.class) {
+    from(sourceSets.main.resources)
+}
+tasks.named("compileGenDataScala", ScalaCompile.class) {
+    source(
+            sourceSets.main.java, sourceSets.main.scala,
+            sourceSets.genData.java, sourceSets.genData.scala,
+    )
+    dependsOn("processGenDataResources")
+}
+tasks.named("processGenDataResources", ProcessResources.class) {
+    from(sourceSets.main.resources)
+}
+tasks.named("compileGameTestScala", ScalaCompile.class) {
+    source(
+            sourceSets.main.java, sourceSets.main.scala,
+            sourceSets.gameTest.java, sourceSets.gameTest.scala,
+    )
+    dependsOn("processGameTestResources")
+}
+tasks.named("processGameTestResources", ProcessResources.class) {
+    from(sourceSets.main.resources)
 }
 
 loom {
@@ -40,31 +85,28 @@ loom {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
+            source("runGame")
             mods {
-                create("main") {
-                    sourceSet("main")
-                }
-                create("gameTest") {
-                    sourceSet("gameTest")
+                create("runGame") {
+                    sourceSet("runGame")
                 }
             }
         }
         server {
             configName = "Server"
             runDir = "run-server"
+            source("runGame")
         }
         gameTest {
             configName = "GameTest"
             environment("gameTestServer")
             forgeTemplate("gameTestServer")
             vmArg("-ea")
+            source("gameTest")
             property("fabric.dli.env", "gameTestServer")
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "game-test"
             mods {
-                create("main") {
-                    sourceSet("main")
-                }
                 create("gameTest") {
                     sourceSet("gameTest")
                 }
@@ -73,18 +115,16 @@ loom {
         data {
             configName = "Data"
             runDir = "run-server"
-            programArgs("--mod", "fluidtank_data", "--all",
+            programArgs("--mod", "fluidtank", "--all",
                     "--output", file("../common/src/generated/resources/").toString(),
                     "--existing", file("../common/src/main/resources/").toString(),
             )
+            source("genData")
             property("mixin.env.remapRefMap", "true")
             property("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
             property("bsl.debug", "true")
             data()
             mods {
-                create("main") {
-                    sourceSet("main")
-                }
                 create("genData") {
                     sourceSet("genData")
                 }
@@ -96,10 +136,16 @@ loom {
 configurations {
     developmentForge.extendsFrom common
 
+    named("runGameCompileClasspath") {
+        extendsFrom(compileClasspath)
+    }
+    named("runGameRuntimeClasspath") {
+        extendsFrom(runtimeClasspath)
+    }
     genDataCompileClasspath.extendsFrom(compileClasspath)
     genDataRuntimeClasspath.extendsFrom(runtimeClasspath)
-    gameTestCompileClasspath.extendsFrom(testCompileClasspath)
-    gameTestRuntimeClasspath.extendsFrom(testRuntimeClasspath)
+    gameTestCompileClasspath.extendsFrom(compileClasspath)
+    gameTestRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
 repositories {
@@ -135,11 +181,11 @@ dependencies {
     // forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     // forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
     modImplementation("com.kotori316:test-utility-forge:${project.property("test_util_version").toString()}") {
-        exclude(group: "net.minecraftforge", module: "forge")
+        transitive(false)
     }
 
-    "genDataImplementation"(sourceSets.main.output)
-    "gameTestImplementation"(sourceSets.main.output)
+    gameTestImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
+    gameTestImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 tasks.register("checkResourceFiles") {
