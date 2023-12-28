@@ -1,5 +1,7 @@
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.jvm.tasks.Jar
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 plugins {
     java
@@ -19,20 +21,40 @@ configurations {
     testRuntimeClasspath { extendsFrom(runtimeClasspath.get()) }
 }
 
+val jarAttributeMap = mapOf(
+    "Specification-Title" to "FluidTank",
+    "Specification-Vendor" to "Kotori316",
+    "Specification-Version" to "1",
+    "Implementation-Title" to "FluidTank",
+    "Implementation-Vendor" to "Kotori316",
+    "Implementation-Version" to project.version as String,
+    "Implementation-Timestamp" to ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
+    "Automatic-Module-Name" to "FluidTank".lowercase(),
+)
+
 tasks {
     jar {
         archiveClassifier = "dev-only-platform"
+        manifest {
+            attributes(jarAttributeMap)
+        }
     }
     shadowJar {
         exclude("architectury.common.json")
         configurations = listOf(project.configurations.getAt("shadowCommon"))
         archiveClassifier = "dev"
+        manifest {
+            attributes(jarAttributeMap)
+        }
     }
     named("remapJar", RemapJarTask::class) {
         val shadowJarProvider = provider { project }.flatMap { p -> p.tasks.shadowJar }
         inputFile = shadowJarProvider.flatMap { j -> j.archiveFile }
         dependsOn(shadowJarProvider)
         archiveClassifier = null
+        manifest {
+            attributes(jarAttributeMap)
+        }
     }
     named("sourcesJar", Jar::class) {
         val commonSources = provider { project(":common") }.flatMap { p -> p.tasks.named("sourcesJar", Jar::class) }

@@ -28,6 +28,8 @@ jobs:
         run: ./gradlew testClasses
       - name: JUnit
         run: ./gradlew test
+        env:
+          RUN_JUNIT: true
       - name: Prepare GameTest
         run: |
           (./gradlew configureLaunch downloadAssets) || \
@@ -64,7 +66,7 @@ jobs:
             cloudflare_access_key:kotori316-mods-resources/cloudflare_access_key
             cloudflare_secret_key:kotori316-mods-resources/cloudflare_secret_key
       - name: Check build with sign
-        run: ->
+        run: >-
           ./gradlew
           -Psigning.secretKeyRingFile="${HOME}/secring.gpg"
           -Psigning.password="${KEY_PASSWORD}"
@@ -84,7 +86,7 @@ jobs:
             gpg --verify "$f" "${f:0:-4}"
             echo "::endgroup::"
           done
-          for f in $(ls */build/libs/*.jar | grep -v -e "common" -e "deobf" -e "sources") ; do
+          for f in $(ls */build/libs/*.jar | grep -v -e "common" -e "deobf" -e "dev" -e "sources") ; do
             echo "::group::Jar sign ${f}"
             jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$f" -strict
             echo "::endgroup::"
