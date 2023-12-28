@@ -130,7 +130,7 @@ jobs:
           done
       - name: Verify Main Jar
         run: |
-          for f in $(ls */build/libs/*.jar | grep -v -e "common" -e "deobf" -e "sources") ; do
+          for f in $(ls */build/libs/*.jar | grep -v -e "common" -e "deobf" -e "dev" -e "sources") ; do
             jarsigner -verify -keystore "${HOME}/kotori316_keystore.jks" "$f" -strict
           done
       - name: Verify Maven Local
