@@ -107,7 +107,7 @@ jobs:
           -PjarSign.keyAlias="ko316"
           -PjarSign.storePass="${JAR_PASSWORD}"
           -Dorg.gradle.s3.endpoint="${CLOUDFLARE_S3_ENDPOINT}"
-          clean assemble publishToMavenLocal githubRelease publishMods registerVersion publish
+          clean assemble publishToMavenLocal githubRelease publishMods registerVersion publish --continue
         env:
           REPO_TOKEN: ${{secrets.GITHUB_TOKEN}}
           AZURE_TOKEN: ${{steps.get-secrets.outputs.azure_token}}
