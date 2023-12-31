@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  assemble:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -25,26 +25,7 @@ jobs:
         with:
           cache-read-only: false
           gradle-home-cache-cleanup: true
-      - name: Tool chain check
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: javaToolchains
-      - name: Check build environments
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: :buildEnvironment :forge:buildEnvironment :fabric:buildEnvironment :neoforge:buildEnvironment
-      - name: Check changelog
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: checkChangelog
-      - name: Check Release Version
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: checkReleaseVersion
-      - name: Generate Jar
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: remapJar
+      - run: ./gradlew javaToolchains checkChangelog checkReleaseVersion assemble --scan
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -148,3 +129,15 @@ jobs:
         run: git status
       - name: Check diff
         run: git diff
+
+  merge-checker:
+    runs-on: ubuntu-latest
+    needs:
+      - assemble
+      - common-test
+      - test
+    steps:
+      - name: Check needs
+        run: echo "${NEED_CONTEXT}" | jq
+        env:
+          NEED_CONTEXT: ${{ toJSON(needs) }}
