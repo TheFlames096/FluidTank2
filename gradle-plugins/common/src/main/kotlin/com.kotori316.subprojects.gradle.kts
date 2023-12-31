@@ -10,6 +10,8 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
+val minecraftVersion = project.property("minecraft_version") as String
+val modId = "FluidTank".lowercase()
 configurations {
     val common = create("common")
     create("shadowCommon") // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
@@ -29,7 +31,7 @@ val jarAttributeMap = mapOf(
     "Implementation-Vendor" to "Kotori316",
     "Implementation-Version" to project.version as String,
     "Implementation-Timestamp" to ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT),
-    "Automatic-Module-Name" to "FluidTank".lowercase(),
+    "Automatic-Module-Name" to modId,
 )
 
 tasks {
@@ -89,12 +91,14 @@ afterEvaluate {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         val version = project.version.toString()
         inputs.property("version", version)
-        filesMatching("fabric.mod.json") {
-            expand("version" to version)
-        }
-        filesMatching("META-INF/mods.toml") {
-            expand("version" to version)
+        listOf("fabric.mod.json", "META-INF/mods.toml").forEach { fileName ->
+            filesMatching(fileName) {
+                expand(
+                    "version" to version,
+                    "update_url" to "https://version.kotori316.com/get-version/${minecraftVersion}/${project.name}/${modId}",
+                    "mc_version" to minecraftVersion,
+                )
+            }
         }
     }
 }
-
