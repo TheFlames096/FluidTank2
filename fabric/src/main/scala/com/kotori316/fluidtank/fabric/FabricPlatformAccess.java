@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.mixin.transfer.BucketItemAccessor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -67,7 +68,7 @@ final class FabricPlatformAccess implements PlatformAccess {
             for (StorageView<FluidVariant> view : storage) {
                 var variant = view.getResource();
                 var amount = view.getAmount();
-                return FluidAmountUtil.from(variant.getFluid(), GenericUnit.fromFabric(amount), Option.apply(variant.copyNbt()));
+                return FluidAmountUtil.from(variant.getFluid(), GenericUnit.fromFabric(amount), Option.<CompoundTag>apply(variant.copyNbt()));
             }
         }
         return FluidAmountUtil.EMPTY();

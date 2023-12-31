@@ -189,6 +189,8 @@ dependencies {
 
     gameTestImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     gameTestImplementation("org.junit.jupiter:junit-jupiter")
+    gameTestCompileOnly(sourceSets.main.output)
+    genDataCompileOnly(sourceSets.main.output)
 }
 
 tasks.register("checkResourceFiles") {

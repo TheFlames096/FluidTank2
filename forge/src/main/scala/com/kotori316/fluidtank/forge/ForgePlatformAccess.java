@@ -139,7 +139,7 @@ final class ForgePlatformAccess implements PlatformAccess {
 
     @Override
     public LootItemFunctionType getTankLoot() {
-        return FluidTank.TANK_LOOT_FUNCTION;
+        return FluidTank.TANK_LOOT_FUNCTION.get();
     }
 
     @Override

@@ -16,6 +16,7 @@ import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -403,7 +404,7 @@ final class TankTest {
         player.setItemInHand(InteractionHand.MAIN_HAND, potionStack.copy());
         helper.useBlock(basePos, player);
 
-        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BOTTLE(), Option.apply(potionStack.getTag()));
+        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BOTTLE(), Option.<CompoundTag>apply(potionStack.getTag()));
         assertEquals(content, tile.getTank().content());
         assertEqualHelper(Items.GLASS_BOTTLE, player.getItemInHand(InteractionHand.MAIN_HAND).getItem());
         helper.succeed();
@@ -416,7 +417,7 @@ final class TankTest {
             PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.NIGHT_VISION),
             Potions.REGENERATION.getEffects()
         );
-        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BUCKET(), Option.apply(potionStack.getTag()));
+        var content = FluidAmountUtil.from(FluidLike.POTION_NORMAL(), GenericUnit.ONE_BUCKET(), Option.<CompoundTag>apply(potionStack.getTag()));
         tile.getConnection().getHandler().fill(content, true);
 
         var player = helper.makeMockSurvivalPlayer();

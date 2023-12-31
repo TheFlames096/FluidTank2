@@ -17,11 +17,8 @@ import com.kotori316.fluidtank.forge.reservoir.ItemReservoirForge;
 import com.kotori316.fluidtank.forge.tank.*;
 import com.kotori316.fluidtank.tank.*;
 import com.mojang.datafixers.DSL;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -43,7 +40,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Comparator;
@@ -88,8 +84,9 @@ public final class FluidTank {
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, FluidTankCommon.modId);
     private static final DeferredRegister<IIngredientSerializer<?>> INGREDIENT_REGISTER = DeferredRegister.create(ForgeRegistries.INGREDIENT_SERIALIZERS, FluidTankCommon.modId);
     private static final DeferredRegister<CreativeModeTab> CREATIVE_TAB_REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, FluidTankCommon.modId);
+    private static final DeferredRegister<LootItemFunctionType> LOOT_TYPE_REGISTER = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, FluidTankCommon.modId);
     static final List<DeferredRegister<?>> REGISTER_LIST = List.of(
-        BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER
+        BLOCK_REGISTER, ITEM_REGISTER, BLOCK_ENTITY_REGISTER, RECIPE_REGISTER, INGREDIENT_REGISTER, CREATIVE_TAB_REGISTER, LOOT_TYPE_REGISTER
     );
 
     public static final Map<Tier, RegistryObject<BlockTankForge>> TANK_MAP = Stream.of(Tier.values())
@@ -112,7 +109,7 @@ public final class FluidTank {
     public static final RegistryObject<BlockEntityType<TileVoidTankForge>> TILE_VOID_TANK_TYPE =
         BLOCK_ENTITY_REGISTER.register(TileVoidTank.class.getSimpleName().toLowerCase(Locale.ROOT), () ->
             BlockEntityType.Builder.of(TileVoidTankForge::new, BLOCK_VOID_TANK.get()).build(DSL.emptyPartType()));
-    public static final LootItemFunctionType TANK_LOOT_FUNCTION = new LootItemFunctionType(TankLootFunction.CODEC);
+    public static final RegistryObject<LootItemFunctionType> TANK_LOOT_FUNCTION = LOOT_TYPE_REGISTER.register(TankLootFunction.NAME, () -> new LootItemFunctionType(TankLootFunction.CODEC));
     public static final RegistryObject<RecipeSerializer<?>> TIER_RECIPE = RECIPE_REGISTER.register(TierRecipeForge.Serializer.LOCATION.getPath(), () -> TierRecipeForge.SERIALIZER);
     public static final RegistryObject<IIngredientSerializer<IgnoreUnknownTagIngredient>> IU_INGREDIENT = INGREDIENT_REGISTER.register(IgnoreUnknownTagIngredient.NAME, () -> IgnoreUnknownTagIngredient.SERIALIZER);
     public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = CREATIVE_TAB_REGISTER.register("tab", () -> {
@@ -128,24 +125,8 @@ public final class FluidTank {
     public static final Map<Tier, RegistryObject<ItemReservoirForge>> RESERVOIR_MAP = Stream.of(Tier.WOOD, Tier.STONE, Tier.IRON)
         .collect(Collectors.toMap(Function.identity(), t -> ITEM_REGISTER.register("reservoir_" + t.name().toLowerCase(Locale.ROOT), () -> new ItemReservoirForge(t))));
 
-    public static final class LazyHolder {
-
-        private static void init(RegisterEvent event) {
-            if (event.getRegistryKey().equals(Registries.LOOT_FUNCTION_TYPE)) {
-                Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE,
-                    new ResourceLocation(FluidTankCommon.modId, TankLootFunction.NAME),
-                    TANK_LOOT_FUNCTION);
-            }
-        }
-    }
-
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent event) {
-    }
-
-    @SubscribeEvent
-    public void callRegister(RegisterEvent event) {
-        LazyHolder.init(event);
     }
 
     private static void createTab(CreativeModeTab.Builder builder) {
