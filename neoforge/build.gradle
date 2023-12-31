@@ -90,6 +90,7 @@ dependencies {
     modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version").toString()}") {
         exclude(group: "org.mockito")
     }
+    modImplementation("com.kotori316:debug-utility-neoforge:${project.property("debug_util_version").toString()}")
 
     "gameTestImplementation"(sourceSets.main.output)
 }
