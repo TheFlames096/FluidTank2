@@ -87,10 +87,10 @@ loom {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
-            source("runGame")
+            source("gameTest")
             mods {
-                create("runGame") {
-                    sourceSet("runGame")
+                create("gameTest") {
+                    sourceSet("gameTest")
                 }
             }
         }
