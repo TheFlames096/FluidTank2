@@ -5,6 +5,10 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import java.util.Locale;
 
+/**
+ * Do not relay on this property for logic.
+ * The property may be modified with Debug Stick, so this property should be used for visual purpose only.
+ */
 public enum TankPos implements StringRepresentable, Comparable<TankPos> {
     TOP, MIDDLE, BOTTOM, SINGLE;
 
