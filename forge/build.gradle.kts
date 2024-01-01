@@ -21,10 +21,10 @@ sourceSets {
         resources {
             srcDir("src/genData/resources")
         }
-        /*val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        val dir = layout.buildDirectory.dir("sourcesSets/${name}")
         output.setResourcesDir(dir)
         java.destinationDirectory = dir
-        scala.destinationDirectory = dir*/
+        scala.destinationDirectory = dir
     }
     create("gameTest") {
         scala {
@@ -33,17 +33,17 @@ sourceSets {
         resources {
             srcDir("src/gameTest/resources")
         }
-        /*val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        val dir = layout.buildDirectory.dir("sourcesSets/${name}")
         output.setResourcesDir(dir)
         java.destinationDirectory = dir
-        scala.destinationDirectory = dir*/
+        scala.destinationDirectory = dir
     }
 
     create("runGame") {
-        /*val dir = layout.buildDirectory.dir("sourcesSets/${it.name}")
+        val dir = layout.buildDirectory.dir("sourcesSets/${name}")
         output.setResourcesDir(dir)
         java.destinationDirectory = dir
-        scala.destinationDirectory = dir*/
+        scala.destinationDirectory = dir
     }
 }
 
@@ -59,7 +59,7 @@ tasks.named("processRunGameResources", ProcessResources::class) {
 tasks.named("compileGenDataScala", ScalaCompile::class) {
     source(
         sourceSets.main.get().java, sourceSets.main.get().scala,
-        //sourceSets.genData.java, sourceSets.genData.scala,
+        sourceSets.getByName("genData").java, sourceSets.getByName("genData").scala,
     )
     dependsOn("processGenDataResources")
 }
@@ -69,7 +69,7 @@ tasks.named("processGenDataResources", ProcessResources::class) {
 tasks.named("compileGameTestScala", ScalaCompile::class) {
     source(
         sourceSets.main.get().java, sourceSets.main.get().scala,
-        //sourceSets.gameTest.java, sourceSets.gameTest.scala,
+        sourceSets.getByName("gameTest").java, sourceSets.getByName("gameTest").scala,
     )
     dependsOn("processGameTestResources")
 }
