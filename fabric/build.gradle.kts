@@ -11,12 +11,12 @@ architectury {
 
 loom {
     runs {
-        create("client") {
+        named("client") {
             configName = "Fabric Client"
             runDir = "run"
-            source(sourceSets.test)
+            source(sourceSets["test"])
         }
-        create("server") {
+        named("server") {
             configName = "Fabric Server"
             runDir = "run-server"
         }
@@ -30,7 +30,7 @@ loom {
             //noinspection SpellCheckingInspection
             property("fabric-api.gametest.report-file", "game-test/test-results/game_test.xml")
             runDir = "game-test"
-            source(sourceSets.test)
+            source(sourceSets["test"])
         }
     }
 }
@@ -40,24 +40,47 @@ repositories {
 }
 
 configurations {
-    developmentFabric.extendsFrom(common)
+    named("developmentFabric") {
+        extendsFrom(common.get())
+    }
 }
 
 dependencies {
-    modImplementation(group: "net.fabricmc", name: "fabric-loader", version: project.property("fabric_loader_version"))
-    modApi(group: "net.fabricmc.fabric-api", name: "fabric-api", version: project.property("fabric_api_version"))
+    modImplementation(
+        group = "net.fabricmc",
+        name = "fabric-loader",
+        version = project.property("fabric_loader_version").toString()
+    )
+    modApi(
+        group = "net.fabricmc.fabric-api",
+        name = "fabric-api",
+        version = project.property("fabric_api_version").toString()
+    )
 
-    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.property("slp_fabric_version"), classifier: "dev") { transitive false }
+    modRuntimeOnly(
+        group = "com.kotori316",
+        name = "scalable-cats-force-fabric",
+        version = project.property("slp_fabric_version").toString(),
+        classifier = "dev"
+    ) { isTransitive = false }
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    common(project(path = ":common", configuration = "namedElements")) { isTransitive = false }
+    shadowCommon(project(path = ":common", configuration = "transformProductionFabric")) { isTransitive = false }
 
     // Other mods
-    modImplementation(group: "curse.maven", name: "jade-324717", version: project.property("jade_fabric_id"))
-    // modRuntimeOnly(group: "mezz.jei", name: "jei-1.20.2-fabric", version: project.jei_fabric_version)
-    modCompileOnly(group: "appeng", name: "appliedenergistics2-fabric", version: project.property("ae2_fabric_version")) { transitive false }
+    modImplementation(
+        group = "curse.maven",
+        name = "jade-324717",
+        version = project.property("jade_fabric_id").toString()
+    )
+    // modRuntimeOnly(group="mezz.jei", name="jei-1.20.2-fabric", version=project.jei_fabric_version)
+    modCompileOnly(
+        group = "appeng",
+        name = "appliedenergistics2-fabric",
+        version = project.property("ae2_fabric_version").toString()
+    ) { isTransitive = false }
     //noinspection SpellCheckingInspection
-    modImplementation(group: "teamreborn", name: "energy", version: "3.0.0")
+    modImplementation(group = "teamreborn", name = "energy", version = "3.0.0")
     modImplementation("com.kotori316:test-utility-fabric:${project.property("test_util_version")}")
     modImplementation("com.kotori316:debug-utility-fabric:${project.property("debug_util_version")}")
 
@@ -65,7 +88,8 @@ dependencies {
 }
 
 ext {
-    changelogHeader = """\
+    set(
+        "changelogHeader", """
         # Large Fluid Tank for fabric
         
         | Dependency | Version |
@@ -76,5 +100,6 @@ ext {
         | scalable-cats-force | ${project.property("slp_fabric_version")} |
         | Applied Energistics 2 | ${project.property("ae2_fabric_version")} |
         | Jade | File id: ${project.property("jade_fabric_id")} |
-        """.stripIndent()
+        """.trimIndent()
+    )
 }

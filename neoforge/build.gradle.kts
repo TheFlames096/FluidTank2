@@ -11,11 +11,11 @@ architectury {
 
 sourceSets {
     create("gameTest") {
-        scala { SourceDirectorySet set ->
-            set.srcDir("src/gameTest/scala")
+        scala {
+            srcDir("src/gameTest/scala")
         }
-        resources { SourceDirectorySet set ->
-            set.srcDir("src/gameTest/resources")
+        resources {
+            srcDir("src/gameTest/resources")
         }
     }
 }
@@ -26,7 +26,7 @@ loom {
     }
 
     runs {
-        create("client") {
+        named("client") {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
@@ -39,7 +39,7 @@ loom {
                 }
             }
         }
-        create("server") {
+        named("server") {
             configName = "Server"
             runDir = "run-server"
         }
@@ -64,39 +64,57 @@ loom {
 }
 
 configurations {
-    developmentNeoForge.extendsFrom(common)
-    gameTestCompileClasspath.extendsFrom(compileClasspath)
-    gameTestRuntimeClasspath.extendsFrom(runtimeClasspath)
+    named("developmentNeoForge").get().extendsFrom(common.get())
+    named("gameTestCompileClasspath").get().extendsFrom(compileClasspath.get())
+    named("gameTestRuntimeClasspath").get().extendsFrom(runtimeClasspath.get())
 }
 
 dependencies {
     neoForge("net.neoforged:neoforge:${project.property("neoforge_version")}")
 
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce-NeoForge".toLowerCase(Locale.ROOT), version: project.property("slpVersion"), classifier: "with-library") {
-        transitive(false)
+    runtimeOnly(
+        group = "com.kotori316",
+        name = "ScalableCatsForce-NeoForge".lowercase(),
+        version = project.property("slpVersion").toString(),
+        classifier = "with-library"
+    ) {
+        isTransitive = false
     }
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
+    common(project(path = ":common", configuration = "namedElements")) { isTransitive = false }
+    shadowCommon(project(path = ":common", configuration = "transformProductionNeoForge")) { isTransitive = false }
 
-    modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.property("jade_neoforge_id"))
+    modCompileOnly(
+        group = "curse.maven",
+        name = "jade-324717",
+        version = project.property("jade_neoforge_id").toString()
+    )
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(group: "org.mockito", name: "mockito-core", version: project.property("mockitoCoreVersion"))
-    testImplementation(group: "org.mockito", name: "mockito-inline", version: project.property("mockitoInlineVersion"))
-    forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.property("jupiterVersion")))
+    testImplementation(
+        group = "org.mockito",
+        name = "mockito-core",
+        version = project.property("mockitoCoreVersion").toString()
+    )
+    testImplementation(
+        group = "org.mockito",
+        name = "mockito-inline",
+        version = project.property("mockitoInlineVersion").toString()
+    )
+    forgeRuntimeLibrary(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
-    modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version").toString()}") {
-        exclude(group: "org.mockito")
+    modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version")}") {
+        exclude(group = "org.mockito")
     }
-    modImplementation("com.kotori316:debug-utility-neoforge:${project.property("debug_util_version").toString()}")
+    modImplementation("com.kotori316:debug-utility-neoforge:${project.property("debug_util_version")}")
 
-    "gameTestImplementation"(sourceSets.main.output)
+    "gameTestImplementation"(sourceSets.main.get().output)
 }
 
 ext {
-    changelogHeader = """\
+    set(
+        "changelogHeader", """
         # Large Fluid Tank for neoforge
         
         | Dependency | Version |
@@ -104,5 +122,6 @@ ext {
         | Minecraft | ${project.property("minecraft_version")} |
         | NeoForge | ${project.property("neoforge_version")} |
         | scalable-cats-force | ${project.property("slpVersion")} |
-        """.stripIndent()
+        """.trimIndent()
+    )
 }
