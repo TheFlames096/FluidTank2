@@ -11,26 +11,26 @@ architectury {
 
 loom {
     runs {
-        client {
+        create("client") {
             configName = "Fabric Client"
             runDir = "run"
-            source sourceSets.test
+            source(sourceSets.test)
         }
-        server {
+        create("server") {
             configName = "Fabric Server"
             runDir = "run-server"
         }
 
-        gameTest {
-            name "Fabric GameTest"
+        create("gameTest") {
+            name("Fabric GameTest")
             server()
-            vmArg "-ea"
+            vmArg("-ea")
             //noinspection SpellCheckingInspection
             property("fabric-api.gametest")
             //noinspection SpellCheckingInspection
             property("fabric-api.gametest.report-file", "game-test/test-results/game_test.xml")
             runDir = "game-test"
-            source sourceSets.test
+            source(sourceSets.test)
         }
     }
 }
@@ -40,28 +40,28 @@ repositories {
 }
 
 configurations {
-    developmentFabric.extendsFrom common
+    developmentFabric.extendsFrom(common)
 }
 
 dependencies {
-    modImplementation(group: "net.fabricmc", name: "fabric-loader", version: project.fabric_loader_version)
-    modApi(group: "net.fabricmc.fabric-api", name: "fabric-api", version: project.fabric_api_version)
+    modImplementation(group: "net.fabricmc", name: "fabric-loader", version: project.property("fabric_loader_version"))
+    modApi(group: "net.fabricmc.fabric-api", name: "fabric-api", version: project.property("fabric_api_version"))
 
-    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.slp_fabric_version, classifier: "dev") { transitive false }
+    modRuntimeOnly(group: "com.kotori316", name: "scalable-cats-force-fabric", version: project.property("slp_fabric_version"), classifier: "dev") { transitive false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     // Other mods
-    modImplementation(group: "curse.maven", name: "jade-324717", version: project.jade_fabric_id)
+    modImplementation(group: "curse.maven", name: "jade-324717", version: project.property("jade_fabric_id"))
     // modRuntimeOnly(group: "mezz.jei", name: "jei-1.20.2-fabric", version: project.jei_fabric_version)
-    modCompileOnly(group: "appeng", name: "appliedenergistics2-fabric", version: project.ae2_fabric_version) { transitive false }
+    modCompileOnly(group: "appeng", name: "appliedenergistics2-fabric", version: project.property("ae2_fabric_version")) { transitive false }
     //noinspection SpellCheckingInspection
     modImplementation(group: "teamreborn", name: "energy", version: "3.0.0")
-    modImplementation("com.kotori316:test-utility-fabric:${project.property("test_util_version").toString()}")
-    modImplementation("com.kotori316:debug-utility-fabric:${project.property("debug_util_version").toString()}")
+    modImplementation("com.kotori316:test-utility-fabric:${project.property("test_util_version")}")
+    modImplementation("com.kotori316:debug-utility-fabric:${project.property("debug_util_version")}")
 
-    testImplementation("net.fabricmc:fabric-loader-junit:${project.fabric_loader_version}")
+    testImplementation("net.fabricmc:fabric-loader-junit:${project.property("fabric_loader_version")}")
 }
 
 ext {
@@ -70,11 +70,11 @@ ext {
         
         | Dependency | Version |
         | -- | -- |
-        | Minecraft | ${project.minecraft_version} |
-        | Fabric | ${project.fabric_api_version} |
-        | Fabric Loader | ${project.fabric_loader_version} |
-        | scalable-cats-force | ${project.slp_fabric_version} |
-        | Applied Energistics 2 | ${project.ae2_fabric_version} |
-        | Jade | File id: ${project.jade_fabric_id} |
+        | Minecraft | ${project.property("minecraft_version")} |
+        | Fabric | ${project.property("fabric_api_version")} |
+        | Fabric Loader | ${project.property("fabric_loader_version")} |
+        | scalable-cats-force | ${project.property("slp_fabric_version")} |
+        | Applied Energistics 2 | ${project.property("ae2_fabric_version")} |
+        | Jade | File id: ${project.property("jade_fabric_id")} |
         """.stripIndent()
 }

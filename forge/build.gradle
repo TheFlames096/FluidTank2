@@ -152,10 +152,13 @@ repositories {
 
 }
 
-dependencies {
-    forge "net.minecraftforge:forge:${project.forge_version}"
+def forgeVersion = project.property("forge_version").toString()
+def minecraftVersion = project.property("minecraft_version").toString()
 
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: "with-library") {
+dependencies {
+    forge("net.minecraftforge:forge:${forgeVersion}")
+
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce".toLowerCase(Locale.ROOT), version: project.property("slpVersion"), classifier: "with-library") {
         transitive(false)
     }
 
@@ -163,27 +166,28 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     // Other mods
-    modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.jade_forge_id)
-    modCompileOnly(group: "curse.maven", name: "the-one-probe-245211", version: project.top_forge_id) // FIXME
+    modCompileOnly(group: "curse.maven", name: "jade-324717", version: project.property("jade_forge_id"))
+    modCompileOnly(group: "curse.maven", name: "the-one-probe-245211", version: project.property("top_forge_id"))
+    // FIXME
     if (Boolean.parseBoolean(System.getenv("RUN_GAME_TEST"))) {
-        modCompileOnly(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jei_forge_version) { transitive false }
+        modCompileOnly(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.property("jei_forge_version")) { transitive false }
     } else {
-        modCompileOnly(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.jei_forge_version) { transitive false }
+        modCompileOnly(group: "mezz.jei", name: "jei-1.20.2-forge", version: project.property("jei_forge_version")) { transitive false }
     }
-    modCompileOnly(group: "appeng", name: "appliedenergistics2-forge", version: project.ae2_forge_version) { transitive false }
+    modCompileOnly(group: "appeng", name: "appliedenergistics2-forge", version: project.property("ae2_forge_version")) { transitive false }
     // FIXME
 
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(group: "org.mockito", name: "mockito-core", version: project.mockitoCoreVersion)
-    testImplementation(group: "org.mockito", name: "mockito-inline", version: project.mockitoInlineVersion)
+    testImplementation(group: "org.mockito", name: "mockito-core", version: project.property("mockitoCoreVersion"))
+    testImplementation(group: "org.mockito", name: "mockito-inline", version: project.property("mockitoInlineVersion"))
     // forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
     // forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
-    modImplementation("com.kotori316:test-utility-forge:${project.property("test_util_version").toString()}") {
+    modImplementation("com.kotori316:test-utility-forge:${project.property("test_util_version")}") {
         transitive(false)
     }
-    modImplementation("com.kotori316:debug-utility-forge:${project.property("debug_util_version").toString()}") {
+    modImplementation("com.kotori316:debug-utility-forge:${project.property("debug_util_version")}") {
         transitive(false)
     }
 
@@ -195,7 +199,7 @@ dependencies {
 
 tasks.register("checkResourceFiles") {
     doLast {
-        def parent = "${loom.files.getUserCache()}/${project.minecraft_version}/forge/${project.forge_version}"
+        def parent = "${loom.files.getUserCache()}/${minecraftVersion}/forge/${forgeVersion}"
         Files.list(java.nio.file.Path.of(parent))
                 .forEach {
                     printf("IsDir %b, Size %d, name %s%n", Files.isDirectory(it), Files.size(it), it)
@@ -209,11 +213,11 @@ ext {
         
         | Dependency | Version |
         | -- | -- |
-        | Minecraft | ${project.minecraft_version} |
-        | Forge | ${project.forge_version} |
-        | scalable-cats-force | ${project.slpVersion} |
-        | Applied Energistics 2 | ${project.ae2_forge_version} |
-        | Jade | File id: ${project.jade_forge_id} |
-        | TheOneProbe | File id: ${project.top_forge_id} |
+        | Minecraft | ${minecraftVersion} |
+        | Forge | ${forgeVersion} |
+        | scalable-cats-force | ${project.property("slpVersion")} |
+        | Applied Energistics 2 | ${project.property("ae2_forge_version")} |
+        | Jade | File id: ${project.property("jade_forge_id")} |
+        | TheOneProbe | File id: ${project.property("top_forge_id")} |
         """.stripIndent()
 }

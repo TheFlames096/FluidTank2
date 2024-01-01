@@ -26,7 +26,7 @@ loom {
     }
 
     runs {
-        client {
+        create("client") {
             configName = "Client"
             property("forge.enabledGameTestNamespaces", "fluidtank")
             runDir = "run"
@@ -39,11 +39,11 @@ loom {
                 }
             }
         }
-        server {
+        create("server") {
             configName = "Server"
             runDir = "run-server"
         }
-        gameTest {
+        create("gameTest") {
             configName = "GameTest"
             environment("gameTestServer")
             forgeTemplate("gameTestServer")
@@ -64,15 +64,15 @@ loom {
 }
 
 configurations {
-    developmentNeoForge.extendsFrom common
+    developmentNeoForge.extendsFrom(common)
     gameTestCompileClasspath.extendsFrom(compileClasspath)
     gameTestRuntimeClasspath.extendsFrom(runtimeClasspath)
 }
 
 dependencies {
-    neoForge("net.neoforged:neoforge:${project.neoforge_version}")
+    neoForge("net.neoforged:neoforge:${project.property("neoforge_version")}")
 
-    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce-NeoForge".toLowerCase(Locale.ROOT), version: project.slpVersion, classifier: "with-library") {
+    runtimeOnly(group: "com.kotori316", name: "ScalableCatsForce-NeoForge".toLowerCase(Locale.ROOT), version: project.property("slpVersion"), classifier: "with-library") {
         transitive(false)
     }
 
@@ -83,9 +83,9 @@ dependencies {
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
-    testImplementation(group: "org.mockito", name: "mockito-core", version: project.mockitoCoreVersion)
-    testImplementation(group: "org.mockito", name: "mockito-inline", version: project.mockitoInlineVersion)
-    forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.jupiterVersion))
+    testImplementation(group: "org.mockito", name: "mockito-core", version: project.property("mockitoCoreVersion"))
+    testImplementation(group: "org.mockito", name: "mockito-inline", version: project.property("mockitoInlineVersion"))
+    forgeRuntimeLibrary(platform(group: "org.junit", name: "junit-bom", version: project.property("jupiterVersion")))
     forgeRuntimeLibrary("org.junit.jupiter:junit-jupiter")
     modImplementation("com.kotori316:test-utility-neoforge:${project.property("test_util_version").toString()}") {
         exclude(group: "org.mockito")
@@ -101,8 +101,8 @@ ext {
         
         | Dependency | Version |
         | -- | -- |
-        | Minecraft | ${project.minecraft_version} |
-        | NeoForge | ${project.neoforge_version} |
-        | scalable-cats-force | ${project.slpVersion} |
+        | Minecraft | ${project.property("minecraft_version")} |
+        | NeoForge | ${project.property("neoforge_version")} |
+        | scalable-cats-force | ${project.property("slpVersion")} |
         """.stripIndent()
 }
