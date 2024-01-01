@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class GetGameTestMethods {
@@ -32,6 +33,18 @@ public class GetGameTestMethods {
             .map(m -> GameTestUtil.create(FluidTankCommon.modId, batchName,
                 clazz.getSimpleName() + "_" + m.getName(),
                 g -> ReflectionSupport.invokeMethod(m, instance, g)));
+        return Stream.concat(noArgs, withHelper).toList();
+    }
+
+    static <T> List<TestFunction> getTests(Class<? extends T> clazz, T instance, String batchName, Consumer<Runnable> wrapper) {
+        var noArgs = getNoArgMethods(clazz)
+            .map(m -> GameTestUtil.create(FluidTankCommon.modId, batchName,
+                clazz.getSimpleName() + "_" + m.getName(),
+                () -> wrapper.accept(() -> ReflectionSupport.invokeMethod(m, instance))));
+        var withHelper = getHelperArgMethods(clazz)
+            .map(m -> GameTestUtil.create(FluidTankCommon.modId, batchName,
+                clazz.getSimpleName() + "_" + m.getName(),
+                g -> wrapper.accept(() -> ReflectionSupport.invokeMethod(m, instance, g))));
         return Stream.concat(noArgs, withHelper).toList();
     }
 

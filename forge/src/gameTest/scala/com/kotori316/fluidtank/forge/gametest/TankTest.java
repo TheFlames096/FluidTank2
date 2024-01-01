@@ -1,6 +1,8 @@
 package com.kotori316.fluidtank.forge.gametest;
 
 import com.kotori316.fluidtank.FluidTankCommon;
+import com.kotori316.fluidtank.config.ConfigData;
+import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import com.kotori316.fluidtank.contents.GenericUnit;
 import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.fluids.FluidLike;
@@ -44,7 +46,7 @@ final class TankTest {
 
     @GameTestGenerator
     List<TestFunction> fillTest() {
-        return GetGameTestMethods.getTests(getClass(), this, BATCH);
+        return GetGameTestMethods.getTests(getClass(), this, BATCH, TankTest::wrapDefaultConfig);
     }
 
     static Supplier<? extends BlockTank> getBlock(Tier tier) {
@@ -64,6 +66,16 @@ final class TankTest {
             return tileTank;
         } else {
             throw new GameTestAssertPosException("Expect tank tile", helper.absolutePos(pos), pos, helper.getTick());
+        }
+    }
+
+    static void wrapDefaultConfig(Runnable r) {
+        var currentConfig = PlatformConfigAccess.getInstance();
+        PlatformConfigAccess.setInstance(ConfigData::DEFAULT);
+        try {
+            r.run();
+        } finally {
+            PlatformConfigAccess.setInstance(currentConfig);
         }
     }
 
