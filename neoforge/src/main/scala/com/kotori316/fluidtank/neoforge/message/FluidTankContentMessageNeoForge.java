@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Objects;
 
@@ -30,9 +30,9 @@ public final class FluidTankContentMessageNeoForge extends FluidTankContentMessa
         super(buf);
     }
 
-    void onReceiveMessage(NetworkEvent.Context context) {
+    void onReceiveMessage(PlayPayloadContext context) {
         // Should be client side
-        context.enqueueWork(() ->
+        context.workHandler().execute(() ->
             this.onReceive(FluidTank.proxy.getLevel(context).orElse(null))
         );
     }

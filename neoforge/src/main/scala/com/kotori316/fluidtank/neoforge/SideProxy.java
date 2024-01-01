@@ -5,7 +5,6 @@ import com.kotori316.fluidtank.neoforge.render.RenderReservoirItemForge;
 import com.kotori316.fluidtank.neoforge.render.RenderTank;
 import com.kotori316.fluidtank.render.ReservoirModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -15,14 +14,13 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Optional;
 
 public abstract class SideProxy {
 
-    public abstract Optional<Level> getLevel(NetworkEvent.Context context);
+    public abstract Optional<Level> getLevel(PlayPayloadContext context);
 
     public static SideProxy get() {
         return switch (FMLEnvironment.dist) {
@@ -46,9 +44,8 @@ public abstract class SideProxy {
         }
 
         @Override
-        public Optional<Level> getLevel(NetworkEvent.Context context) {
-            var serverWorld = Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
-            return serverWorld.or(() -> LogicalSidedProvider.CLIENTWORLD.get(context.getDirection().getReceptionSide()));
+        public Optional<Level> getLevel(PlayPayloadContext context) {
+            return context.level();
         }
 
         @SubscribeEvent
@@ -68,8 +65,8 @@ public abstract class SideProxy {
         }
 
         @Override
-        public Optional<Level> getLevel(NetworkEvent.Context context) {
-            return Optional.ofNullable(context.getSender()).map(ServerPlayer::getCommandSenderWorld);
+        public Optional<Level> getLevel(PlayPayloadContext context) {
+            return context.level();
         }
 
         /**

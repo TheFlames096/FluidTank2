@@ -36,6 +36,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 import net.neoforged.neoforge.registries.*;
 
 import java.util.Comparator;
@@ -59,7 +60,6 @@ public final class FluidTank {
         modBus.register(this);
         modBus.register(proxy);
         modBus.addListener(FluidTank::registerCapabilities);
-        PacketHandler.init();
         // AE2FluidTankIntegration.onAPIAvailable();
         // FluidTankTopPlugin.sendIMC();
         NeoForge.EVENT_BUS.addListener(FluidTank::onServerStart);
@@ -123,6 +123,11 @@ public final class FluidTank {
 
     @SubscribeEvent
     public void setup(FMLCommonSetupEvent event) {
+    }
+
+    @SubscribeEvent
+    public void setupPacket(RegisterPayloadHandlerEvent event) {
+        PacketHandler.init(event);
     }
 
     private static void createTab(CreativeModeTab.Builder builder) {
