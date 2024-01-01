@@ -36,35 +36,13 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  common-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      DISABLE_FORGE: true
-      DISABLE_FABRIC: true
-      DISABLE_NEOFORGE: true
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v2
-        with:
-          cache-read-only: false
-          gradle-home-cache-cleanup: true
-      - name: Common JUnit
-        run: ./gradlew :common:test
-
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        platform: [ forge, fabric, neoforge ]
+        platform: [ common, forge, fabric, neoforge ]
     env:
       DISABLE_FORGE: ${{ matrix.platform != 'forge' }}
       DISABLE_FABRIC: ${{ matrix.platform != 'fabric' }}
@@ -86,6 +64,7 @@ jobs:
         env:
           RUN_JUNIT: true
       - name: ${{ matrix.platform }} GameTest
+        if: ${{ matrix.platform != 'common' }}
         timeout-minutes: 5
         run: ./gradlew :${{ matrix.platform }}:runGameTest
         env:
@@ -136,10 +115,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - assemble
-      - common-test
       - test
     steps:
       - name: Check needs
-        run: echo "${NEED_CONTEXT}" | jq
+        run: date
         env:
           NEED_CONTEXT: ${{ toJSON(needs) }}
