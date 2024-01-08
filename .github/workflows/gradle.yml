@@ -23,7 +23,7 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
       - run: ./gradlew javaToolchains assemble --scan
       - run: ./gradlew checkChangelog
@@ -57,7 +57,7 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
       - name: ${{ matrix.platform }} JUnit
         run: ./gradlew :${{ matrix.platform }}:test
@@ -87,7 +87,7 @@ jobs:
       - run: chmod +x ./gradlew
       - uses: gradle/gradle-build-action@v2
         with:
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
       - name: Compile
         uses: gradle/gradle-build-action@v2
