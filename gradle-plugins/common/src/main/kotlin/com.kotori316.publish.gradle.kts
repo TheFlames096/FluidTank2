@@ -70,6 +70,12 @@ tasks {
         functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
         gameVersion = minecraftVersion
         platform = project.name
+        platformVersion = when (project.name) {
+            "forge" -> project.property("forge_version").toString()
+            "fabric" -> project.property("fabric_api_version").toString()
+            "neoforge" -> project.property("neoforge_version").toString()
+            else -> throw IllegalArgumentException("Unknown platform ${project.name}")
+        }
         modName = baseName
         changelog = cfChangelog()
         homepage = "https://modrinth.com/mod/large-fluid-tank"
