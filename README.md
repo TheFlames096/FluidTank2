@@ -15,7 +15,7 @@ The main parts of code are shared between platforms.
 [Modrinth]: https://modrinth.com/mod/large-fluid-tank
 
 Source code LICENSE: MIT License  
-Copyright (c) 2019-2023 Kotori316
+Copyright (c) 2019-2024 Kotori316
 
 ![](https://gist.githubusercontent.com/Kotori316/8c426c7e1ea70856bf5f2545048c49a9/raw/aa04a21f3c5d2fec496dc73e3531b099ec33220c/2023-07-23_18.11.40.png)
 
@@ -37,3 +37,8 @@ I don't allow users to redistribute this mod unless in mod-packs.
 ## Function
 
 Place the tank and fill with Water Bucket. Then use empty Bucket to drain from the tank. Just it!
+
+## Contact
+
+* Discord: https://discord.gg/ThxxGXMjZn
+* Twitter: https://twitter.com/small_bird_316
