@@ -21,16 +21,18 @@ githubRelease {
     tagName = "v${project.findProperty("mod_version")}"
     releaseName = "v${project.findProperty("mod_version")} for ${project.findProperty("minecraft_version")}"
     body = createChangelog()
+
+    val buildDirectories = listOf(
+        findProject(":forge")?.layout?.buildDirectory?.dir("libs"),
+        findProject(":fabric")?.layout?.buildDirectory?.dir("libs"),
+        findProject(":neoforge")?.layout?.buildDirectory?.dir("libs"),
+    )
     releaseAssets = files(
-        fileTree(findProject(":forge")?.layout?.buildDirectory?.dir("libs")!!) {
-            include("*.jar")
-        },
-        fileTree(findProject(":fabric")?.layout?.buildDirectory?.dir("libs")!!) {
-            include("*.jar")
-        },
-        fileTree(findProject(":neoforge")?.layout?.buildDirectory?.dir("libs")!!) {
-            include("*.jar")
-        },
+        *buildDirectories.filterNotNull().map {
+            fileTree(it) {
+                include("*.jar")
+            }
+        }.toTypedArray()
     )
     dryRun = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
     overwrite = false
