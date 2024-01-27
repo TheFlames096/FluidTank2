@@ -3,8 +3,8 @@
 This is a renovated version of [FluidTank](https://github.com/Kotori316/FluidTank).
 The main parts of code are shared between platforms.
 
-[![](http://cf.way2muchnoise.eu/versions/291006.svg?badge_style=flat)][CurseForge Forge]
-[![](http://cf.way2muchnoise.eu/full_291006_downloads.svg?badge_style=flat)][CurseForge Forge]
+[![](https://cf.way2muchnoise.eu/versions/291006.svg?badge_style=flat)][CurseForge Forge]
+[![](https://cf.way2muchnoise.eu/full_291006_downloads.svg?badge_style=flat)][CurseForge Forge]
 
 [![](https://img.shields.io/modrinth/dt/large-fluid-tank?logo=modrinth&style=flat-square)][Modrinth]
 
