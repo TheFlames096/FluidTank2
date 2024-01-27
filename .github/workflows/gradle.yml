@@ -25,6 +25,7 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
+          add-job-summary: 'on-failure'
       - run: ./gradlew javaToolchains assemble --scan
       - run: ./gradlew checkChangelog
       - run: ./gradlew checkReleaseVersion
@@ -59,6 +60,7 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
+          add-job-summary: 'on-failure'
       - name: ${{ matrix.platform }} JUnit
         run: ./gradlew :${{ matrix.platform }}:test
         env:
@@ -89,6 +91,7 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           gradle-home-cache-cleanup: true
+          add-job-summary: 'on-failure'
       - name: Compile
         uses: gradle/gradle-build-action@v3
         with:
