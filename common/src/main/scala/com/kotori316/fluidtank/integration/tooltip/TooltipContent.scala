@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Locale
+import scala.jdk.CollectionConverters.SeqHasAsJava
 import scala.util.chaining.scalaUtilChainingOps
 
 object TooltipContent {
@@ -40,7 +41,7 @@ object TooltipContent {
     }
   }
 
-  final def getTooltipText(tankData: CompoundTag, tank: TileTank, isShort: Boolean, isCompact: Boolean, locale: Locale): Seq[Component] = {
+  final def getTooltipTextJava(tankData: CompoundTag, tank: TileTank, isShort: Boolean, isCompact: Boolean, locale: Locale): java.util.List[Component] = {
     getTooltipText(
       tier = tank.tier,
       fluid = FluidAmountUtil.fromTag(tankData.getCompound(KEY_FLUID)),
@@ -50,7 +51,7 @@ object TooltipContent {
       isShort = isShort,
       isCompact = isCompact,
       locale = locale
-    )
+    ).asJava
   }
 
   final def getTooltipText(tier: Tier, fluid: FluidAmount, capacity: Long, comparator: Int, hasCreative: Boolean,

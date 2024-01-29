@@ -12,6 +12,7 @@ import com.kotori316.fluidtank.tank.Tier;
 import com.kotori316.fluidtank.tank.TileTank;
 import com.kotori316.testutil.GameTestUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertPosException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -178,7 +179,7 @@ final class TankTest {
         placeTank(helper, basePos, Tier.WOOD);
         placeTank(helper, basePos.above(), Tier.STONE);
 
-        var handler = helper.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(basePos), null);
+        var handler = helper.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, helper.absolutePos(basePos), Direction.NORTH);
         assertNotNull(handler);
         assertEquals(20000, handler.getTankCapacity(0));
         helper.succeed();
