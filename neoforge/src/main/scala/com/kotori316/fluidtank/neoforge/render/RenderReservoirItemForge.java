@@ -1,6 +1,7 @@
 package com.kotori316.fluidtank.neoforge.render;
 
 import com.kotori316.fluidtank.contents.Tank;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.fluids.VanillaFluid;
 import com.kotori316.fluidtank.fluids.VanillaPotion;
@@ -12,7 +13,6 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import scala.jdk.javaapi.OptionConverters;
 
 import java.util.List;
 
@@ -23,6 +23,8 @@ public final class RenderReservoirItemForge extends RenderReservoirItem {
     public TextureAtlasSprite getFluidTexture(Tank<FluidLike> tank) {
         var fluid = FluidLike.asFluid(tank.content().content(), Fluids.WATER);
         var attributes = IClientFluidTypeExtensions.of(fluid);
+        assert Minecraft.getInstance().level != null;
+        assert Minecraft.getInstance().player != null;
         var location = attributes.getStillTexture(fluid.defaultFluidState(),
             Minecraft.getInstance().level, Minecraft.getInstance().player.getOnPos());
         return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(location);
@@ -39,13 +41,15 @@ public final class RenderReservoirItemForge extends RenderReservoirItem {
             }
             var stackColor = attributes.getTintColor(NeoForgeConverter.toStack(content));
             if (normal == stackColor) {
+                assert Minecraft.getInstance().level != null;
+                assert Minecraft.getInstance().player != null;
                 return attributes.getTintColor(vanillaFluid.fluid().defaultFluidState(),
                     Minecraft.getInstance().level, Minecraft.getInstance().player.getOnPos());
             } else {
                 return stackColor;
             }
         } else if (content.content() instanceof VanillaPotion) {
-            return PotionUtils.getColor(OptionConverters.toJava(content.nbt())
+            return PotionUtils.getColor(FluidAmountUtil.getTag(content)
                 .map(PotionUtils::getAllEffects)
                 .orElse(List.of())
             );

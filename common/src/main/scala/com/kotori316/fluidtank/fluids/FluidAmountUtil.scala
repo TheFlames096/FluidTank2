@@ -7,6 +7,8 @@ import net.minecraft.world.item.{ItemStack, Items}
 import net.minecraft.world.level.material.{Fluid, Fluids}
 import org.jetbrains.annotations.VisibleForTesting
 
+import scala.jdk.OptionConverters.RichOption
+
 object FluidAmountUtil {
 
   final val EMPTY: FluidAmount = from(Fluids.EMPTY, GenericUnit.ZERO)
@@ -43,4 +45,6 @@ object FluidAmountUtil {
    * Helper for Java code
    */
   def access: GenericAccess[FluidLike] = implicitly[GenericAccess[FluidLike]]
+
+  def getTag(amount: FluidAmount): java.util.Optional[CompoundTag] = amount.nbt.toJava
 }

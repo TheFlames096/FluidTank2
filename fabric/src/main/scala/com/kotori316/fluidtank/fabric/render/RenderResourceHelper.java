@@ -2,6 +2,7 @@ package com.kotori316.fluidtank.fabric.render;
 
 import com.kotori316.fluidtank.contents.GenericAmount;
 import com.kotori316.fluidtank.fabric.fluid.FabricConverter;
+import com.kotori316.fluidtank.fluids.FluidAmountUtil;
 import com.kotori316.fluidtank.fluids.FluidLike;
 import com.kotori316.fluidtank.fluids.VanillaFluid;
 import com.kotori316.fluidtank.fluids.VanillaPotion;
@@ -13,11 +14,9 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
-import scala.jdk.javaapi.OptionConverters;
 
 import java.util.List;
 
-@SuppressWarnings("UnstableApiUsage")
 final class RenderResourceHelper {
     static TextureAtlasSprite getSprite(GenericAmount<FluidLike> fluid) {
         return FluidVariantRendering.getSprite(FabricConverter.toVariant(fluid, Fluids.WATER));
@@ -28,9 +27,9 @@ final class RenderResourceHelper {
             return FluidVariantRendering.getColor(FabricConverter.toVariant(fluid, Fluids.EMPTY));
         } else if (fluid.content() instanceof VanillaPotion) {
             return PotionUtils.getColor(
-                    OptionConverters.toJava(fluid.nbt())
-                            .map(PotionUtils::getAllEffects)
-                            .orElse(List.of())
+                FluidAmountUtil.getTag(fluid)
+                    .map(PotionUtils::getAllEffects)
+                    .orElse(List.of())
             );
         } else {
             throw new AssertionError();

@@ -14,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Objects;
+
 public final class RenderReservoirItemFabric extends RenderReservoirItem
     implements IdentifiableResourceReloadListener,
     BuiltinItemRendererRegistry.DynamicItemRenderer {
@@ -35,6 +37,6 @@ public final class RenderReservoirItemFabric extends RenderReservoirItem
 
     @Override
     public int getFluidColor(Tank<FluidLike> tank) {
-        return RenderResourceHelper.getColorWithPos(tank.content(), Minecraft.getInstance().level, Minecraft.getInstance().player.getOnPos());
+        return RenderResourceHelper.getColorWithPos(tank.content(), Minecraft.getInstance().level, Objects.requireNonNull(Minecraft.getInstance().player).getOnPos());
     }
 }
