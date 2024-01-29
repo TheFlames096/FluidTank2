@@ -113,7 +113,7 @@ public class EntityChestAsTank extends BlockEntity {
         }
 
         @Override
-        public int fill(FluidStack resource, FluidAction fluidAction) {
+        public int fill(@Nullable FluidStack resource, FluidAction fluidAction) {
             if (resource == null || resource.isEmpty()) return 0;
             var t = cache.get();
             if (!(t instanceof IItemHandlerModifiable inventory)) return 0;
@@ -139,7 +139,7 @@ public class EntityChestAsTank extends BlockEntity {
         }
 
         @Override
-        public @NotNull FluidStack drain(FluidStack resource, FluidAction fluidAction) {
+        public @NotNull FluidStack drain(@Nullable FluidStack resource, FluidAction fluidAction) {
             if (resource == null || resource.isEmpty()) return FluidStack.EMPTY;
             var t = cache.get();
             if (!(t instanceof IItemHandlerModifiable inventory)) return FluidStack.EMPTY;

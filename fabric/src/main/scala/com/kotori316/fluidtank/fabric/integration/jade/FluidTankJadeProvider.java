@@ -5,7 +5,6 @@ import com.kotori316.fluidtank.tank.TileTank;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import scala.jdk.javaapi.CollectionConverters;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 
@@ -22,9 +21,14 @@ class FluidTankJadeProvider implements IServerDataProvider<BlockAccessor>, IBloc
             } else {
                 locale = Locale.US;
             }
-            var content = TooltipContent.getTooltipText(accessor.getServerData(), tileTank,
-                    false, false, locale);
-            tooltip.addAll(CollectionConverters.asJava(content));
+            var content = TooltipContent.getTooltipTextJava(
+                accessor.getServerData(),
+                tileTank,
+                false,
+                false,
+                locale
+            );
+            tooltip.addAll(content);
         }
     }
 
