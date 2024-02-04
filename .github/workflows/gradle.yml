@@ -136,17 +136,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - run: chmod +x ./gradlew
-      - uses: gradle/gradle-build-action@v3
-        with:
-          cache-read-only: true
-          add-job-summary: 'on-failure'
-      - run: ./gradlew classes
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2023.3
         env:
