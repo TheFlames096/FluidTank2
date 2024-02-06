@@ -2,4 +2,4 @@ set -eu
 
 chmod +x ./gradlew
 
-./gradlew classes
+./gradlew classes configureClientLaunch
