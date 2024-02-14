@@ -202,6 +202,11 @@ publishMods {
         requires {
             slug = "scalable-cats-force"
         }
+        if (project.name == "fabric") {
+            requires {
+                slug = "automatic-potato"
+            }
+        }
     }
 
     modrinth {
@@ -211,6 +216,11 @@ publishMods {
         changelog = provider { modrinthChangelog() }
         requires {
             slug = "scalable-cats-force"
+        }
+        if (project.name == "fabric") {
+            requires {
+                slug = "automatic-potato"
+            }
         }
     }
 }

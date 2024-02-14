@@ -30,5 +30,8 @@
     "fabric": "*",
     "minecraft": ">=${mc_version}",
     "kotori_scala": ">=2.0.0"
+  },
+  "custom": {
+    "kotori316_version_checker": "${update_url}"
   }
 }

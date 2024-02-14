@@ -83,6 +83,9 @@ dependencies {
     modImplementation(group = "teamreborn", name = "energy", version = "3.0.0")
     modImplementation("com.kotori316:test-utility-fabric:${project.property("test_util_version")}")
     modImplementation("com.kotori316:debug-utility-fabric:${project.property("debug_util_version")}")
+    modImplementation("com.kotori316:VersionCheckerMod:${project.property("automatic_potato_version")}") {
+        isTransitive = false
+    }
 
     testImplementation("net.fabricmc:fabric-loader-junit:${project.property("fabric_loader_version")}")
 }
