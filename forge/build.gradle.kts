@@ -199,7 +199,6 @@ dependencies {
             version = project.property("jei_forge_version").toString()
         ) { isTransitive = false }
     }
-    // FIXME
     modCompileOnly(
         group = "appeng",
         name = "appliedenergistics2-forge",

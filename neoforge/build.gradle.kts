@@ -94,6 +94,11 @@ dependencies {
         name = "the-one-probe-245211",
         version = project.property("top_neoforge_id").toString()
     )
+    modImplementation(
+        group = "appeng",
+        name = "appliedenergistics2-neoforge",
+        version = project.property("ae2_neoforge_version").toString()
+    ) { isTransitive = false }
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
