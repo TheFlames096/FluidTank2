@@ -8,6 +8,7 @@ import com.kotori316.fluidtank.cat.ItemChestAsTank;
 import com.kotori316.fluidtank.config.PlatformConfigAccess;
 import com.kotori316.fluidtank.neoforge.cat.EntityChestAsTank;
 import com.kotori316.fluidtank.neoforge.config.NeoForgePlatformConfigAccess;
+import com.kotori316.fluidtank.neoforge.integration.ae2.AE2FluidTankIntegration;
 import com.kotori316.fluidtank.neoforge.integration.top.FluidTankTopPlugin;
 import com.kotori316.fluidtank.neoforge.message.PacketHandler;
 import com.kotori316.fluidtank.neoforge.recipe.IgnoreUnknownTagIngredient;
@@ -61,7 +62,7 @@ public final class FluidTank {
         modBus.register(this);
         modBus.register(proxy);
         modBus.addListener(FluidTank::registerCapabilities);
-        // AE2FluidTankIntegration.onAPIAvailable();
+        AE2FluidTankIntegration.onAPIAvailable(modBus);
         FluidTankTopPlugin.sendIMC();
         NeoForge.EVENT_BUS.addListener(FluidTank::onServerStart);
         FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "Initialize finished {}", FluidTankCommon.modId);
