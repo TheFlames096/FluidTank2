@@ -1,6 +1,5 @@
 package com.kotori316.fluidtank.neoforge.integration.top
 
-/*
 import com.kotori316.fluidtank.fluids.FluidAmountUtil
 import com.kotori316.fluidtank.integration.tooltip.TooltipContent
 import com.kotori316.fluidtank.tank.TileTank
@@ -33,4 +32,4 @@ object FluidTankTopProvider extends IProbeInfoProvider {
       case _ =>
     }
   }
-}*/
+}

@@ -1,5 +1,5 @@
 package com.kotori316.fluidtank.neoforge.integration.top;
-/*
+
 import com.kotori316.fluidtank.FluidTankCommon;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import net.neoforged.fml.InterModComms;
@@ -7,7 +7,7 @@ import net.neoforged.fml.ModList;
 
 import java.util.function.Function;
 
-public class FluidTankTopPlugin {
+public final class FluidTankTopPlugin {
     private static final String TOP_ID = "theoneprobe";
 
     public static void sendIMC() {
@@ -30,4 +30,4 @@ public class FluidTankTopPlugin {
             return null;
         }
     }
-}*/
+}
