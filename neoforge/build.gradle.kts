@@ -84,10 +84,15 @@ dependencies {
     common(project(path = ":common", configuration = "namedElements")) { isTransitive = false }
     shadowCommon(project(path = ":common", configuration = "transformProductionNeoForge")) { isTransitive = false }
 
-    modCompileOnly(
+    modImplementation(
         group = "curse.maven",
         name = "jade-324717",
         version = project.property("jade_neoforge_id").toString()
+    )
+    modImplementation(
+        group = "curse.maven",
+        name = "the-one-probe-245211",
+        version = project.property("top_neoforge_id").toString()
     )
     // Test Dependencies.
     // Required these libraries to execute the tests.

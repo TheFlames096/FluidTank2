@@ -176,23 +176,26 @@ dependencies {
     shadowCommon(project(path = ":common", configuration = "transformProductionForge")) { isTransitive = false }
 
     // Other mods
-    modCompileOnly(group = "curse.maven", name = "jade-324717", version = project.property("jade_forge_id").toString())
+    modImplementation(
+        group = "curse.maven",
+        name = "jade-324717",
+        version = project.property("jade_forge_id").toString()
+    )
     modCompileOnly(
         group = "curse.maven",
         name = "the-one-probe-245211",
         version = project.property("top_forge_id").toString()
     )
-    // FIXME
     if (System.getenv("RUN_GAME_TEST").toBoolean()) {
         modCompileOnly(
             group = "mezz.jei",
-            name = "jei-1.20.2-forge",
+            name = "jei-1.20.4-forge",
             version = project.property("jei_forge_version").toString()
         ) { isTransitive = false }
     } else {
-        modCompileOnly(
+        modImplementation(
             group = "mezz.jei",
-            name = "jei-1.20.2-forge",
+            name = "jei-1.20.4-forge",
             version = project.property("jei_forge_version").toString()
         ) { isTransitive = false }
     }
