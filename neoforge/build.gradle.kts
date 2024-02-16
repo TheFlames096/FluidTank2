@@ -99,6 +99,11 @@ dependencies {
         name = "appliedenergistics2-neoforge",
         version = project.property("ae2_neoforge_version").toString()
     ) { isTransitive = false }
+    modLocalRuntime(
+        group = "mezz.jei",
+        name = "jei-1.20.4-neoforge",
+        version = project.property("jei_neoforge_version").toString()
+    ) { isTransitive = false }
     // Test Dependencies.
     // Required these libraries to execute the tests.
     // The library will avoid errors of ForgeRegistry and Capability.
