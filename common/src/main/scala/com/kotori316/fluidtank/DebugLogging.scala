@@ -19,10 +19,14 @@ object DebugLogging {
   val LOGGER: Logger = {
     class DummyClassLoader extends SecureClassLoader
 
-    val context = Configurator.initialize("fluidtank-config", new DummyClassLoader,
-      classOf[FluidTankCommon].getResource("/fluidtank-log4j2.xml").toURI)
+    val configUri = classOf[FluidTankCommon].getResource("/fluidtank-log4j2.xml").toURI
+    val context = Configurator.initialize("fluidtank-config", new DummyClassLoader, configUri)
+    if (context == null) {
+      FluidTankCommon.LOGGER.error("Failed to initialize DebugLogging.LOGGER. See the log for detail.")
+    }
     val l = context.getLogger("FluidTankDebug")
     if (!ENABLED) {
+      // default is debug
       l.setLevel(Level.INFO)
     }
     l
@@ -40,7 +44,8 @@ object DebugLogging {
       .map { case (id, r) => (id, r.getResultItem(server.registryAccess()), ingredientAsMap(r.getIngredients.asScala)) }
       .map { case (id, stack, value) =>
         val location = BuiltInRegistries.ITEM.getKey(stack.getItem)
-        s"$id $location x${stack.getCount}(tag: ${stack.getTag}) -> ${noPretty.toJson(value)}" }
+        s"$id $location x${stack.getCount}(tag: ${stack.getTag}) -> ${noPretty.toJson(value)}"
+      }
       .zipWithIndex
       .foreach { case (s, index) => LOGGER.info("{} {}", index + 1, s) }
   }
