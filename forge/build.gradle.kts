@@ -157,11 +157,10 @@ repositories {
 
 }
 
-val forgeVersion = project.property("forge_version").toString()
 val minecraftVersion = project.property("minecraft_version").toString()
 
 dependencies {
-    forge("net.minecraftforge:forge:${forgeVersion}")
+    forge("net.minecraftforge:forge:${project.property("forge_version")}")
 
     runtimeOnly(
         group = "com.kotori316",
@@ -235,6 +234,8 @@ dependencies {
 
 tasks.register("checkResourceFiles") {
     doLast {
+        val forgeVersion = project.property("forge_version")
+
         @Suppress("UnstableApiUsage")
         val parent = "${(loom as LoomGradleExtension).files.userCache}/${minecraftVersion}/forge/${forgeVersion}"
         Files.list(Path.of(parent))
@@ -251,8 +252,8 @@ ext {
         
         | Dependency | Version |
         | -- | -- |
-        | Minecraft | ${minecraftVersion} |
-        | Forge | ${forgeVersion} |
+        | Minecraft | $minecraftVersion |
+        | Forge | ${project.property("forge_version")} |
         | scalable-cats-force | ${project.property("slpVersion")} |
         | Applied Energistics 2 | ${project.property("ae2_forge_version")} |
         | Jade | File id: ${project.property("jade_forge_id")} |
