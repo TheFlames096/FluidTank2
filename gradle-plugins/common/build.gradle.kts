@@ -7,7 +7,7 @@ repositories {
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.minecraftforge.net/") }
     maven { url = uri("https://maven.architectury.dev/") }
-    maven { url = uri("https://storage.googleapis.com/kotori316-maven-storage/maven/") }
+    maven { url = uri("https://maven.kotori316.com/") }
 }
 
 dependencies {
