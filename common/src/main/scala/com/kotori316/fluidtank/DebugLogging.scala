@@ -21,13 +21,18 @@ object DebugLogging {
 
     val configUri = classOf[FluidTankCommon].getResource("/fluidtank-log4j2.xml").toURI
     val context = Configurator.initialize("fluidtank-config", new DummyClassLoader, configUri)
-    if (context == null) {
-      FluidTankCommon.LOGGER.error("Failed to initialize DebugLogging.LOGGER. See the log for detail.")
-    }
-    val l = context.getLogger("FluidTankDebug")
-    if (!ENABLED) {
-      // default is debug
-      l.setLevel(Level.INFO)
+    val l: Logger = if (context == null) {
+      FluidTankCommon.LOGGER.error("Failed to initialize DebugLogging.LOGGER. See the log for detail. Uri: {}, Context: {}", configUri, context)
+      org.apache.logging.log4j.LogManager.getLogger("FluidTankDebug")
+    } else {
+      val logger = context.getLogger("FluidTankDebug")
+      if (!ENABLED) {
+        // default is debug
+        logger.setLevel(Level.INFO)
+      } else {
+        logger.debug("Logger Configuration URI: {}, Context: {}", configUri, context)
+      }
+      logger
     }
     l
   }

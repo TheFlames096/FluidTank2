@@ -148,6 +148,7 @@ public final class FluidTank {
     }
 
     static void onServerStart(ServerStartedEvent event) {
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "OnServerStart {}, {}", FluidTankCommon.modId, event.getServer().getMotd());
         DebugLogging.initialLog(event.getServer());
     }
 

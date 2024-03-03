@@ -109,6 +109,7 @@ public final class FluidTank implements ModInitializer {
     }
 
     static void onServerStart(MinecraftServer server) {
+        FluidTankCommon.LOGGER.info(FluidTankCommon.INITIALIZATION, "OnServerStart {}, {}", FluidTankCommon.modId, server.getMotd());
         DebugLogging.initialLog(server);
     }
 }
