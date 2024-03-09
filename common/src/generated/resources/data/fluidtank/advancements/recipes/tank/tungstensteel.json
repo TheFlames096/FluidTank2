@@ -8,32 +8,32 @@
         "values": [
           {
             "type": "forge:tag_empty",
-            "tag": "forge:gems/emerald"
+            "tag": "forge:ingots/lead"
           },
           {
             "type": "forge:tag_empty",
-            "tag": "c:emeralds"
+            "tag": "c:lead_ingots"
           }
         ]
       }
     }
   ],
   "criteria": {
-    "has_fabric_emeralds": {
+    "has_fabric_lead_ingots": {
       "conditions": {
         "items": [
           {
-            "tag": "c:emeralds"
+            "tag": "c:lead_ingots"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_forge_gems/emerald": {
+    "has_forge_ingots/lead": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:gems/emerald"
+            "tag": "forge:ingots/lead"
           }
         ]
       },
@@ -41,7 +41,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_emerald"
+        "recipe": "fluidtank:tungstensteel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -53,13 +53,13 @@
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "c:emeralds"
+            "c:lead_ingots"
           ]
         },
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "forge:gems/emerald"
+            "forge:ingots/lead"
           ]
         }
       ]
@@ -68,13 +68,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_forge_gems/emerald",
-      "has_fabric_emeralds"
+      "has_forge_ingots/lead",
+      "has_fabric_lead_ingots"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_emerald"
+      "fluidtank:tungstensteel"
     ]
   },
   "sends_telemetry_event": false

@@ -16,11 +16,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "fluidtank:tank_emerald"
+          "name": "fluidtank:tungstensteel"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "fluidtank:blocks/tank_emerald"
+  "random_sequence": "fluidtank:blocks/tungstensteel"
 }

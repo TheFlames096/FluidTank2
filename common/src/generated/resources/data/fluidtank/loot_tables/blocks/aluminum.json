@@ -16,11 +16,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "fluidtank:tank_tin"
+          "name": "fluidtank:aluminum"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "fluidtank:blocks/tank_tin"
+  "random_sequence": "fluidtank:blocks/aluminum"
 }

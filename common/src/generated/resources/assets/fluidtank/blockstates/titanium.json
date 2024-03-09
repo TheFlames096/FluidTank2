@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "tank_pos=bottom": {
+      "model": "fluidtank:block/titanium"
+    },
+    "tank_pos=middle": {
+      "model": "fluidtank:block/titanium"
+    },
+    "tank_pos=single": {
+      "model": "fluidtank:block/titanium"
+    },
+    "tank_pos=top": {
+      "model": "fluidtank:block/titanium"
+    }
+  }
+}

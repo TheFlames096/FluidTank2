@@ -8,32 +8,32 @@
         "values": [
           {
             "type": "forge:tag_empty",
-            "tag": "forge:ingots/bronze"
+            "tag": "forge:gems/emerald"
           },
           {
             "type": "forge:tag_empty",
-            "tag": "c:bronze_ingots"
+            "tag": "c:emeralds"
           }
         ]
       }
     }
   ],
   "criteria": {
-    "has_fabric_bronze_ingots": {
+    "has_fabric_emeralds": {
       "conditions": {
         "items": [
           {
-            "tag": "c:bronze_ingots"
+            "tag": "c:emeralds"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_forge_ingots/bronze": {
+    "has_forge_gems/emerald": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/bronze"
+            "tag": "forge:gems/emerald"
           }
         ]
       },
@@ -41,7 +41,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_bronze"
+        "recipe": "fluidtank:aluminum"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -53,13 +53,13 @@
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "c:bronze_ingots"
+            "c:emeralds"
           ]
         },
         {
           "condition": "fabric:item_tags_populated",
           "values": [
-            "forge:ingots/bronze"
+            "forge:gems/emerald"
           ]
         }
       ]
@@ -68,13 +68,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_forge_ingots/bronze",
-      "has_fabric_bronze_ingots"
+      "has_forge_gems/emerald",
+      "has_fabric_emeralds"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_bronze"
+      "fluidtank:aluminum"
     ]
   },
   "sends_telemetry_event": false

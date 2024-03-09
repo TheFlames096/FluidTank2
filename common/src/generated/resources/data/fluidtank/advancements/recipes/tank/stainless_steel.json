@@ -41,7 +41,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_tin"
+        "recipe": "fluidtank:stainless_steel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -74,7 +74,7 @@
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_tin"
+      "fluidtank:stainless_steel"
     ]
   },
   "sends_telemetry_event": false

@@ -13,18 +13,18 @@ import java.util.Map;
 public enum Tier {
     INVALID(0, ""),
     WOOD(1),
-    STONE(2),
     IRON(3),
     GOLD(4),
     DIAMOND(5),
-    EMERALD(6),
+    EMERALD(6, "aluminum"),
     STAR(7),
     CREATIVE(10, "creative"),
     VOID(0),
     COPPER(2),
-    TIN(2),
-    BRONZE(3),
-    LEAD(3),
+    TIN(2,"stainless_steel"),
+    STONE(2,"steel"),
+    BRONZE(3,"titanium"),
+    LEAD(3,"tungstensteel"),
     SILVER(3),
     ;
 
@@ -76,20 +76,20 @@ public enum Tier {
     public static EnumMap<Tier, BigInt> getDefaultCapacityMap() {
         return new EnumMap<>(Map.ofEntries(
             Map.entry(INVALID, fromForge(0)),
-            Map.entry(WOOD, fromForge(4_000)),
-            Map.entry(STONE, fromForge(16_000)),
-            Map.entry(IRON, fromForge(256_000)),
-            Map.entry(GOLD, fromForge(4_096_000)),
-            Map.entry(DIAMOND, fromForge(16_384_000)),
-            Map.entry(EMERALD, fromForge(65_536_000)),
-            Map.entry(STAR, fromForge(1_048_576_000)),
+            Map.entry(WOOD, fromForge(16_000)),
+            Map.entry(STONE, fromForge(48_000)),
+            Map.entry(IRON, fromForge(32_000)),
+            Map.entry(GOLD, fromForge(48_000)),
+            Map.entry(DIAMOND, fromForge(64_000)),
+            Map.entry(EMERALD, fromForge(96_000)),
+            Map.entry(STAR, fromForge(64_000_000)),
             Map.entry(CREATIVE, GenericUnit.CREATIVE_TANK()),
             Map.entry(VOID, fromForge(0)),
-            Map.entry(COPPER, fromForge(40_000)),
-            Map.entry(TIN, fromForge(48_000)),
+            Map.entry(COPPER, fromForge(24_000)),
+            Map.entry(TIN, fromForge(128_000)),
             Map.entry(BRONZE, fromForge(256_000)),
-            Map.entry(LEAD, fromForge(192_000)),
-            Map.entry(SILVER, fromForge(1_024_000))
+            Map.entry(LEAD, fromForge(512_000)),
+            Map.entry(SILVER, fromForge(40_000))
         ));
     }
 }

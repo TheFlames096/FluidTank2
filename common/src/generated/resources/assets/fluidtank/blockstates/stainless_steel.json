@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "tank_pos=bottom": {
+      "model": "fluidtank:block/stainless_steel"
+    },
+    "tank_pos=middle": {
+      "model": "fluidtank:block/stainless_steel"
+    },
+    "tank_pos=single": {
+      "model": "fluidtank:block/stainless_steel"
+    },
+    "tank_pos=top": {
+      "model": "fluidtank:block/stainless_steel"
+    }
+  }
+}

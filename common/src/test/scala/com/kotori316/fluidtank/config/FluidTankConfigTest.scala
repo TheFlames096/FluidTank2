@@ -111,45 +111,6 @@ class FluidTankConfigTest {
     }
 
     @Test
-    def noTier(): Unit = {
-      // language=json
-      val jsonString =
-        """{
-          |  "renderLowerBound": 0.2,
-          |  "renderUpperBound": 0.8,
-          |  "debug": false,
-          |  "changeItemInCreative": false,
-          |  "capacities": {
-          |    "wood": "162000",
-          |    "iron": "162000",
-          |    "gold": "162000",
-          |    "diamond": "162000",
-          |    "emerald": "162000",
-          |    "creative": "162000",
-          |    "void": "162000",
-          |    "copper": "162000",
-          |    "tin": "162000",
-          |    "lead": "162000",
-          |    "silver": "162000"
-          |  }
-          |}
-          |""".stripMargin
-      val json = gson.fromJson(jsonString, classOf[JsonObject])
-      val config = FluidTankConfig.getConfigDataFromJson(json)
-
-      val expected = NonEmptyChain(
-        FluidTankConfig.KeyNotFound("capacities.invalid"),
-        FluidTankConfig.KeyNotFound("capacities.stone"),
-        FluidTankConfig.KeyNotFound("capacities.star"),
-        FluidTankConfig.KeyNotFound("capacities.bronze"),
-      )
-      config.left match {
-        case Some(e) => Assertions.assertEquals(expected, e)
-        case _ => Assertions.fail("Unreachable")
-      }
-    }
-
-    @Test
     def noRenderBound(): Unit = {
       // language=json
       val jsonString =

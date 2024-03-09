@@ -16,11 +16,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "fluidtank:tank_lead"
+          "name": "fluidtank:steel"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "fluidtank:blocks/tank_lead"
+  "random_sequence": "fluidtank:blocks/steel"
 }

@@ -26,7 +26,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fluidtank:tank_stone"
+        "recipe": "fluidtank:steel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "fluidtank:tank_stone"
+      "fluidtank:steel"
     ]
   },
   "sends_telemetry_event": false

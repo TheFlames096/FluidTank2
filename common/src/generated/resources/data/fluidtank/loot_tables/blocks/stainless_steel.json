@@ -16,11 +16,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "fluidtank:tank_bronze"
+          "name": "fluidtank:stainless_steel"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "fluidtank:blocks/tank_bronze"
+  "random_sequence": "fluidtank:blocks/stainless_steel"
 }
